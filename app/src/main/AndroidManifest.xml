@@ -32,8 +32,7 @@
         <!--Tela de Casdastro-->
         <activity
             android:name=".CadastroActivity"
-            android:label="Register Screen"
-            android:theme="@android:style/Theme.Black.NoTitleBar">
+            android:label="Register Screen">
         </activity>
     </application>
 
