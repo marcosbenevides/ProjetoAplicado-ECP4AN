@@ -8,24 +8,16 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     tools:context=".LoginActivity"
-    android:background="#ffffff">
+    android:background="@drawable/gradient_background">
 
-    <ImageView
-        android:id="@+id/logo_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/logo_pequena"
-        android:layout_marginTop="70dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
     <LinearLayout
         android:id="@+id/estilo_login"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@+id/logo_login"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
+        android:layout_above="@+id/buttonLogin"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <EditText
             android:id="@+id/textEmail"
@@ -44,21 +36,6 @@
             android:layout_marginRight="0dp"
             android:password="true"
             android:hint="Senha"/>
-        <Button
-            android:id="@+id/buttonLogin"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:text="Login"/>
-        <Button
-            android:id="@+id/buttonCreateLogin"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:text="Não sou cadastrado"
-            android:onClick="cadastrar" />
     </LinearLayout>
 
     <TextView
@@ -68,6 +45,25 @@
         android:text="Projeto Aplicado - UNA.BR"
         android:textColor="#b0b0b1"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView" />
+
+    <Button
+        android:id="@+id/buttonCreateLogin"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Não sou cadastrado"
+        android:onClick="cadastrar"
+        android:layout_above="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:id="@+id/buttonLogin"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:layout_above="@+id/buttonCreateLogin"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
