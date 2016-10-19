@@ -32,7 +32,6 @@
         <activity
             android:name=".CadastroActivity"
             android:label="Register Screen"></activity>
-        <activity android:name="br.una.projetoaplicado.marcosbenevides.bg_home"></activity>
     </application>
 
 </manifest>
