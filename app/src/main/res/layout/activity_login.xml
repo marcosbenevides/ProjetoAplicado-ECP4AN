@@ -28,7 +28,42 @@
         android:onClick="cadastrar"
         android:layout_above="@+id/textView"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:textColorLink="@android:color/holo_red_dark"
+        android:textColor="@color/colorWhite" />
+
+    <LinearLayout
+        android:id="@+id/estilo_login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/buttonLogin">
+
+        <EditText
+            android:id="@+id/emailEditor"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:hint="E-mail"
+            android:textColor="#ffffff"
+            style="@style/Widget.AppCompat.EditText" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:password="true"
+            android:hint="Senha"
+            android:textColor="#ffffff"
+            android:id="@+id/senhaEditor" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/buttonLogin"
@@ -36,37 +71,8 @@
         android:layout_height="wrap_content"
         android:text="Login"
         android:layout_above="@+id/buttonCreateLogin"
-        android:layout_centerHorizontal="true" />
-
-    <LinearLayout
-        android:id="@+id/estilo_login"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_above="@+id/buttonLogin"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-        <EditText
-            android:id="@+id/textEmail"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="0dp"
-            android:hint="E-mail"
-            android:textColor="#ffffff" />
-
-        <EditText
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="0dp"
-            android:password="true"
-            android:hint="Senha"
-            android:textColor="#ffffff" />
-
-    </LinearLayout>
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        style="@style/Widget.AppCompat.Button.Colored" />
 
 </RelativeLayout>
