@@ -2,4 +2,7 @@
     <string name="app_name">VizinhancaSegura</string>
     <string name="proj_name">Projeto Aplicado</string>
     <string name="login_Screen">Login Screen</string>
+    <string name="Carregando">Buscando dados no servidor...</string>
+    <string name="Favor_Aguardar">Favor aguardar...</string>
+
 </resources>
