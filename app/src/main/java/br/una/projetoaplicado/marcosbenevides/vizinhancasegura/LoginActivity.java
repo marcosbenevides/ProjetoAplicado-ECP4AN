@@ -1,26 +1,20 @@
 package br.una.projetoaplicado.marcosbenevides.vizinhancasegura;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Usuario;
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.RetrofitService;
@@ -37,7 +31,7 @@ public class LoginActivity extends Activity {
     private TextView status_error;
     private ProgressDialog dialog;
     Usuario usuario = new Usuario();
-    Thread thread;
+    AlertDialog.Builder alertDialog;
     public static final String TAG = "MARCOS: ";
 
 
@@ -88,11 +82,11 @@ public class LoginActivity extends Activity {
                             });
                         } else {
                             dialog.dismiss();
-                            if(response.body() == true){
+                            if (response.body() == true) {
                                 status_error.setVisibility(View.INVISIBLE);
                                 //Intent intent = new Intent(LoginActivity.this,MapaActivity.class);
-                                Toast.makeText(LoginActivity.this,"Login realizado com sucesso!",Toast.LENGTH_LONG);
-                            }else{
+                                Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG);
+                            } else {
                                 senhaEditor.setText("");
                                 status_error.setVisibility(View.VISIBLE);
                                 Toast.makeText(LoginActivity.this, "Algo está errado!", Toast.LENGTH_SHORT).show();
@@ -104,11 +98,19 @@ public class LoginActivity extends Activity {
                     @Override
                     public void onFailure(Call<Boolean> call, Throwable t) {
                         dialog.dismiss();
+
+                        alertDialog = new AlertDialog.Builder(LoginActivity.this)
+                                .setMessage("Impossível conectar ao servidor!")
+                                .setCancelable(true)
+                                .setPositiveButton("OK", null);
+                        alertDialog.create();
+                        alertDialog.show();
                         Log.e(TAG, "Falha: " + t.getMessage());
                     }
                 });
             }
-        }).start();
+        }
+        ).start();
 
 
     }

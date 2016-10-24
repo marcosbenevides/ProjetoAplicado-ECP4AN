@@ -15,8 +15,6 @@ import retrofit2.http.Path;
 public interface RetrofitService {
 
     @GET("usuario")
-//    Call<String> buscarUsuario();
-
     Call<Boolean> login();
 /*    Call<Usuario> buscarUsuario(@Path("idusuario") String idusuario,
                                    @Path("nome") String nome,
