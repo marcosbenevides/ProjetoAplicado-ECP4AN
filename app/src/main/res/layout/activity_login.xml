@@ -56,13 +56,28 @@
         <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
             android:password="true"
             android:hint="Senha"
             android:textColor="#ffffff"
             android:id="@+id/senhaEditor" />
+
+        <TextView
+            android:text="Login ou senha inválidos!"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/status_login"
+            android:visibility="visible"
+            android:textColor="@color/colorAccent"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
     </LinearLayout>
 
     <Button

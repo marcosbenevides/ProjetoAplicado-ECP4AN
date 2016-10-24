@@ -1,12 +1,26 @@
 package br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes;
 
+
 /**
  * Created by marcos.benevides on 21/10/2016.
  */
 
 public class Usuario {
+
     private String nome;
     private String email;
+
+
+    public Usuario() {
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "nome='" + nome + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 
     public String getNome() {
         return nome;
@@ -24,11 +38,4 @@ public class Usuario {
         this.email = email;
     }
 
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "nome='" + nome + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }
