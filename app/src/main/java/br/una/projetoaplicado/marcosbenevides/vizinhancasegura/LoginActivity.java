@@ -16,6 +16,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Usuario;
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.RetrofitService;
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.ServiceGenerator;
@@ -54,64 +58,80 @@ public class LoginActivity extends Activity {
         //finish();
     }
 
-    public void consultaWS(View arg0) {
+    public void consultaWS(View arg0) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        email = emailEditor.getText().toString();
+        senha = md5(String.valueOf(senhaEditor.getText()));
 
 
-        new Thread(new Runnable() {
+                new Thread(new Runnable() {
 
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        dialog = ProgressDialog.show(LoginActivity.this, "Por favor, aguarde...", "Carregando dados do servidor...");
-                    }
-                });
-                RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
-                Call<Boolean> call = service.login();
-                call.enqueue(new Callback<Boolean>() {
-                    @Override
-                    public void onResponse(Call<Boolean> call, final Response<Boolean> response) {
-                        if (!response.isSuccessful()) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dialog.dismiss();
-                                    Log.e(TAG, " " + response.message());
-                                }
-                            });
-                        } else {
-                            dialog.dismiss();
-                            if (response.body() == true) {
-                                status_error.setVisibility(View.INVISIBLE);
-                                //Intent intent = new Intent(LoginActivity.this,MapaActivity.class);
-                                Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG);
-                            } else {
-                                senhaEditor.setText("");
-                                status_error.setVisibility(View.VISIBLE);
-                                Toast.makeText(LoginActivity.this, "Algo está errado!", Toast.LENGTH_SHORT).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog = ProgressDialog.show(LoginActivity.this, "Por favor, aguarde...", "Carregando dados do servidor...");
                             }
-                            Log.e(TAG, usuario.toString());
-                        }
-                    }
+                        });
+                        RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
+                        Call<Object> call = service.login();
+                        call.enqueue(new Callback<Object>() {
+                            @Override
+                            public void onResponse(Call<Object> call, final Response<Object> response) {
+                                if (!response.isSuccessful()) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            dialog.dismiss();
+                                            Log.e(TAG, " " + response.message());
+                                        }
+                                    });
+                                } else {
+                                    dialog.dismiss();
+                                    if (response.body().toString() == "true") {
+                                        status_error.setVisibility(View.INVISIBLE);
+                                        //Intent intent = new Intent(LoginActivity.this,MapaActivity.class);
+                                        Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        senhaEditor.setText("");
+                                        status_error.setVisibility(View.VISIBLE);
+                                        Toast.makeText(LoginActivity.this, "Algo está errado!", Toast.LENGTH_LONG).show();
+                                    }
+                                    Log.e(TAG, response.body().toString());
+                                    Log.e(TAG, usuario.toString());
+                                }
+                            }
 
-                    @Override
-                    public void onFailure(Call<Boolean> call, Throwable t) {
-                        dialog.dismiss();
+                            @Override
+                            public void onFailure(Call<Object> call, Throwable t) {
+                                dialog.dismiss();
 
-                        alertDialog = new AlertDialog.Builder(LoginActivity.this)
-                                .setMessage("Impossível conectar ao servidor!")
-                                .setCancelable(true)
-                                .setPositiveButton("OK", null);
-                        alertDialog.create();
-                        alertDialog.show();
-                        Log.e(TAG, "Falha: " + t.getMessage());
+                                alertDialog = new AlertDialog.Builder(LoginActivity.this)
+                                        .setMessage("Impossível conectar ao servidor!")
+                                        .setCancelable(true)
+                                        .setPositiveButton("OK", null);
+                                alertDialog.create();
+                                alertDialog.show();
+                                Log.e(TAG, "Falha: " + t.getMessage());
+                            }
+                        });
                     }
-                });
-            }
-        }
-        ).start();
+                }
+                ).start();
 
 
     }
+
+    private String md5(String senha) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+        byte b[] = messageDigest.digest(senha.getBytes("UTF-8"));
+        StringBuilder stringBuilder = new StringBuilder();
+        for (byte b1 : b) {
+            stringBuilder.append(String.format("%02X", 0xFF & b1));
+        }
+        final String MD5_CRYPT = stringBuilder.toString();
+
+        return MD5_CRYPT;
+    }
+
 }
