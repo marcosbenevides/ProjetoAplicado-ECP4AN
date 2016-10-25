@@ -74,10 +74,10 @@ public class LoginActivity extends Activity {
                             }
                         });
                         RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
-                        Call<Object> call = service.login();
-                        call.enqueue(new Callback<Object>() {
+                        Call<Usuario> call = service.login(email,senha);
+                        call.enqueue(new Callback<Usuario>() {
                             @Override
-                            public void onResponse(Call<Object> call, final Response<Object> response) {
+                            public void onResponse(Call<Usuario> call, final Response<Usuario> response) {
                                 if (!response.isSuccessful()) {
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -88,7 +88,8 @@ public class LoginActivity extends Activity {
                                     });
                                 } else {
                                     dialog.dismiss();
-                                    if (response.body().toString() == "true") {
+                                    usuario = response.body();
+                                    if (usuario.getEmail().equals(email)) {
                                         status_error.setVisibility(View.INVISIBLE);
                                         //Intent intent = new Intent(LoginActivity.this,MapaActivity.class);
                                         Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
@@ -103,7 +104,7 @@ public class LoginActivity extends Activity {
                             }
 
                             @Override
-                            public void onFailure(Call<Object> call, Throwable t) {
+                            public void onFailure(Call<Usuario> call, Throwable t) {
                                 dialog.dismiss();
 
                                 alertDialog = new AlertDialog.Builder(LoginActivity.this)

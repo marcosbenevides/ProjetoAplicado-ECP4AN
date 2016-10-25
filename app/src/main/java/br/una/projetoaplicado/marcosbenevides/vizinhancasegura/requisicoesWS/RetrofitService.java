@@ -1,5 +1,7 @@
 package br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS;
 
+import java.util.Objects;
+
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Usuario;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -14,15 +16,12 @@ import retrofit2.http.Path;
 
 public interface RetrofitService {
 
-    @GET("usuario")
-    Call<Boolean> login();
-/*    Call<Usuario> buscarUsuario(@Path("idusuario") String idusuario,
-                                   @Path("nome") String nome,
-                                   @Path("email") String email,
-                                   @Path("enderecos") String enderecos,
-                                   @Path("segurancas") String segurancas,
-                                   @Path("alertas") String alertas);*/
+    @GET("evalido")
+    Call<Object> buscaUsuario();
 
+    @GET("usuario")
+    Call<Usuario> login(@Path("email") String email,
+                        @Path("senha") String senha);
 
 
 }
