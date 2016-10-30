@@ -2,14 +2,10 @@ package br.una.projetoaplicado.marcosbenevides.vizinhancasegura;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -60,65 +56,67 @@ public class LoginActivity extends Activity {
 
     public void consultaWS(View arg0) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         email = emailEditor.getText().toString();
-        senha = md5(String.valueOf(senhaEditor.getText()));
+        //senha = md5(String.valueOf(senhaEditor.getText()));
+        senha = String.valueOf(senhaEditor.getText());
 
 
-                new Thread(new Runnable() {
+        new Thread(new Runnable() {
 
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialog = ProgressDialog.show(LoginActivity.this, "Por favor, aguarde...", "Carregando dados do servidor...");
-                            }
-                        });
-                        RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
-                        Call<Usuario> call = service.login(email,senha);
-                        call.enqueue(new Callback<Usuario>() {
-                            @Override
-                            public void onResponse(Call<Usuario> call, final Response<Usuario> response) {
-                                if (!response.isSuccessful()) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            dialog.dismiss();
-                                            Log.e(TAG, " " + response.message());
-                                        }
-                                    });
-                                } else {
-                                    dialog.dismiss();
-                                    usuario = response.body();
-                                    if (usuario.getEmail().equals(email)) {
-                                        status_error.setVisibility(View.INVISIBLE);
-                                        //Intent intent = new Intent(LoginActivity.this,MapaActivity.class);
-                                        Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        senhaEditor.setText("");
-                                        status_error.setVisibility(View.VISIBLE);
-                                        Toast.makeText(LoginActivity.this, "Algo está errado!", Toast.LENGTH_LONG).show();
-                                    }
-                                    Log.e(TAG, response.body().toString());
-                                    Log.e(TAG, usuario.toString());
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Usuario> call, Throwable t) {
-                                dialog.dismiss();
-
-                                alertDialog = new AlertDialog.Builder(LoginActivity.this)
-                                        .setMessage("Impossível conectar ao servidor!")
-                                        .setCancelable(true)
-                                        .setPositiveButton("OK", null);
-                                alertDialog.create();
-                                alertDialog.show();
-                                Log.e(TAG, "Falha: " + t.getMessage());
-                            }
-                        });
+                        dialog = ProgressDialog.show(LoginActivity.this, "Por favor, aguarde...", "Carregando dados do servidor...");
                     }
-                }
-                ).start();
+                });
+                RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
+                Call<Usuario> call = null;
+                    Log.e(TAG,email  + " = " + senha);
+                    call = service.login(email, senha);
+                call.enqueue(new Callback<Usuario>() {
+                    @Override
+                    public void onResponse(final Call<Usuario> call, final Response<Usuario> response) {
+                        if (!response.isSuccessful()) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dialog.dismiss();
+                                    Log.e(TAG, " " + response.message());
+                                }
+                            });
+                        } else {
+                            dialog.dismiss();
+                            usuario = response.body();
+                            if (usuario.getEmail().equals(email)) {
+                                status_error.setVisibility(View.INVISIBLE);
+                                //Intent intent = new Intent(LoginActivity.this,MapaActivity.class);
+                                Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
+                            } else {
+                                senhaEditor.setText("");
+                                status_error.setVisibility(View.VISIBLE);
+                                Toast.makeText(LoginActivity.this, "Algo está errado!", Toast.LENGTH_LONG).show();
+                            }
+                            Log.e(TAG, usuario.toString());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Usuario> call, Throwable t) {
+                        dialog.dismiss();
+
+                        alertDialog = new AlertDialog.Builder(LoginActivity.this)
+                                .setMessage("Impossível conectar ao servidor!")
+                                .setCancelable(true)
+                                .setPositiveButton("OK", null);
+                        alertDialog.create();
+                        alertDialog.show();
+                        Log.e(TAG, "Falha: " + t.getMessage());
+                    }
+                });
+            }
+        }
+        ).start();
 
 
     }

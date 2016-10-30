@@ -3,47 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    tools:context=".LoginActivity"
-    android:background="@drawable/gradient_background">
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".LoginActivity">
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:text="Projeto Aplicado - UNA.BR"
-        android:textColor="#b0b0b1"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/textView" />
-
-    <Button
-        android:id="@+id/buttonCreateLogin"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Não sou cadastrado"
-        android:onClick="cadastrar"
-        android:layout_above="@+id/textView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-        android:textColorLink="@android:color/holo_red_dark"
-        android:textColor="@color/colorWhite" />
 
     <LinearLayout
         android:id="@+id/estilo_login"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_above="@+id/buttonLogin">
+        android:layout_alignParentStart="true">
 
         <EditText
             android:id="@+id/emailEditor"
+            style="@style/Widget.AppCompat.EditText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -51,44 +30,82 @@
             android:layout_marginRight="0dp"
             android:hint="E-mail"
             android:textColor="#ffffff"
-            style="@style/Widget.AppCompat.EditText" />
+            android:cursorVisible="true"/>
 
         <EditText
+            android:id="@+id/senhaEditor"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
-            android:password="true"
             android:hint="Senha"
+            android:password="true"
             android:textColor="#ffffff"
-            android:id="@+id/senhaEditor" />
+            android:cursorVisible="true"/>
 
         <TextView
-            android:text="Login ou senha inválidos!"
+            android:id="@+id/status_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/status_login"
-            android:visibility="invisible"
-            android:textColor="@color/colorAccent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
             android:layout_marginBottom="20dp"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
-            android:layout_alignParentRight="true"
+            android:text="Login ou senha inválidos!"
+            android:textColor="@color/colorAccent"
+            android:visibility="invisible" />
+
+
+        <Button
+            android:id="@+id/buttonLogin"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonCreateLogin"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:onClick="consultaWS"
+            android:text="Login" />
+
+        <Button
+            android:id="@+id/buttonCreateLogin"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/buttonVisitor"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:onClick="cadastrar"
+            android:text="Criar Conta"
+            android:textColor="@color/colorWhite"/>
+
+        <Button
+            android:id="@+id/buttonVisitor"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/textView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
+            android:text="Entrar como visitante"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginBottom="19dp" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="Projeto Aplicado - UNA.BR"
+            android:textAlignment="center"
+            android:textColor="#b0b0b1" />
+
     </LinearLayout>
 
-    <Button
-        android:id="@+id/buttonLogin"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        android:layout_above="@+id/buttonCreateLogin"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:onClick="consultaWS" />
 
 </RelativeLayout>

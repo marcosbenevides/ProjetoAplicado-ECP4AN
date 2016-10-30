@@ -7,6 +7,7 @@ package br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes;
 
 public class Usuario {
 
+    private Integer idUsuario;
     private String nome;
     private String email;
 
@@ -17,7 +18,8 @@ public class Usuario {
     @Override
     public String toString() {
         return "Usuario{" +
-                "nome='" + nome + '\'' +
+                "idUsuario=" + idUsuario +
+                ", nome='" + nome + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }
@@ -38,4 +40,11 @@ public class Usuario {
         this.email = email;
     }
 
+    public Integer getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
+    }
 }
