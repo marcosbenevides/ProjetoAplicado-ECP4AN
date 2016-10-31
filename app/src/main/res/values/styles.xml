@@ -8,5 +8,4 @@
         <item name="colorAccent">@color/colorButton</item>
         <item name="android:textColorHint">@color/colorWhite</item>
     </style>
-
 </resources>
