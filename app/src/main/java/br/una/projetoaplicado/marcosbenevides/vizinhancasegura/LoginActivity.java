@@ -95,7 +95,7 @@ public class LoginActivity extends Activity {
                         } else {
                             dialog.dismiss();
                             usuario = response.body();
-                            if (usuario.getEmail().equals(email)) {
+                            if (usuario.getEmail().equalsIgnoreCase(email)) {
                                 status_error.setVisibility(View.INVISIBLE);
                                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                                 startActivity(intent);

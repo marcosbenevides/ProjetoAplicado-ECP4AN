@@ -303,10 +303,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e("BAIRRO", " " + bairro);
                 Log.e("ESTADO", " " + estado);
                 inicio = false;
-                new Thread(new Runnable() {
+                new Thread(new Runnable() { //por causa do Call, precisa pra rodar ele
                     @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
+                    public void run() { // vai rodar aqui qndo der o Start la em baixo
+                        runOnUiThread(new Runnable() { // O dialogo tem que ser na tread da interface, por isso
                             @Override
                             public void run() {
                                 dialogo = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor ... ", "Favor Aguardar!");
@@ -314,22 +314,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
                         String latitudeEnviar = "" + inicialLocation.getLatitude();
                         String longitudeEnviar = "" + inicialLocation.getLongitude();
-                        RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
-                        Call<Alerta> alertas = service.consultaAlerta(bairro2, cidade2, estado2);
-                        alertas.enqueue(new Callback<Alerta>() {
+                        RetrofitService service = ServiceGenerator.createService(RetrofitService.class); // inicia o gerador de servico/cria conexao com o server
+                        Call<List<Alerta>> alertas = service.consultaAlerta(bairro2, cidade2, estado2); // acessa os metodos do retrofit
+                        alertas.enqueue(new Callback<List<Alerta>>() { // aqui que vai no servidor, precisa ser em outra tread
                             @Override
-                            public void onResponse(Call<Alerta> call, Response<Alerta> response) {
+                            public void onResponse(Call<List<Alerta>> call, Response<List<Alerta>> response) { // resposta do server
                                 if (!response.isSuccessful()) {
                                     dialogo.dismiss();
                                     Log.e(TAG, response.message());
                                 } else {
                                     dialogo.dismiss();
-                                    Log.e(TAG2, response.body().toString());
+                                    Log.e(TAG2, response.body().toString()); // aqui vai receber os dados, tem que tratar ainda
                                 }
                             }
 
                             @Override
-                            public void onFailure(Call<Alerta> call, Throwable t) {
+                            public void onFailure(Call<List<Alerta>> call, Throwable t) { // se for aqui, falhou a conexao com o server
                                 dialogo.dismiss();
 
                                 alertDialog = new AlertDialog.Builder(MapsActivity.this)
@@ -343,7 +343,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
 
                     }
-                });
+                }).start();
 
             }
         }

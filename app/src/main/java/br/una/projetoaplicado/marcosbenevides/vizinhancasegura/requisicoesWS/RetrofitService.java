@@ -1,6 +1,7 @@
 package br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Alerta;
@@ -25,9 +26,9 @@ public interface RetrofitService {
     Call<Usuario> login(@Path("email") String email, @Path("senha") String senha);
 
     @GET("consultaalerta/{bairro}/{cidade}/{estado}")
-    Call<Alerta> consultaAlerta(@Path("bairro") String bairro,
-                                @Path("cidade") String cidade,
-                                @Path("estado") String estado);
+    Call<List<Alerta>> consultaAlerta(@Path("bairro") String bairro,
+                              @Path("cidade") String cidade,
+                              @Path("estado") String estado);
 
     @FormUrlEncoded
     @POST("cadastrarAlerta")
