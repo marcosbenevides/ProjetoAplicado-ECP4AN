@@ -1,6 +1,8 @@
 package br.una.projetoaplicado.marcosbenevides.vizinhancasegura;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
@@ -28,6 +30,7 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import android.location.Address;
 
 import java.io.IOException;
@@ -36,10 +39,19 @@ import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Alerta;
+import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.RetrofitService;
+import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.ServiceGenerator;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, SearchView.OnQueryTextListener,
         GoogleMap.OnCircleClickListener {
 
+    private static final String TAG = "ERRO: ";
+    private static final String TAG2 = "DEU CERTO: ";
     private GoogleMap mMap;
     private Boolean inicio = true;
     private static final int MY_PERMISSION_LOCATION = 0;
@@ -52,6 +64,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Circle circulo;
     Calendar hora;
     NumberFormat formato;
+    private ProgressDialog dialogo;
+    private AlertDialog.Builder alertDialog;
+
     //Alerta alerta;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -86,6 +101,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
         formato = new DecimalFormat("00");
+
+
     }
 
     @Override
@@ -137,7 +154,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String cidade = "";
         String bairro = "";
         String estado = "";
-        try{
+        try {
             cidade = address.get(0).getLocality();
             bairro = address.get(0).getSubLocality();
             estado = address.get(0).getAdminArea();
@@ -153,10 +170,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.e("LONGITUDE", slong);
 
         hora = Calendar.getInstance();
-        String horario = "" + hora.get(Calendar.YEAR) + "-" + formato.format((hora.get(Calendar.MONTH)+1))
+        String horario = "" + hora.get(Calendar.YEAR) + "-" + formato.format((hora.get(Calendar.MONTH) + 1))
                 + "-" + formato.format(hora.get(Calendar.DAY_OF_MONTH)) + " "
                 + formato.format(hora.get(Calendar.HOUR_OF_DAY)) + ":" + formato.format(hora.get(Calendar.MINUTE)) +
-                ":" +formato.format(hora.get(Calendar.SECOND));
+                ":" + formato.format(hora.get(Calendar.SECOND));
         Log.e("HORA: ", horario);
 
         //alerta = new Alerta(estado, cidade, bairro, lat, slong, horario);
@@ -270,7 +287,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 String cidade = "";
                 String bairro = "";
                 String estado = "";
-                try{
+                try {
                     cidade = address.get(0).getLocality();
                     bairro = address.get(0).getSubLocality();
                     estado = address.get(0).getAdminArea();
@@ -279,10 +296,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 //enviar para o banco os dados a seguir mais a lat e a long
+                final String bairro2 = bairro;
+                final String cidade2 = cidade;
+                final String estado2 = estado;
                 Log.e("CIDADE", " " + cidade);
                 Log.e("BAIRRO", " " + bairro);
                 Log.e("ESTADO", " " + estado);
                 inicio = false;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialogo = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor ... ", "Favor Aguardar!");
+                            }
+                        });
+                        String latitudeEnviar = "" + inicialLocation.getLatitude();
+                        String longitudeEnviar = "" + inicialLocation.getLongitude();
+                        RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
+                        Call<Alerta> alertas = service.consultaAlerta(bairro2, cidade2, estado2);
+                        alertas.enqueue(new Callback<Alerta>() {
+                            @Override
+                            public void onResponse(Call<Alerta> call, Response<Alerta> response) {
+                                if (!response.isSuccessful()) {
+                                    dialogo.dismiss();
+                                    Log.e(TAG, response.message());
+                                } else {
+                                    dialogo.dismiss();
+                                    Log.e(TAG2, response.body().toString());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Alerta> call, Throwable t) {
+                                dialogo.dismiss();
+
+                                alertDialog = new AlertDialog.Builder(MapsActivity.this)
+                                        .setMessage("Impossível conectar ao servidor!")
+                                        .setCancelable(true)
+                                        .setPositiveButton("OK", null);
+                                alertDialog.create();
+                                alertDialog.show();
+                                Log.e(TAG, "Falha: " + t.getMessage());
+                            }
+                        });
+
+                    }
+                });
+
             }
         }
     }

@@ -24,10 +24,15 @@ public interface RetrofitService {
     @GET("login/{email}/{senha}")
     Call<Usuario> login(@Path("email") String email, @Path("senha") String senha);
 
+    @GET("consultaalerta/{bairro}/{cidade}/{estado}")
+    Call<Alerta> consultaAlerta(@Path("bairro") String bairro,
+                                @Path("cidade") String cidade,
+                                @Path("estado") String estado);
+
     @FormUrlEncoded
     @POST("cadastrarAlerta")
     Call<Alerta> cadastrarAlerta(@Field("email") String email,
-                                 @Field("logHora")Date data,
+                                 @Field("logHora") Date data,
                                  @Field("longitude") String longitude,
                                  @Field("latitude") String latitude,
                                  @Field("bairro") String bairro,
