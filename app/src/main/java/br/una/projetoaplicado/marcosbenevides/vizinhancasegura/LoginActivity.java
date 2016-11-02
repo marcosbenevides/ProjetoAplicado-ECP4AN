@@ -1,10 +1,12 @@
 package br.una.projetoaplicado.marcosbenevides.vizinhancasegura;
 
+import android.*;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +27,7 @@ import retrofit2.Response;
 
 public class LoginActivity extends Activity {
 
+    private static final int MY_PERMISSION_LOCATION = 0;
     private String senha, email;
     private Button cadastrar, confirmar;
     private EditText emailEditor, senhaEditor;
@@ -45,6 +48,10 @@ public class LoginActivity extends Activity {
         emailEditor = (EditText) findViewById(R.id.emailEditor);
         senhaEditor = (EditText) findViewById(R.id.senhaEditor);
         status_error = (TextView) findViewById(R.id.status_login);
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                MY_PERMISSION_LOCATION);
     }
 
     public void cadastrar(View arg0) {
@@ -90,7 +97,8 @@ public class LoginActivity extends Activity {
                             usuario = response.body();
                             if (usuario.getEmail().equals(email)) {
                                 status_error.setVisibility(View.INVISIBLE);
-                                //Intent intent = new Intent(LoginActivity.this,MapaActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                                startActivity(intent);
                                 Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
                             } else {
                                 senhaEditor.setText("");
@@ -112,6 +120,8 @@ public class LoginActivity extends Activity {
                         alertDialog.create();
                         alertDialog.show();
                         Log.e(TAG, "Falha: " + t.getMessage());
+                        Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                        startActivity(intent);
                     }
                 });
             }
