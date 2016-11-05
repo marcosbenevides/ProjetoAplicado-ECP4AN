@@ -66,8 +66,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     NumberFormat formato;
     private ProgressDialog dialogo;
     private AlertDialog.Builder alertDialog;
-
-    //Alerta alerta;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -137,6 +135,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            buscaPontos(latLng);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
         }
 
@@ -303,7 +302,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e("BAIRRO", " " + bairro);
                 Log.e("ESTADO", " " + estado);
                 inicio = false;
-                new Thread(new Runnable() { //por causa do Call, precisa pra rodar ele
+
+                buscaPontos(new LatLng(inicialLocation.getLatitude(), inicialLocation.getLongitude()));
+
+                /*new Thread(new Runnable() { //por causa do Call, precisa pra rodar ele
                     @Override
                     public void run() { // vai rodar aqui qndo der o Start la em baixo
                         runOnUiThread(new Runnable() { // O dialogo tem que ser na tread da interface, por isso
@@ -325,6 +327,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 } else {
                                     dialogo.dismiss();
                                     Log.e(TAG2, response.body().toString()); // aqui vai receber os dados, tem que tratar ainda
+                                    //choveMarcador(response.body());
                                 }
                             }
 
@@ -343,8 +346,73 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
 
                     }
-                }).start();
+                }).start();*/
 
+            }
+        }
+    }
+
+    public void buscaPontos(final LatLng ponto) {
+        new Thread(new Runnable() { //por causa do Call, precisa pra rodar ele
+            @Override
+            public void run() { // vai rodar aqui qndo der o Start la em baixo
+                runOnUiThread(new Runnable() { // O dialogo tem que ser na tread da interface, por isso
+                    @Override
+                    public void run() {
+                        dialogo = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor ... ", "Favor Aguardar!");
+                    }
+                });
+
+                String latitudeEnviar = "" + ponto.latitude;
+                String longitudeEnviar = "" + ponto.longitude;
+
+                RetrofitService service = ServiceGenerator.createService(RetrofitService.class); // inicia o gerador de servico/cria conexao com o server
+                Call<List<Alerta>> alertas = service.consultaAlerta(latitudeEnviar, longitudeEnviar, ""); // acessa os metodos do retrofit <<<LEMBRAR alterar
+
+                alertas.enqueue(new Callback<List<Alerta>>() { // aqui que vai no servidor, precisa ser em outra tread
+                    @Override
+                    public void onResponse(Call<List<Alerta>> call, Response<List<Alerta>> response) { // resposta do server
+                        if (!response.isSuccessful()) {
+                            dialogo.dismiss();
+                            Log.e(TAG, response.message());
+                        } else {
+                            dialogo.dismiss();
+                            Log.e(TAG2, response.body().toString()); // aqui vai receber os dados, tem que tratar ainda
+                            choveMarcador(response.body());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Alerta>> call, Throwable t) { // se for aqui, falhou a conexao com o server
+                        dialogo.dismiss();
+
+                        alertDialog = new AlertDialog.Builder(MapsActivity.this)
+                                .setMessage("Impossível conectar ao servidor!")
+                                .setCancelable(true)
+                                .setPositiveButton("OK", null);
+                        alertDialog.create();
+                        alertDialog.show();
+                        Log.e(TAG, "Falha: " + t.getMessage());
+                    }
+                });
+            }
+        }).start();
+    }
+
+    public void choveMarcador(List<Alerta> lista) {
+        for(int i = 0; i < lista.size(); i++) {
+            if(lista.get(i).getTipo().equalsIgnoreCase("Lugar bom")){
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(Double.parseDouble(lista.get(i).getLatitude()), Double.parseDouble(lista.get(i).getLongitude())))
+                        .title(lista.get(i).getTipo())
+                        .snippet(lista.get(i).getObservacao())
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+            }
+            else {
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(Double.parseDouble(lista.get(i).getLatitude()), Double.parseDouble(lista.get(i).getLongitude())))
+                        .title(lista.get(i).getTipo())
+                        .snippet(lista.get(i).getObservacao()));
             }
         }
     }
