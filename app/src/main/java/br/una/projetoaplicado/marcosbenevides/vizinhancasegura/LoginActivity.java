@@ -37,6 +37,7 @@ public class LoginActivity extends Activity {
     Usuario usuario = new Usuario();
     AlertDialog.Builder alertDialog;
     public static final String TAG = "MARCOS: ";
+    private Intent it;
 
 
     @Override
@@ -100,6 +101,11 @@ public class LoginActivity extends Activity {
                         } else {
                             dialog.dismiss();
                             usuario = response.body();
+                            it = new Intent(LoginActivity.this, MapsActivity.class);
+                            if(it != null) {
+                                it.putExtra("EMAIL", usuario.getEmail());
+                            }
+                            usuario.getEmail();
                             if (usuario.getEmail().equalsIgnoreCase(email)) {
                                 status_error.setVisibility(View.INVISIBLE);
                                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
@@ -125,8 +131,11 @@ public class LoginActivity extends Activity {
                         alertDialog.create();
                         alertDialog.show();
                         Log.e(TAG, "Falha: " + t.getMessage());
-                        Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-                        startActivity(intent);
+                        Intent it = new Intent(LoginActivity.this, MapsActivity.class);
+                        if(it != null) {
+                            it.putExtra("EMAIL", "errrrrrrrrrrrrrrrrou");
+                        }
+                        startActivity(it);
                     }
                 });
             }

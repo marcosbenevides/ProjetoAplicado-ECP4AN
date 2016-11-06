@@ -34,6 +34,7 @@ public class Marcador {
                 if(distancia2Pontos(a.getLatitude(), a.getLongitude(), m.getLatitude(), m.getLongitude())) {
                     listaM.get(j).setMarcadorList(a);
                     controle = false;
+                    break;
                 }
             }
             if(controle)
@@ -41,6 +42,29 @@ public class Marcador {
         }
         return listaM;
     }
+
+    public Marker temReferencia(List<Marcador> marcador, Alerta alerta){
+        for(int i = 0;i<marcador.size();i++){
+            if(distancia2Pontos(marcador.get(i).getAlerta().getLatitude(),
+                    marcador.get(i).getAlerta().getLongitude()
+                    ,alerta.getLatitude(),
+                    alerta.getLongitude())){
+                marcador.get(i).marcadorList.add(alerta);
+                return marcador.get(i).getMarcador();
+            }
+        }
+        return null;
+    }
+
+    public Marcador procuraMarcador(List<Marcador> marcador, Marker marker){
+        for(int i= 0;i<marcador.size();i++){
+            if(marker.getId().equals( marcador.get(i).getMarcador().getId())){
+                return marcador.get(i);
+            }
+        }
+        return null;
+    }
+
 
     public Boolean distancia2Pontos(String latA, String longA, String latB, String longB) {
 

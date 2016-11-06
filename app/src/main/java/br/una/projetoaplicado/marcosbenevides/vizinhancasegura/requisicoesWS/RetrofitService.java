@@ -27,8 +27,8 @@ public interface RetrofitService {
 
     @GET("consultaalerta/{bairro}/{cidade}/{estado}")
     Call<List<Alerta>> consultaAlerta(@Path("bairro") String bairro,
-                              @Path("cidade") String cidade,
-                              @Path("estado") String estado);
+                                      @Path("cidade") String cidade,
+                                      @Path("estado") String estado);
 
     @GET("consutaalerta/{longitude}/{latitude}")
     Call<List<Alerta>> consultaAlerta(@Path("longitude") String longitude,
@@ -36,13 +36,14 @@ public interface RetrofitService {
 
     @FormUrlEncoded
     @POST("cadastrarAlerta")
-    Call<Alerta> cadastrarAlerta(@Field("email") String email,
+    Call<String> cadastrarAlerta(@Field("email") String email,
                                  @Field("logHora") Date data,
-                                 @Field("longitude") String longitude,
                                  @Field("latitude") String latitude,
+                                 @Field("longitude") String longitude,
                                  @Field("bairro") String bairro,
                                  @Field("cidade") String cidade,
                                  @Field("estado") String estado,
                                  @Field("obs") String obs,
-                                 @Field("tipo") String tipo);
+                                 @Field("tipo") String tipo,
+                                 @Field("ePositivo") Boolean ePositivo);
 }

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:text="Criar Alerta:"
+            android:layout_height="match_parent"
+            android:id="@+id/textCriarAlerta"
+            android:textAlignment="center"
+            android:textStyle="normal|bold"
+            android:layout_width="100dp" />
+
+        <ToggleButton
+            android:text="Negativo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonNegPos"
+            android:textOff="Negativo"
+            android:textOn="Positivo"
+            android:textStyle="normal|bold"
+            android:textAlignment="center" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:text="Selecione abaixo o tipo de alerta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/labelTipoAlerta"
+            android:textAlignment="center"
+            android:textStyle="normal|bold" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:elevation="0dp"
+        android:orientation="vertical">
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerTipo" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:text="Ocorrência"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textOcorrencia"
+            android:textStyle="normal|bold"
+            android:textAlignment="center" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:id="@+id/editOcorrencia"
+            android:hint="Descreva o alerta em até 150 caracteres."
+            android:textColorHint="@android:color/darker_gray"/>
+
+    </TableRow>
+
+
+</LinearLayout>

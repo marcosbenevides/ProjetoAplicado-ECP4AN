@@ -5,6 +5,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerAlertas" />
+    </TableRow>
+
     <TableLayout
         android:id="@+id/tableView"
         android:layout_width="match_parent"

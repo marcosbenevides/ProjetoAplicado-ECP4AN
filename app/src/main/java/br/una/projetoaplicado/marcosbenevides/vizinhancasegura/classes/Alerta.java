@@ -20,8 +20,9 @@ public class Alerta implements java.io.Serializable {
     public Alerta() {
     }
 
-    public Alerta(int idalerta, String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, boolean statusAtivo, Boolean ePositivo) {
+    public Alerta(int idalerta, Date data,String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, Boolean ePositivo) {
         this.idalerta = idalerta;
+        this.loghora = data;
         this.longitude = longitude;
         this.latitude = latitude;
         this.bairro = bairro;
@@ -29,7 +30,7 @@ public class Alerta implements java.io.Serializable {
         this.estado = estado;
         this.observacao = observacao;
         this.tipo = tipo;
-        this.statusAtivo = statusAtivo;
+        this.statusAtivo = true;
         this.ePositivo = ePositivo;
     }
 
