@@ -1,17 +1,25 @@
 package br.una.projetoaplicado.marcosbenevides.vizinhancasegura;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
+import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.*;
 import android.content.*;
 
@@ -29,6 +37,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.location.Address;
@@ -36,10 +45,13 @@ import android.location.Address;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Alerta;
+import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.mapaUtil.Marcador;
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.RetrofitService;
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.ServiceGenerator;
 import retrofit2.Call;
@@ -47,25 +59,32 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, SearchView.OnQueryTextListener,
-        GoogleMap.OnCircleClickListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, SearchView.OnQueryTextListener {
 
     private static final String TAG = "ERRO: ";
     private static final String TAG2 = "DEU CERTO: ";
     private GoogleMap mMap;
     private Boolean inicio = true;
     private static final int MY_PERMISSION_LOCATION = 0;
-    GoogleApiClient mGoogleApiClient = null;
-    Location inicialLocation = null;
-    Intent it;
-    boolean marcar = false;
-    LatLng latLngMarcar;
-    SearchView barraProcurar;
-    Circle circulo;
-    Calendar hora;
-    NumberFormat formato;
+    private GoogleApiClient mGoogleApiClient = null;
+    private Location inicialLocation = null;
+    private Intent it;
+    private Boolean marcar = false;
+    private LatLng latLngMarcar;
+    private SearchView barraProcurar;
+    private Circle circulo;
+    private Calendar hora;
+    private NumberFormat formato;
     private ProgressDialog dialogo;
-    private AlertDialog.Builder alertDialog;
+    private AlertDialog.Builder alertDialog, infoDialog, addMarkerDialog;
+    private AlertDialog informacao,cadastro;
+    private TextView textTipoAlertaCont, textDataHoraCont, textOcorrenciaCont;
+    private List<Alerta> listaTeste = new ArrayList<>();
+    private Switch switchPositivo;
+    private EditText editorOcorrencia;
+    private Spinner spinnerTipo;
+
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -84,6 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 MY_PERMISSION_LOCATION);*/
 
+
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
@@ -99,7 +119,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
         formato = new DecimalFormat("00");
-
 
     }
 
@@ -187,24 +206,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (resultCode == 1) {
             dados(latLngMarcar);
-            mMap.addMarker(new MarkerOptions().position(latLngMarcar).title("LUGAR BOM")
+            mMap.addMarker(new MarkerOptions().position(latLngMarcar).title("LUGAR BOM").snippet("a\nb")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-            circulo = mMap.addCircle(new CircleOptions()
-                    .center(latLngMarcar)
-                    .radius(300)
-                    .strokeWidth(2)
-                    .strokeColor(0xff4682B4)
-                    .fillColor(0x504682B4)
-                    .clickable(true));
+
         } else if (resultCode == 2) {
             dados(latLngMarcar);
-            mMap.addMarker(new MarkerOptions().position(latLngMarcar).title("LUGAR RUIM"));
+            mMap.addMarker(new MarkerOptions().position(latLngMarcar).title("LUGAR RUIM").snippet("a\nb"));
         }
-    }
 
-    public void onCircleClick(Circle circle) {
-        circulo.setFillColor(0x50008000);
-        Log.e("XWXW", " " + "CLICK CIRCLE");
+        chuvadeListeners(latLngMarcar);
+
     }
 
     @Override
@@ -216,10 +227,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng point) {
-                marcar = true;
                 latLngMarcar = point;
-                it.putExtra("TESTE", "teste aqui"); // trecho apenas para um teste de passagem dos parametros
-                startActivityForResult(it, 0);
+                addMarkerDialog = new AlertDialog.Builder(MapsActivity.this)
+                        .setTitle("ADICIONAR ALERTA")
+                        .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                LayoutInflater layoutInflater = MapsActivity.this.getLayoutInflater();
+                View dialogView = layoutInflater.inflate(R.layout.addmarkerview, null);
+                addMarkerDialog.setView(dialogView);
+
+                switchPositivo = (Switch) dialogView.findViewById(R.id.switchTipo);
+                editorOcorrencia = (EditText) dialogView.findViewById(R.id.editOcorrencia);
+                spinnerTipo = (Spinner) dialogView.findViewById(R.id.spinnerTipo);
+                List<String> lista = new ArrayList<String>();
+                lista.add("1");
+                lista.add("2");
+                lista.add("3");
+
+                ArrayAdapter <String> adapter = new ArrayAdapter<>(MapsActivity.this,android.R.layout.simple_list_item_1,lista);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+                spinnerTipo.setAdapter(adapter);
+
+                if(switchPositivo.isPressed()){
+
+                }
+
+                cadastro = addMarkerDialog.create();
+                cadastro.show();
+
             }
         }); //chama a outra janela
 
@@ -304,50 +349,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 inicio = false;
 
                 buscaPontos(new LatLng(inicialLocation.getLatitude(), inicialLocation.getLongitude()));
-
-                /*new Thread(new Runnable() { //por causa do Call, precisa pra rodar ele
-                    @Override
-                    public void run() { // vai rodar aqui qndo der o Start la em baixo
-                        runOnUiThread(new Runnable() { // O dialogo tem que ser na tread da interface, por isso
-                            @Override
-                            public void run() {
-                                dialogo = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor ... ", "Favor Aguardar!");
-                            }
-                        });
-                        String latitudeEnviar = "" + inicialLocation.getLatitude();
-                        String longitudeEnviar = "" + inicialLocation.getLongitude();
-                        RetrofitService service = ServiceGenerator.createService(RetrofitService.class); // inicia o gerador de servico/cria conexao com o server
-                        Call<List<Alerta>> alertas = service.consultaAlerta(bairro2, cidade2, estado2); // acessa os metodos do retrofit
-                        alertas.enqueue(new Callback<List<Alerta>>() { // aqui que vai no servidor, precisa ser em outra tread
-                            @Override
-                            public void onResponse(Call<List<Alerta>> call, Response<List<Alerta>> response) { // resposta do server
-                                if (!response.isSuccessful()) {
-                                    dialogo.dismiss();
-                                    Log.e(TAG, response.message());
-                                } else {
-                                    dialogo.dismiss();
-                                    Log.e(TAG2, response.body().toString()); // aqui vai receber os dados, tem que tratar ainda
-                                    //choveMarcador(response.body());
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<List<Alerta>> call, Throwable t) { // se for aqui, falhou a conexao com o server
-                                dialogo.dismiss();
-
-                                alertDialog = new AlertDialog.Builder(MapsActivity.this)
-                                        .setMessage("Impossível conectar ao servidor!")
-                                        .setCancelable(true)
-                                        .setPositiveButton("OK", null);
-                                alertDialog.create();
-                                alertDialog.show();
-                                Log.e(TAG, "Falha: " + t.getMessage());
-                            }
-                        });
-
-                    }
-                }).start();*/
-
             }
         }
     }
@@ -367,7 +368,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 String longitudeEnviar = "" + ponto.longitude;
 
                 RetrofitService service = ServiceGenerator.createService(RetrofitService.class); // inicia o gerador de servico/cria conexao com o server
-                Call<List<Alerta>> alertas = service.consultaAlerta(latitudeEnviar, longitudeEnviar, ""); // acessa os metodos do retrofit <<<LEMBRAR alterar
+                Call<List<Alerta>> alertas = service.consultaAlerta(latitudeEnviar, longitudeEnviar); // acessa os metodos do retrofit <<<LEMBRAR alterar
 
                 alertas.enqueue(new Callback<List<Alerta>>() { // aqui que vai no servidor, precisa ser em outra tread
                     @Override
@@ -378,7 +379,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         } else {
                             dialogo.dismiss();
                             Log.e(TAG2, response.body().toString()); // aqui vai receber os dados, tem que tratar ainda
-                            choveMarcador(response.body());
+                            Marcador marcador = new Marcador();
+                            choveMarcador(marcador.setReferencia(response.body()));
                         }
                     }
 
@@ -393,28 +395,122 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         alertDialog.create();
                         alertDialog.show();
                         Log.e(TAG, "Falha: " + t.getMessage());
+                        teste();
                     }
                 });
             }
         }).start();
     }
 
-    public void choveMarcador(List<Alerta> lista) {
-        for(int i = 0; i < lista.size(); i++) {
-            if(lista.get(i).getTipo().equalsIgnoreCase("Lugar bom")){
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(Double.parseDouble(lista.get(i).getLatitude()), Double.parseDouble(lista.get(i).getLongitude())))
-                        .title(lista.get(i).getTipo())
-                        .snippet(lista.get(i).getObservacao())
+    public void choveMarcador(List<Marcador> lista) {
+        Log.e("CHOVE MARCADOR", "1");
+        Marker marker;
+        for (int i = 0; i < lista.size(); i++) {
+            LatLng latLng = new LatLng(Double.parseDouble(lista.get(i).getAlerta().getLatitude()), Double.parseDouble(lista.get(i).getAlerta().getLongitude()));
+            if (lista.get(i).getAlerta().getePositivo()) {
+                Log.e("CHOVE MARCADOR", "2");
+                marker = mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title("LUGAR BOM")
+                        .snippet((lista.get(i).getMarcadorList().size() + 1) + "")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+            } else {
+                Log.e("CHOVE MARCADOR", "3");
+                marker = mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title("LUGAR RUIM")
+                        .snippet(String.valueOf(lista.get(i).getMarcadorList().size() + 1)));
             }
-            else {
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(Double.parseDouble(lista.get(i).getLatitude()), Double.parseDouble(lista.get(i).getLongitude())))
-                        .title(lista.get(i).getTipo())
-                        .snippet(lista.get(i).getObservacao()));
-            }
+            lista.get(i).setMarcador(marker);
+            chuvadeListeners(latLng);
         }
+    }
+
+    public void chuvadeListeners(LatLng latLng) {
+
+        circulo = mMap.addCircle(new CircleOptions()
+                .center(latLng)
+                .radius(100)
+                .strokeWidth(2)
+                .strokeColor(0xff4682B4)
+                .fillColor(0x504682B4)
+                .clickable(true));
+
+
+        mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
+            @Override
+            public void onCircleClick(Circle circle) {
+                circle.setFillColor(0x50008000);
+                Log.e("XWXW", " " + "CLICK CIRCLE");
+            }
+        });
+
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                Context context = getApplicationContext(); //or getActivity(), YourActivity.this, etc.
+
+                LinearLayout info = new LinearLayout(context);
+                info.setOrientation(LinearLayout.VERTICAL);
+
+                TextView title = new TextView(context);
+                title.setTextColor(Color.BLACK);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+
+                TextView snippet = new TextView(context);
+                snippet.setTextColor(Color.GRAY);
+                snippet.setText(marker.getSnippet());
+
+                info.addView(title);
+                info.addView(snippet);
+
+                return info;
+            }
+        });
+
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                System.out.println("0...");
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    System.out.println("1...");
+                    infoDialog = new AlertDialog.Builder(MapsActivity.this)
+                            .setTitle("INFO")
+                            .setPositiveButton("OK", null);
+                    LayoutInflater layoutInflater = MapsActivity.this.getLayoutInflater();
+                    View dialogView = layoutInflater.inflate(R.layout.info_dialog, null);
+                    infoDialog.setView(dialogView);
+
+                    textTipoAlertaCont = (TextView) dialogView.findViewById(R.id.textTipoAlertaCont);
+                    textDataHoraCont = (TextView) dialogView.findViewById(R.id.textDataHoraCont);
+                    textOcorrenciaCont = (TextView) dialogView.findViewById(R.id.textOcorrenciaCont);
+
+                    textOcorrenciaCont.setText("Mussum ipsum cacilds, vidis litro abertis Consetis " +
+                            "adipiscings elitis. Pra lá , depois divoltis porris, paradis." +
+                            " Paisis, filhis, espiritis santis.");
+
+                    textTipoAlertaCont.setText("Texto do tiopo alerta");
+                    textDataHoraCont.setText("Texto do data hora");
+                    System.out.println("3...");
+
+                    informacao = infoDialog.create();
+                    informacao.show();
+
+                }
+            }
+
+        });
     }
 
     /**
@@ -423,8 +519,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     public Action getIndexApiAction() {
         Thing object = new Thing.Builder()
-                .setName("Maps Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
+                .setName("Maps Page")
                 .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
                 .build();
         return new Action.Builder(Action.TYPE_VIEW)
@@ -432,4 +527,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
     }
+
+
+    public void teste() {
+
+        listaTeste.add(new Alerta(1, "-20.065993", "-44.281507", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 2 rapazes pretos dos olhos claros bonitos", "Assalto", true, true));
+        listaTeste.add(new Alerta(2, "-20.065900", "-44.281555", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 2 rapazes pretos dos olhos claros bonitos", "Tiroteio", true, true));
+        listaTeste.add(new Alerta(3, "-20.065965", "-44.281522", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 2 rapazes pretos dos olhos claros bonitos", "Festa", true, true));
+        listaTeste.add(new Alerta(4, "-20.065912", "-44.281566", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 2 rapazes pretos dos olhos claros bonitos", "Policiamento", true, true));
+        listaTeste.add(new Alerta(5, "-20.065933", "-44.281512", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 2 rapazes pretos dos olhos claros bonitos", "Corrida Naruto", true, true));
+        listaTeste.add(new Alerta(6, "-20.064242", "-44.282150", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 2 rapazes pretos dos olhos claros bonitos", "Corrida Naruto", true, false));
+        listaTeste.add(new Alerta(7, "-21.064292", "-49.282120", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 2 rapazes pretos dos olhos claros bonitos", "Corrida Naruto", true, false));
+        listaTeste.add(new Alerta(8, "-20.064232", "-44.282110", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 2 rapazes pretos dos olhos claros bonitos", "Corrida Naruto", true, false));
+        listaTeste.add(new Alerta(9, "-20.064212", "-44.282190", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 2 rapazes pretos dos olhos claros bonitos", "Corrida Naruto", true, false));
+
+        Marcador marcador = new Marcador();
+        List<Marcador> m = marcador.setReferencia(listaTeste);
+        for (int i = 0; i < m.size(); i++) {
+            Log.e("DEU OU NâO", m.get(i).toString());
+        }
+        choveMarcador(m);
+
+    }
+
 }

@@ -19,6 +19,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Usuario;
+import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.mapaUtil.Marcador;
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.RetrofitService;
 import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.ServiceGenerator;
 import retrofit2.Call;
@@ -52,6 +53,10 @@ public class LoginActivity extends Activity {
         ActivityCompat.requestPermissions(this,
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                 MY_PERMISSION_LOCATION);
+
+        //Marcador m = new Marcador();
+        //m.distancia2Pontos("-20.064247", "-44.282156", "-20.066588", "-44.281439");
+
     }
 
     public void cadastrar(View arg0) {

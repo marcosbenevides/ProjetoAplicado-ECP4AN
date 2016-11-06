@@ -14,14 +14,14 @@ public class Alerta implements java.io.Serializable {
     private String estado;
     private String observacao;
     private String tipo;
+    private Boolean ePositivo;
     private boolean statusAtivo;
 
     public Alerta() {
     }
 
-    public Alerta(int idalerta, Date loghora, String longitude, String latitude, String bairro, String cidade, String estado, String observacao, String tipo, boolean statusAtivo) {
+    public Alerta(int idalerta, String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, boolean statusAtivo, Boolean ePositivo) {
         this.idalerta = idalerta;
-        this.loghora = loghora;
         this.longitude = longitude;
         this.latitude = latitude;
         this.bairro = bairro;
@@ -30,9 +30,10 @@ public class Alerta implements java.io.Serializable {
         this.observacao = observacao;
         this.tipo = tipo;
         this.statusAtivo = statusAtivo;
+        this.ePositivo = ePositivo;
     }
 
-    public Alerta(int idalerta, Usuario usuario, Date loghora, String longitude, String latitude, String bairro, String cidade, String estado, String observacao, String tipo, boolean statusAtivo) {
+    public Alerta(int idalerta, Usuario usuario, Date loghora, String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, boolean statusAtivo) {
         this.idalerta = idalerta;
         this.usuario = usuario;
         this.loghora = loghora;
@@ -48,7 +49,7 @@ public class Alerta implements java.io.Serializable {
 
     @Override
     public String toString() {
-        return "Alerta{" + "idalerta=" + idalerta + ", loghora=" + loghora + ", longitude=" + longitude + ", latitude=" + latitude + ", bairro=" + bairro + ", cidade=" + cidade + ", estado=" + estado + ", observacao=" + observacao + ", tipo=" + tipo + ", statusAtivo=" + statusAtivo + '}';
+        return "Alerta{" + "idalerta=" + idalerta +"}";// + ", loghora=" + loghora + ", longitude=" + longitude + ", latitude=" + latitude + ", bairro=" + bairro + ", cidade=" + cidade + ", estado=" + estado + ", observacao=" + observacao + ", tipo=" + tipo + ", statusAtivo=" + statusAtivo + '}';
     }
 
 
@@ -140,4 +141,11 @@ public class Alerta implements java.io.Serializable {
         this.statusAtivo = statusAtivo;
     }
 
+    public Boolean getePositivo() {
+        return ePositivo;
+    }
+
+    public void setePositivo(Boolean ePositivo) {
+        this.ePositivo = ePositivo;
+    }
 }

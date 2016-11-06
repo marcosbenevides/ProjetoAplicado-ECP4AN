@@ -30,6 +30,10 @@ public interface RetrofitService {
                               @Path("cidade") String cidade,
                               @Path("estado") String estado);
 
+    @GET("consutaalerta/{longitude}/{latitude}")
+    Call<List<Alerta>> consultaAlerta(@Path("longitude") String longitude,
+                                      @Path("latitude") String latitude);
+
     @FormUrlEncoded
     @POST("cadastrarAlerta")
     Call<Alerta> cadastrarAlerta(@Field("email") String email,

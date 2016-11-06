@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <TableLayout
+        android:id="@+id/tableView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp">
+
+            <TextView
+                android:id="@+id/textTipoAlertaTitle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Tipo Alerta: " />
+
+            <TextView
+                android:id="@+id/textTipoAlertaCont"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text=" ? Valor ?" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp">
+
+            <TextView
+                android:id="@+id/textDataHoraTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Data e Hora: " />
+
+            <TextView
+                android:id="@+id/textDataHoraCont"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=" ? Valor ?" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+
+            <TextView
+                android:id="@+id/textOcorrenciaTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ocorrência: " />
+
+            <TextView
+                android:id="@+id/textOcorrenciaCont"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:text=" ? Valor ?"/>
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>
