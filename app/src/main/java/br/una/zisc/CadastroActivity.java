@@ -1,4 +1,4 @@
-package br.una.projetoaplicado.marcosbenevides.vizinhancasegura;
+package br.una.zisc;
 
 import android.app.Activity;
 import android.content.Intent;

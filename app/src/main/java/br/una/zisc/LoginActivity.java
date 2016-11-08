@@ -1,4 +1,4 @@
-package br.una.projetoaplicado.marcosbenevides.vizinhancasegura;
+package br.una.zisc;
 
 import android.*;
 import android.app.Activity;
@@ -21,10 +21,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Usuario;
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.mapaUtil.Marcador;
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.RetrofitService;
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.ServiceGenerator;
+import br.una.zisc.classes.Usuario;
+import br.una.zisc.requisicoesWS.RetrofitService;
+import br.una.zisc.requisicoesWS.ServiceGenerator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

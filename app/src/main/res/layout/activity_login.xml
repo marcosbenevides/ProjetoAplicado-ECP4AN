@@ -9,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".LoginActivity">
+    tools:context="br.una.zisc.LoginActivity">
 
 
     <LinearLayout
@@ -86,7 +86,7 @@
             android:layout_above="@+id/buttonCreateLogin"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:onClick="consultaWS"
+            android:onClick="botaoLogin"
             android:text="Login" />
 
         <Button

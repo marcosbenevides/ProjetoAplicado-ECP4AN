@@ -20,7 +20,7 @@
 
         <!-- Splash Screen -->
         <activity
-            android:name=".splashPA"
+            android:name="br.una.zisc.splashPA"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar">
@@ -33,13 +33,13 @@
         <!-- Tela de Login -->
 
         <activity
-            android:name=".LoginActivity"
+            android:name="br.una.zisc.LoginActivity"
             android:label="@string/login_Screen"
             android:screenOrientation="portrait" />
 
         <!-- Tela de Casdastro -->
         <activity
-            android:name=".CadastroActivity"
+            android:name="br.una.zisc.CadastroActivity"
             android:label="Register Screen" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -54,9 +54,19 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name="br.una.zisc.MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".ActTelaParaMarcar"></activity>
+        <activity android:name="br.una.zisc.ActTelaParaMarcar" />
+
+        <receiver android:name="br.una.zisc.widget.Zisc">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/zisc_info" />
+        </receiver>
     </application>
 
 </manifest>

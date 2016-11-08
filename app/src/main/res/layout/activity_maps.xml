@@ -6,7 +6,7 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapsActivity">
+    tools:context="br.una.zisc.MapsActivity">
 
     <SearchView
         android:id="@+id/barraProcurar"

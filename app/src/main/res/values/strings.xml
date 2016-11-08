@@ -13,4 +13,6 @@
     <string name="cancelar">Cancelar</string>
     <string name="password">senha</string>
     <string name="email">email</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>

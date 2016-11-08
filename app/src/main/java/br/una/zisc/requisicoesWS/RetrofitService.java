@@ -1,11 +1,10 @@
-package br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS;
+package br.una.zisc.requisicoesWS;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Alerta;
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Usuario;
+import br.una.zisc.classes.Alerta;
+import br.una.zisc.classes.Usuario;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;

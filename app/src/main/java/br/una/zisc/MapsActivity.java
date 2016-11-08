@@ -1,4 +1,4 @@
-package br.una.projetoaplicado.marcosbenevides.vizinhancasegura;
+package br.una.zisc;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -50,10 +50,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Alerta;
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.mapaUtil.Marcador;
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.RetrofitService;
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.ServiceGenerator;
+import br.una.zisc.classes.Alerta;
+import br.una.zisc.mapaUtil.Marcador;
+import br.una.zisc.requisicoesWS.RetrofitService;
+import br.una.zisc.requisicoesWS.ServiceGenerator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

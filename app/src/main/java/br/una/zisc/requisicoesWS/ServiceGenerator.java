@@ -1,15 +1,10 @@
-package br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS;
+package br.una.zisc.requisicoesWS;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 
-import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Usuario;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -21,7 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceGenerator {
     //URL de acesso a API
-    public static final String API_URL = "https://192.168.1.110/ZISC2/res/";
+    public static final String API_URL = "http://ec2-54-187-15-178.us-west-2.compute.amazonaws.com/ZISC/res/";
 
     public static <S> S createService(Class<S> serviceClass){
 

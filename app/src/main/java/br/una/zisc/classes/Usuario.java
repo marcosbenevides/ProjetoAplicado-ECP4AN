@@ -1,4 +1,4 @@
-package br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes;
+package br.una.zisc.classes;
 
 
 /**

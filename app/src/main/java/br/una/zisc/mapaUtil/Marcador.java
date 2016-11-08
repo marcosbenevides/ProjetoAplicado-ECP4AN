@@ -1,4 +1,4 @@
-package br.una.projetoaplicado.marcosbenevides.vizinhancasegura.mapaUtil;
+package br.una.zisc.mapaUtil;
 
 import android.util.Log;
 
@@ -7,7 +7,7 @@ import com.google.android.gms.maps.model.Marker;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Alerta;
+import br.una.zisc.classes.Alerta;
 
 /**
  * Created by Marcos Benevides on 05/11/2016.
