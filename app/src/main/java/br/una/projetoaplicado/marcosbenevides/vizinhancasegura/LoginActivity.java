@@ -4,12 +4,15 @@ import android.*;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +41,8 @@ public class LoginActivity extends Activity {
     AlertDialog.Builder alertDialog;
     public static final String TAG = "MARCOS: ";
     private Intent it;
+    private CheckBox checkSenha;
+    private SharedPreferences preferences;
 
 
     @Override
@@ -50,13 +55,11 @@ public class LoginActivity extends Activity {
         emailEditor = (EditText) findViewById(R.id.emailEditor);
         senhaEditor = (EditText) findViewById(R.id.senhaEditor);
         status_error = (TextView) findViewById(R.id.status_login);
+        checkSenha = (CheckBox) findViewById(R.id.checkSenha);
 
         ActivityCompat.requestPermissions(this,
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                 MY_PERMISSION_LOCATION);
-
-        //Marcador m = new Marcador();
-        //m.distancia2Pontos("-20.064247", "-44.282156", "-20.066588", "-44.281439");
 
     }
 
@@ -67,11 +70,21 @@ public class LoginActivity extends Activity {
         //finish();
     }
 
-    public void consultaWS(View arg0) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public void botaoLogin(View arg0){
         email = emailEditor.getText().toString();
         //senha = md5(String.valueOf(senhaEditor.getText()));
         senha = String.valueOf(senhaEditor.getText());
 
+        try {
+            consultaWS();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void consultaWS() throws UnsupportedEncodingException, NoSuchAlgorithmException {
 
         new Thread(new Runnable() {
 
@@ -101,6 +114,13 @@ public class LoginActivity extends Activity {
                         } else {
                             dialog.dismiss();
                             usuario = response.body();
+                            if(checkSenha.isChecked()){
+                                preferences = getPreferences(Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putString("emailUser", emailEditor.getText().toString());
+                                editor.putString("senhaUser", senhaEditor.getText().toString());
+                                editor.commit();
+                            }
                             it = new Intent(LoginActivity.this, MapsActivity.class);
                             if(it != null) {
                                 it.putExtra("EMAIL", usuario.getEmail());
@@ -144,6 +164,7 @@ public class LoginActivity extends Activity {
 
 
     }
+
 
     private String md5(String senha) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");

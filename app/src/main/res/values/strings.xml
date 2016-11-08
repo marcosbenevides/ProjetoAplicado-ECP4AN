@@ -11,22 +11,6 @@
     <string name="ruim">Ruim</string>
     <string name="ok">OK</string>
     <string name="cancelar">Cancelar</string>
-    <array name="alertaTipoBom">
-        <item>Arroz</item>
-        <item>Arroz1</item>
-        <item>Arroz2</item>
-        <item>Arroz3</item>
-        <item>Arroz4</item>
-        <item>Arroz5</item>
-        <item>Arroz6</item>
-    </array>
-    <array name="alertaTipoRuim">
-        <item>Arroz</item>
-        <item>Arroz-1</item>
-        <item>Arroz-2</item>
-        <item>Arroz-3</item>
-        <item>Arroz-4</item>
-        <item>Arroz-5</item>
-        <item>Arroz-6</item>
-    </array>
+    <string name="password">senha</string>
+    <string name="email">email</string>
 </resources>

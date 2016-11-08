@@ -75,7 +75,7 @@
             style="@style/Widget.AppCompat.CompoundButton.CheckBox"
             android:checked="true"
             android:duplicateParentState="false"
-            app:buttonTint="@android:color/white"
+            android:buttonTint="@android:color/white"
             android:textColor="@android:color/white" />
 
         <Button
