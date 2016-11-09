@@ -4,9 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
@@ -31,7 +36,9 @@ import retrofit2.Response;
 public class LoginActivity extends Activity {
 
     private static final int MY_PERMISSION_LOCATION = 0;
-    private String senha, email;
+    private String senha, email
+            , ativaGPS = "GPS desativado, deseja ativa-lo?"
+            , ativaInternet = "Não existe nenhum tipo de conexão, deseja ativar o WIFI?";
     private Button cadastrar, confirmar;
     private EditText emailEditor, senhaEditor;
     private TextView status_error;
@@ -42,6 +49,8 @@ public class LoginActivity extends Activity {
     private SharedPreferences preferences;
     private CheckBox checkLogin;
     private Usuario usuario = new Usuario();
+    private LocationManager locationManager;
+    private ConnectivityManager connectivityManager;
 
 
     @Override
@@ -61,7 +70,7 @@ public class LoginActivity extends Activity {
         senhaEditor.setText(sharedPreferences.getString("senhaUsuario", ""));
         checkLogin.setChecked(sharedPreferences.getBoolean("checkLogin",checkLogin.isChecked()));
 
-
+        gpsLigado();
 
         ActivityCompat.requestPermissions(this,
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -139,6 +148,11 @@ public class LoginActivity extends Activity {
                                     alertDialog.create();
                                     alertDialog.show();
                                     Log.e(TAG, " " + response.message());
+                                    /**
+                                    *Retirar as duas proximas linhas qndo tudo der certo
+                                    */
+                                    Intent it = new Intent(LoginActivity.this, MapsActivity.class); // retirar qndo tudo der certo
+                                    startActivity(it);
                                 }
                             });
                         } else {
@@ -182,6 +196,9 @@ public class LoginActivity extends Activity {
                         alertDialog.create();
                         alertDialog.show();
                         Log.e(TAG, "Falha: " + t.getMessage());
+                        /**
+                         *Retirar até startActivity(it); qndo tudo der certo
+                         */
                         Intent it = new Intent(LoginActivity.this, MapsActivity.class);
                         if (it != null) {
                             it.putExtra("EMAIL", "errrrrrrrrrrrrrrrrou");
@@ -206,6 +223,72 @@ public class LoginActivity extends Activity {
         final String MD5_CRYPT = stringBuilder.toString();
 
         return MD5_CRYPT;
+    }
+
+    /**
+     * Verifica se o GPS está ligado, se não chama um dialogo perguntando se quer ligar
+     */
+    public void gpsLigado() {
+        locationManager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            alertAtiva(ativaGPS);
+            return;
+        }
+        temConexao();
+    }
+
+    /**
+     * Verifica se tem internet, se não chama um dialogo perguntando se quer conectar no WIFI
+     */
+    public void temConexao() {
+        connectivityManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+        for(NetworkInfo n: networkInfo) {
+            if (n.getTypeName().equalsIgnoreCase("WIFI"))
+                if (n.isConnected())
+                    return;
+            if (n.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (n.isConnected())
+                    return;
+        }
+        alertAtiva(ativaInternet);
+    }
+
+    /**
+     * Pergunta se quer ativar o que precisa, se aceitar vai para devida tela
+     * se não fecha o app
+     */
+    public void alertAtiva(final String nome) {
+        final AlertDialog.Builder alertAtivaDialog = new AlertDialog.Builder(this);
+        alertAtivaDialog.setMessage(nome)
+                .setTitle("Algo está desativado!")
+                .setCancelable(false)
+                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        if(nome.equals(ativaGPS))
+                            startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
+                        else
+                            startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), 0);
+                    }
+                })
+                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                        finish();
+                    }
+                });
+        final AlertDialog alert = alertAtivaDialog.create();
+        alert.show();
+    }
+
+    /**
+     * Se o ususario for pra tela de ativar o que devia e não ativar
+     * pergunta novamente
+     */
+    @Override
+    protected void onActivityResult(int requestCode,
+                                    int resultCode, Intent data) {
+        gpsLigado();
     }
 
 }

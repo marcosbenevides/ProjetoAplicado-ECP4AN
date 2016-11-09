@@ -576,7 +576,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     textDataHoraCont = (TextView) dialogView.findViewById(R.id.textDataHoraCont);
                     textOcorrenciaCont = (TextView) dialogView.findViewById(R.id.textOcorrenciaCont);
                     spinnerAlerta = (Spinner) dialogView.findViewById(R.id.spinnerAlertas);
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd HH:mm");
+                    final SimpleDateFormat dateFormat = new SimpleDateFormat("dd HH:mm");
+                    final SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                     Marcador marcador = new Marcador();
                     marcador = marcador.procuraMarcador(m, marker);
                     /**
@@ -606,12 +607,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 if (position == 0) {
                                     textOcorrenciaCont.setText(finalMarcador.getAlerta().getObservacao());
                                     textTipoAlertaCont.setText(finalMarcador.getAlerta().getTipo());
-                                    textDataHoraCont.setText(String.valueOf(finalMarcador.getAlerta().getLoghora()));
+                                    textDataHoraCont.setText(String.valueOf(dateFormat2.format(finalMarcador.getAlerta().getLoghora())));
 
                                 } else {
                                     textOcorrenciaCont.setText(finalMarcador.getMarcadorList().get(position - 1).getObservacao());
                                     textTipoAlertaCont.setText(finalMarcador.getMarcadorList().get(position - 1).getTipo());
-                                    textDataHoraCont.setText(String.valueOf(finalMarcador.getMarcadorList().get(position - 1).getLoghora()));
+                                    textDataHoraCont.setText(String.valueOf(dateFormat2.format(finalMarcador.getMarcadorList().get(position - 1).getLoghora())));
                                 }
                             }
 
@@ -620,7 +621,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 textOcorrenciaCont.setText(finalMarcador.getAlerta().getObservacao());
 
                                 textTipoAlertaCont.setText(finalMarcador.getAlerta().getTipo());
-                                textDataHoraCont.setText(String.valueOf(finalMarcador.getAlerta().getLoghora()));
+                                textDataHoraCont.setText(String.valueOf(dateFormat2.format(finalMarcador.getAlerta().getLoghora())));
                                 System.out.println("3...");
                             }
                         });
@@ -674,7 +675,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public Date getDataHoraAgora() {
         Date data = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         hora = Calendar.getInstance();
         String horario = "" + hora.get(Calendar.YEAR) + "-" + formato.format((hora.get(Calendar.MONTH) + 1))
                 + "-" + formato.format(hora.get(Calendar.DAY_OF_MONTH)) + " "
