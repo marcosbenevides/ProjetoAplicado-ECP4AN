@@ -16,7 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceGenerator {
     //URL de acesso a API
-    public static final String API_URL = "https://192.168.1.110/ZISC2/res/";
+    public static final String API_URL = "http://ec2-54-187-15-178.us-west-2.compute.amazonaws.com/ZISC/res/";
 
     public static <S> S createService(Class<S> serviceClass){
 

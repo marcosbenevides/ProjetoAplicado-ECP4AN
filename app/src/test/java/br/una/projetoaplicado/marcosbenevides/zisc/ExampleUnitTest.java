@@ -1,4 +1,4 @@
-package br.una.projetoaplicado.marcosbenevides.vizinhancasegura;
+package br.una.projetoaplicado.marcosbenevides.zisc;
 
 import org.junit.Test;
 

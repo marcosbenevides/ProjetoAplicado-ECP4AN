@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.*;
 import android.content.*;
 
+import br.una.projetoaplicado.marcosbenevides.zisc.R;
+
 public class ActTelaParaMarcar extends AppCompatActivity implements View.OnClickListener {
 
     String classificacao = "vazio";

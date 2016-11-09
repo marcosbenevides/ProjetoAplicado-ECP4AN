@@ -1,9 +1,9 @@
-package br.una.projetoaplicado.marcosbenevides.vizinhancasegura;
+package br.una.zisc;
 
-import android.*;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,10 +20,10 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.classes.Usuario;
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.mapaUtil.Marcador;
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.RetrofitService;
-import br.una.projetoaplicado.marcosbenevides.vizinhancasegura.requisicoesWS.ServiceGenerator;
+import br.una.projetoaplicado.marcosbenevides.zisc.R;
+import br.una.zisc.classes.Usuario;
+import br.una.zisc.requisicoesWS.RetrofitService;
+import br.una.zisc.requisicoesWS.ServiceGenerator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,11 +36,12 @@ public class LoginActivity extends Activity {
     private EditText emailEditor, senhaEditor;
     private TextView status_error;
     private ProgressDialog dialog;
-    Usuario usuario = new Usuario();
-    AlertDialog.Builder alertDialog;
+    private AlertDialog.Builder alertDialog;
     public static final String TAG = "MARCOS: ";
     private Intent it;
-    SharedPreferences preferences;
+    private SharedPreferences preferences;
+    private CheckBox checkLogin;
+    private Usuario usuario = new Usuario();
 
 
     @Override
@@ -52,10 +54,34 @@ public class LoginActivity extends Activity {
         emailEditor = (EditText) findViewById(R.id.emailEditor);
         senhaEditor = (EditText) findViewById(R.id.senhaEditor);
         status_error = (TextView) findViewById(R.id.status_login);
+        checkLogin = (CheckBox) findViewById(R.id.checkLogin);
+
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        emailEditor.setText(sharedPreferences.getString("emailUsuario", ""));
+        senhaEditor.setText(sharedPreferences.getString("senhaUsuario", ""));
+        checkLogin.setChecked(sharedPreferences.getBoolean("checkLogin",checkLogin.isChecked()));
+
+
 
         ActivityCompat.requestPermissions(this,
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                 MY_PERMISSION_LOCATION);
+
+        confirmar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                email = emailEditor.getText().toString();
+                //senha = md5(String.valueOf(senhaEditor.getText()));
+                senha = String.valueOf(senhaEditor.getText());
+                try {
+                    consultaWS();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         //Marcador m = new Marcador();
         //m.distancia2Pontos("-20.064247", "-44.282156", "-20.066588", "-44.281439");
@@ -69,12 +95,21 @@ public class LoginActivity extends Activity {
         //finish();
     }
 
-    public void consultaWS(View arg0) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        email = emailEditor.getText().toString();
-        //senha = md5(String.valueOf(senhaEditor.getText()));
-        senha = String.valueOf(senhaEditor.getText());
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(checkLogin.isChecked()){
+            try {
+                consultaWS();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-
+    public void consultaWS() throws UnsupportedEncodingException, NoSuchAlgorithmException {
         new Thread(new Runnable() {
 
             @Override
@@ -87,8 +122,8 @@ public class LoginActivity extends Activity {
                 });
                 RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
                 Call<Usuario> call = null;
-                    Log.e(TAG,email  + " = " + senha);
-                    call = service.login(email, senha);
+                Log.e(TAG, email + " = " + senha);
+                call = service.login(email, senha);
                 call.enqueue(new Callback<Usuario>() {
                     @Override
                     public void onResponse(final Call<Usuario> call, final Response<Usuario> response) {
@@ -97,15 +132,28 @@ public class LoginActivity extends Activity {
                                 @Override
                                 public void run() {
                                     dialog.dismiss();
+                                    alertDialog = new AlertDialog.Builder(LoginActivity.this)
+                                            .setMessage("Impossível conectar ao servidor!\n" + response.message())
+                                            .setCancelable(true)
+                                            .setPositiveButton("OK", null);
+                                    alertDialog.create();
+                                    alertDialog.show();
                                     Log.e(TAG, " " + response.message());
                                 }
                             });
                         } else {
                             dialog.dismiss();
-
+                            if (checkLogin.isChecked()) {
+                                preferences = getPreferences(Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putString("emailUsuario", emailEditor.getText().toString());
+                                editor.putString("senhaUsuario", senhaEditor.getText().toString());
+                                editor.putBoolean("checkLogin", checkLogin.isChecked());
+                                editor.commit();
+                            }
                             usuario = response.body();
                             it = new Intent(LoginActivity.this, MapsActivity.class);
-                            if(it != null) {
+                            if (it != null) {
                                 it.putExtra("EMAIL", usuario.getEmail());
                             }
                             usuario.getEmail();
@@ -128,14 +176,14 @@ public class LoginActivity extends Activity {
                         dialog.dismiss();
 
                         alertDialog = new AlertDialog.Builder(LoginActivity.this)
-                                .setMessage("Impossível conectar ao servidor!")
+                                .setMessage("Impossível conectar ao servidor!\n" + t.getMessage())
                                 .setCancelable(true)
                                 .setPositiveButton("OK", null);
                         alertDialog.create();
                         alertDialog.show();
                         Log.e(TAG, "Falha: " + t.getMessage());
                         Intent it = new Intent(LoginActivity.this, MapsActivity.class);
-                        if(it != null) {
+                        if (it != null) {
                             it.putExtra("EMAIL", "errrrrrrrrrrrrrrrrou");
                         }
                         startActivity(it);

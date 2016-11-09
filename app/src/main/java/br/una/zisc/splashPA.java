@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Bundle;
 
+import br.una.projetoaplicado.marcosbenevides.zisc.R;
+
 public class splashPA extends Activity {
 
     //tempo da splash screen

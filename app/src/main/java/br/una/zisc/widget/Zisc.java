@@ -5,6 +5,8 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.widget.RemoteViews;
 
+import br.una.projetoaplicado.marcosbenevides.zisc.R;
+
 /**
  * Implementation of App Widget functionality.
  */

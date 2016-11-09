@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import br.una.projetoaplicado.marcosbenevides.zisc.R;
+
 public class CadastroActivity extends Activity {
 
     String name,email,cep,password;
