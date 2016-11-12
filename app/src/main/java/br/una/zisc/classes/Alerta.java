@@ -1,6 +1,6 @@
 package br.una.zisc.classes;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Alerta implements java.io.Serializable {
 

@@ -165,6 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            Log.e("LATITUDE E LONGITUDE",address.getLatitude() + "/" + address.getLongitude());
             buscaPontos(latLng);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
         }
@@ -231,7 +232,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 switchNegPos.isChecked());
 
                                         RetrofitService service = ServiceGenerator.createService(RetrofitService.class); // inicia o gerador de servico/cria conexao com o server
-                                        Call<String> call = service.cadastrarAlerta(emailUsuario,
+                                        Call<String> call = service.cadastraralerta(
+                                                emailUsuario,
                                                 alerta.getLoghora(),
                                                 alerta.getLatitude(),
                                                 alerta.getLongitude(),
@@ -450,12 +452,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onResponse(Call<List<Alerta>> call, Response<List<Alerta>> response) { // resposta do server
                         if (!response.isSuccessful()) {
                             dialogo.dismiss();
-                            Log.e(TAG, response.message());
+                            alertDialog = new AlertDialog.Builder(MapsActivity.this)
+                                    .setMessage("Impossível conectar ao servidor!\n" + response.message())
+                                    .setCancelable(true)
+                                    .setPositiveButton("OK", null);
+                            alertDialog.create();
+                            alertDialog.show();
+                            Log.e(TAG, response.message() + " " + response.code() + " " + response.errorBody());
                         } else {
                             dialogo.dismiss();
                             Log.e(TAG2, response.body().toString()); // aqui vai receber os dados, tem que tratar ainda
                             Marcador marcador = new Marcador();
-                            choveMarcador(marcador.setReferencia(response.body()));
+                            List <Alerta> lista = response.body();
+                            if(lista.size() == 0){
+                                alertDialog = new AlertDialog.Builder(MapsActivity.this)
+                                        .setMessage("Não existe Alertas nesta \nproximidade!")
+                                        .setCancelable(true)
+                                        .setPositiveButton("OK", null);
+                                alertDialog.create();
+                                alertDialog.show();
+                            }else {
+                                choveMarcador(marcador.setReferencia(response.body()));
+                            }
                         }
                     }
 
@@ -673,9 +691,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public Date getDataHoraAgora() {
+    public java.sql.Date getDataHoraAgora() {
         Date data = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        java.sql.Date dataSql = new java.sql.Date(data.getTime());
+/*        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         hora = Calendar.getInstance();
         String horario = "" + hora.get(Calendar.YEAR) + "-" + formato.format((hora.get(Calendar.MONTH) + 1))
                 + "-" + formato.format(hora.get(Calendar.DAY_OF_MONTH)) + " "
@@ -683,13 +702,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ":" + formato.format(hora.get(Calendar.SECOND));
         Log.e("HORA: ", horario);
 
+
         try {
             data = dateFormat.parse(horario);
+            dataSql = new java.sql.Date(data.getTime());
+
+            Log.e("HORA DATE", data.toString());
+            Log.e("HORA DATE SQL", dataSql.toString());
         } catch (ParseException e) {
             e.printStackTrace();
-        }
+        }*/
 
-        return data;
+
+
+        return dataSql;
     }
 
 }

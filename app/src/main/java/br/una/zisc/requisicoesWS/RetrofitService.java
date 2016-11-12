@@ -24,19 +24,19 @@ public interface RetrofitService {
     @GET("login/{email}/{senha}")
     Call<Usuario> login(@Path("email") String email, @Path("senha") String senha);
 
-    @GET("consultaalerta/{bairro}/{cidade}/{estado}")
+    /*@GET("consultaalerta/{bairro}/{cidade}/{estado}")
     Call<List<Alerta>> consultaAlerta(@Path("bairro") String bairro,
                                       @Path("cidade") String cidade,
-                                      @Path("estado") String estado);
+                                      @Path("estado") String estado);*/
 
-    @GET("consutaalerta/{longitude}/{latitude}")
-    Call<List<Alerta>> consultaAlerta(@Path("longitude") String longitude,
-                                      @Path("latitude") String latitude);
+    @GET("ConsultaAlerta/{latitude}/{longitude}")
+    Call<List<Alerta>> consultaAlerta(@Path("latitude") String longitude,
+                                      @Path("longitude") String latitude);
 
     @FormUrlEncoded
-    @POST("cadastrarAlerta")
-    Call<String> cadastrarAlerta(@Field("email") String email,
-                                 @Field("logHora") Date data,
+    @POST("CadastrarAlerta")
+    Call<String> cadastraralerta(@Field("email") String email,
+                                 @Field("logHora") java.sql.Date data,
                                  @Field("latitude") String latitude,
                                  @Field("longitude") String longitude,
                                  @Field("bairro") String bairro,

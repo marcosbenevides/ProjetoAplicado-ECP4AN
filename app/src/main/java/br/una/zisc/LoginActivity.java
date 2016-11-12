@@ -104,20 +104,6 @@ public class LoginActivity extends Activity {
         //finish();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if(checkLogin.isChecked()){
-            try {
-                consultaWS();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public void consultaWS() throws UnsupportedEncodingException, NoSuchAlgorithmException {
         new Thread(new Runnable() {
 
@@ -151,8 +137,8 @@ public class LoginActivity extends Activity {
                                     /**
                                     *Retirar as duas proximas linhas qndo tudo der certo
                                     */
-                                    Intent it = new Intent(LoginActivity.this, MapsActivity.class); // retirar qndo tudo der certo
-                                    startActivity(it);
+                                    //Intent it = new Intent(LoginActivity.this, MapsActivity.class); // retirar qndo tudo der certo
+                                    //startActivity(it);
                                 }
                             });
                         } else {
@@ -199,11 +185,11 @@ public class LoginActivity extends Activity {
                         /**
                          *Retirar até startActivity(it); qndo tudo der certo
                          */
-                        Intent it = new Intent(LoginActivity.this, MapsActivity.class);
-                        if (it != null) {
-                            it.putExtra("EMAIL", "errrrrrrrrrrrrrrrrou");
-                        }
-                        startActivity(it);
+//                        Intent it = new Intent(LoginActivity.this, MapsActivity.class);
+//                        if (it != null) {
+//                            it.putExtra("EMAIL", "errrrrrrrrrrrrrrrrou");
+//                        }
+//                        startActivity(it);
                     }
                 });
             }

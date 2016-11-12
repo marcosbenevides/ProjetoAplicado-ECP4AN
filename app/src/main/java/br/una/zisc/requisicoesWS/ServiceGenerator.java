@@ -17,6 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ServiceGenerator {
     //URL de acesso a API
     public static final String API_URL = "http://ec2-54-187-15-178.us-west-2.compute.amazonaws.com/ZISC/res/";
+    public static final String API_URL_LOCAL = "http://192.168.1.110:8080/ZISC/res/";
 
     public static <S> S createService(Class<S> serviceClass){
 
@@ -26,6 +27,7 @@ public class ServiceGenerator {
 
         Gson gson = new GsonBuilder()
                 .setLenient()
+                .setDateFormat("yyyy-MM-dd HH:mm:ss")
                 .create();
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
@@ -37,7 +39,8 @@ public class ServiceGenerator {
 
         //Instancia do retrofit, o interpretador.
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
+                .baseUrl(API_URL_LOCAL)
+                .client(httpClient.build())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
