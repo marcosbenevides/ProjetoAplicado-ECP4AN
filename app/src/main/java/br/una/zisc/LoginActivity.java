@@ -155,6 +155,7 @@ public class LoginActivity extends Activity {
                             it = new Intent(LoginActivity.this, MapsActivity.class);
                             if (it != null) {
                                 it.putExtra("EMAIL", usuario.getEmail());
+                                Log.e("PUT", usuario.getEmail());
                             }
                             usuario.getEmail();
                             if (usuario.getEmail().equalsIgnoreCase(email)) {

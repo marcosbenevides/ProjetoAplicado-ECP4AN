@@ -14,13 +14,13 @@ public class Alerta implements java.io.Serializable {
     private String estado;
     private String observacao;
     private String tipo;
-    private Boolean ePositivo;
+    private Boolean epositivo;
     private boolean statusAtivo;
 
     public Alerta() {
     }
 
-    public Alerta(int idalerta, Date data,String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, Boolean ePositivo) {
+    public Alerta(int idalerta, Date data,String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, Boolean epositivo) {
         this.idalerta = idalerta;
         this.loghora = data;
         this.longitude = longitude;
@@ -31,7 +31,7 @@ public class Alerta implements java.io.Serializable {
         this.observacao = observacao;
         this.tipo = tipo;
         this.statusAtivo = true;
-        this.ePositivo = ePositivo;
+        this.epositivo = epositivo;
     }
 
     public Alerta(int idalerta, Usuario usuario, Date loghora, String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, boolean statusAtivo) {
@@ -142,11 +142,11 @@ public class Alerta implements java.io.Serializable {
         this.statusAtivo = statusAtivo;
     }
 
-    public Boolean getePositivo() {
-        return ePositivo;
+    public Boolean getEpositivo() {
+        return epositivo;
     }
 
-    public void setePositivo(Boolean ePositivo) {
-        this.ePositivo = ePositivo;
+    public void setEpositivo(Boolean epositivo) {
+        this.epositivo = epositivo;
     }
 }

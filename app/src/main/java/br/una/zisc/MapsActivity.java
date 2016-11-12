@@ -43,7 +43,6 @@ import android.location.Address;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -83,7 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Alerta> listaTeste = new ArrayList<>();
     private final List<String> listaPositiva = new ArrayList<String>();
     private final List<String> listaNegativa = new ArrayList<String>();
-    List<Marcador> m = new ArrayList<>();
+    private List<Marcador> m = new ArrayList<>();
     private ToggleButton switchNegPos;
     private EditText editorOcorrencia;
     private Spinner spinnerTipo, spinnerAlerta;
@@ -127,6 +126,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         formato = new DecimalFormat("00");
 
         Bundle bundle = getIntent().getExtras();
+        Log.e("BUNDLE: ", emailUsuario);
         if (bundle != null) {
             emailUsuario = bundle.getString("EMAIL");
             Log.e("BUNDLE: ", emailUsuario);
@@ -165,7 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            Log.e("LATITUDE E LONGITUDE",address.getLatitude() + "/" + address.getLongitude());
+            Log.e("LATITUDE E LONGITUDE", address.getLatitude() + "/" + address.getLongitude());
             buscaPontos(latLng);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
         }
@@ -242,7 +242,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 alerta.getEstado(),
                                                 alerta.getObservacao(),
                                                 alerta.getTipo(),
-                                                alerta.getePositivo()); // acessa os metodos do retrofit <<<LEMBRAR alterar
+                                                alerta.getEpositivo()); // acessa os metodos do retrofit <<<LEMBRAR alterar
                                         call.enqueue(new Callback<String>() {
                                             @Override
                                             public void onResponse(Call<String> call, Response<String> response) {
@@ -265,7 +265,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     } else {
                                                         marcador.setAlerta(alerta);
                                                         m.add(marcador);
-                                                        choveMarcador(m);
+                                                        choveMarcador();
                                                     }
                                                 }
                                             }
@@ -463,16 +463,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             dialogo.dismiss();
                             Log.e(TAG2, response.body().toString()); // aqui vai receber os dados, tem que tratar ainda
                             Marcador marcador = new Marcador();
-                            List <Alerta> lista = response.body();
-                            if(lista.size() == 0){
+                            List<Alerta> lista = response.body();
+                            if (lista.size() == 0) {
                                 alertDialog = new AlertDialog.Builder(MapsActivity.this)
                                         .setMessage("Não existe Alertas nesta \nproximidade!")
                                         .setCancelable(true)
                                         .setPositiveButton("OK", null);
                                 alertDialog.create();
                                 alertDialog.show();
-                            }else {
-                                choveMarcador(marcador.setReferencia(response.body()));
+                            } else {
+                                m.addAll(marcador.setReferencia(lista));
+                                choveMarcador();
                             }
                         }
                     }
@@ -494,29 +495,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }).start();
     }
 
-    public void choveMarcador(List<Marcador> lista) {
+    public void choveMarcador() {
         Log.e("CHOVE MARCADOR", "1");
         Marker marker;
-        for (int i = controle; i < lista.size(); i++) {
-            LatLng latLng = new LatLng(Double.parseDouble(lista.get(i).getAlerta().getLatitude()), Double.parseDouble(lista.get(i).getAlerta().getLongitude()));
-            if (lista.get(i).getAlerta().getePositivo()) {
+        for (int i = controle; i < m.size(); i++) {
+            LatLng latLng = new LatLng(Double.parseDouble(m.get(i).getAlerta().getLatitude()), Double.parseDouble(m.get(i).getAlerta().getLongitude()));
+            if (m.get(i).getAlerta().getEpositivo()) {
                 Log.e("CHOVE MARCADOR", "2");
                 marker = mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title("LUGAR BOM")
-                        .snippet((lista.get(i).getMarcadorList().size() + 1) + "")
+                        .snippet((m.get(i).getMarcadorList().size() + 1) + "")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
             } else {
                 Log.e("CHOVE MARCADOR", "3");
                 marker = mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title("LUGAR RUIM")
-                        .snippet(String.valueOf(lista.get(i).getMarcadorList().size() + 1)));
+                        .snippet(String.valueOf(m.get(i).getMarcadorList().size() + 1)));
             }
-            lista.get(i).setMarcador(marker);
+            m.get(i).setMarcador(marker);
             choveListener(latLng);
         }
-        controle = lista.size() - 1;
+        controle = m.size() - 1;
     }
 
     public void choveListener(LatLng latLng) {
@@ -687,7 +688,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (int i = 0; i < m.size(); i++) {
             Log.e("DEU OU NâO", m.get(i).toString());
         }
-        choveMarcador(m);
+        choveMarcador();
 
     }
 
@@ -712,7 +713,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (ParseException e) {
             e.printStackTrace();
         }*/
-
 
 
         return dataSql;
