@@ -5,41 +5,29 @@
 
     <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content" >
 
-        <RadioGroup
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="20dp" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="true">
+
+        <ToggleButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAlignment="center">
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" >
-
-                <RadioButton
-                    android:text="RadioButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/radioLocal"
-                    android:layout_weight="1"
-                    android:textAlignment="center"
-                    android:textAllCaps="false"
-                    android:layout_marginLeft="@dimen/cast_intro_overlay_button_margin_bottom" />
-
-                <RadioButton
-                    android:text="RadioButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/radioRemoto"
-                    android:textAlignment="center"
-                    android:textAllCaps="false"
-                    android:layout_marginLeft="@dimen/cast_intro_overlay_button_margin_bottom" />
-            </TableRow>
-
-        </RadioGroup>
-
+            android:id="@+id/toggleButton"
+            android:textOff="Remoto"
+            android:textOn="Local"
+            android:layout_gravity="center_horizontal"
+            android:textAlignment="center"
+            android:textStyle="normal|bold"
+            android:soundEffectsEnabled="true" />
     </TableRow>
 
     <TableRow

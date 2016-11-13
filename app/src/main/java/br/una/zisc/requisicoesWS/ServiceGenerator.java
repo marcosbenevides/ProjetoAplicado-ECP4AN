@@ -18,10 +18,18 @@ public class ServiceGenerator {
     //URL de acesso a API
     public static String remoto = "ec2-54-187-15-178.us-west-2.compute.amazonaws.com";
     public static String local = "192.168.1.110";
-    public static String API_URL = "http://" + remoto + "/ZISC/res/";
+    public static String API_URL_REMOTO = "http://" + remoto + "/ZISC/res/";
     public static String API_URL_LOCAL = "http://" + local + ":8080/ZISC/res/";
+    public static String API_URL = API_URL_LOCAL;
+    public static Boolean eLocal = true;
 
-    public static <S> S createService(Class<S> serviceClass){
+    public static <S> S createService(Class<S> serviceClass) {
+
+        if (eLocal) {
+            API_URL = API_URL_LOCAL;
+        } else {
+            API_URL = API_URL_REMOTO;
+        }
 
         //Interceptador das requisições
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -38,10 +46,9 @@ public class ServiceGenerator {
         httpClient.addInterceptor(loggingInterceptor);
 
 
-
         //Instancia do retrofit, o interpretador.
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL_LOCAL)
+                .baseUrl(API_URL)
                 .client(httpClient.build())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();

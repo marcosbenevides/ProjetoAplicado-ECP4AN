@@ -18,10 +18,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import org.w3c.dom.Text;
 
@@ -56,7 +58,7 @@ public class LoginActivity extends Activity {
     private Usuario usuario = new Usuario();
     private LocationManager locationManager;
     private ConnectivityManager connectivityManager;
-    private RadioButton radioRemoto,radioLocal;
+    private ToggleButton toggleButton;
 
 
     @Override
@@ -118,11 +120,27 @@ public class LoginActivity extends Activity {
                 View dialogView = layoutInflater.inflate(R.layout.easter_egg_config, null);
                 easterEggConfig.setView(dialogView);
 
-                radioLocal = (RadioButton) dialogView.findViewById(R.id.radioLocal);
-                radioRemoto = (RadioButton) dialogView.findViewById(R.id.radioRemoto);
+                toggleButton = (ToggleButton)dialogView.findViewById(R.id.toggleButton);
                 remotoEditor = (EditText) dialogView.findViewById(R.id.editorRemoto);
                 localEditor = (EditText) dialogView.findViewById(R.id.editorLocal);
 
+                toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked){
+                            remotoEditor.setEnabled(false);
+                            localEditor.setEnabled(true);
+                            sg.eLocal = true;
+                        }else{
+                            remotoEditor.setEnabled(true);
+                            localEditor.setEnabled(false);
+                            sg.eLocal = false;
+                        }
+                    }
+                });
+
+                remotoEditor.setEnabled(false);
+                localEditor.setEnabled(false);
                 remotoEditor.setText(sg.remoto);
                 localEditor.setText(sg.local);
 
