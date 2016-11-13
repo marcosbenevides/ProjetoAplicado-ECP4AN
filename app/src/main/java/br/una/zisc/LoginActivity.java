@@ -14,12 +14,16 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -40,10 +44,11 @@ public class LoginActivity extends Activity {
             , ativaGPS = "GPS desativado, deseja ativa-lo?"
             , ativaInternet = "Não existe nenhum tipo de conexão, deseja ativar o WIFI?";
     private Button cadastrar, confirmar;
-    private EditText emailEditor, senhaEditor;
-    private TextView status_error;
+    private EditText emailEditor, senhaEditor,remotoEditor,localEditor;
+    private TextView status_error,easterEgg;
     private ProgressDialog dialog;
-    private AlertDialog.Builder alertDialog;
+    private AlertDialog.Builder alertDialog,easterEggConfig;
+    private AlertDialog alerta;
     public static final String TAG = "MARCOS: ";
     private Intent it;
     private SharedPreferences preferences;
@@ -51,6 +56,7 @@ public class LoginActivity extends Activity {
     private Usuario usuario = new Usuario();
     private LocationManager locationManager;
     private ConnectivityManager connectivityManager;
+    private RadioButton radioRemoto,radioLocal;
 
 
     @Override
@@ -62,6 +68,7 @@ public class LoginActivity extends Activity {
         cadastrar = (Button) findViewById(R.id.buttonCreateLogin);
         emailEditor = (EditText) findViewById(R.id.emailEditor);
         senhaEditor = (EditText) findViewById(R.id.senhaEditor);
+        easterEgg = (TextView) findViewById(R.id.textView);
         status_error = (TextView) findViewById(R.id.status_login);
         checkLogin = (CheckBox) findViewById(R.id.checkLogin);
 
@@ -89,6 +96,40 @@ public class LoginActivity extends Activity {
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+
+        easterEgg.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                final ServiceGenerator sg = new ServiceGenerator();
+
+                easterEggConfig = new AlertDialog.Builder(LoginActivity.this)
+                        .setTitle("EDITAR PREFERÊNCIAS")
+                        .setPositiveButton("SALVAR", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                sg.remoto = remotoEditor.getText().toString();
+                                sg.local = localEditor.getText().toString();
+                            }
+                        });
+
+                LayoutInflater layoutInflater = LoginActivity.this.getLayoutInflater();
+                View dialogView = layoutInflater.inflate(R.layout.easter_egg_config, null);
+                easterEggConfig.setView(dialogView);
+
+                radioLocal = (RadioButton) dialogView.findViewById(R.id.radioLocal);
+                radioRemoto = (RadioButton) dialogView.findViewById(R.id.radioRemoto);
+                remotoEditor = (EditText) dialogView.findViewById(R.id.editorRemoto);
+                localEditor = (EditText) dialogView.findViewById(R.id.editorLocal);
+
+                remotoEditor.setText(sg.remoto);
+                localEditor.setText(sg.local);
+
+                alerta = easterEggConfig.create();
+                alerta.show();
+
+                return true;
             }
         });
 
