@@ -82,12 +82,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Alerta> listaTeste = new ArrayList<>();
     private final List<String> listaPositiva = new ArrayList<String>();
     private final List<String> listaNegativa = new ArrayList<String>();
-    private List<Marcador> m = new ArrayList<>();
+    private List<Marcador> mListMarcador = new ArrayList<>(); // lista que armazena todos os objetos do tipo Marcador
     private ToggleButton switchNegPos;
     private EditText editorOcorrencia;
     private Spinner spinnerTipo, spinnerAlerta;
     private String cidade = "", estado = "", bairro = "", emailUsuario = "";
-    private Integer controle = 0;
+    private Integer controle = 0, contFalha = 0;
 
 
     /**
@@ -257,14 +257,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 } else {
                                                     dialogo.dismiss();
                                                     Marcador marcador = new Marcador();
-                                                    Marker marker = marcador.temReferencia(m, alerta);
+                                                    Marker marker = marcador.temReferencia(mListMarcador, alerta);
                                                     if (marker != null) {
                                                         dialogo.dismiss();
                                                         Toast.makeText(MapsActivity.this, "Alerta adicionado ao marcador selecionado!", Toast.LENGTH_LONG).show();
                                                         marker.showInfoWindow();
                                                     } else {
                                                         marcador.setAlerta(alerta);
-                                                        m.add(marcador);
+                                                        mListMarcador.add(marcador);
                                                         choveMarcador();
                                                     }
                                                 }
@@ -451,6 +451,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onResponse(Call<List<Alerta>> call, Response<List<Alerta>> response) { // resposta do server
                         if (!response.isSuccessful()) {
+                            contFalha = 0;
                             dialogo.dismiss();
                             alertDialog = new AlertDialog.Builder(MapsActivity.this)
                                     .setMessage("Impossível conectar ao servidor!\n" + response.message())
@@ -460,6 +461,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             alertDialog.show();
                             Log.e(TAG, response.message() + " " + response.code() + " " + response.errorBody());
                         } else {
+                            contFalha = 0;
                             dialogo.dismiss();
                             Log.e(TAG2, response.body().toString()); // aqui vai receber os dados, tem que tratar ainda
                             Marcador marcador = new Marcador();
@@ -472,7 +474,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 alertDialog.create();
                                 alertDialog.show();
                             } else {
-                                m.addAll(marcador.setReferencia(lista));
+                                mListMarcador.addAll(marcador.setReferencia(lista));
                                 choveMarcador();
                             }
                         }
@@ -480,15 +482,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     @Override
                     public void onFailure(Call<List<Alerta>> call, Throwable t) { // se for aqui, falhou a conexao com o server
-                        dialogo.dismiss();
+                        contFalha++;
+                        if(contFalha > 3) {
+                            contFalha = 0;
+                            dialogo.dismiss();
 
-                        alertDialog = new AlertDialog.Builder(MapsActivity.this)
-                                .setMessage("Impossível conectar ao servidor!")
-                                .setCancelable(true)
-                                .setPositiveButton("OK", null);
-                        alertDialog.create();
-                        alertDialog.show();
-                        Log.e(TAG, "Falha: " + t.getMessage());
+                            alertDialog = new AlertDialog.Builder(MapsActivity.this)
+                                    .setMessage("Impossível conectar ao servidor! Fui lá três vezes já!!")
+                                    .setCancelable(true)
+                                    .setPositiveButton("OK", null);
+                            alertDialog.create();
+                            alertDialog.show();
+                            Log.e(TAG, "Falha: " + t.getMessage());
+                        }
+                        else {
+                            buscaPontos(ponto);
+                        }
                     }
                 });
             }
@@ -498,26 +507,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void choveMarcador() {
         Log.e("CHOVE MARCADOR", "1");
         Marker marker;
-        for (int i = controle; i < m.size(); i++) {
-            LatLng latLng = new LatLng(Double.parseDouble(m.get(i).getAlerta().getLatitude()), Double.parseDouble(m.get(i).getAlerta().getLongitude()));
-            if (m.get(i).getAlerta().getEpositivo()) {
+        for (int i = controle; i < mListMarcador.size(); i++) {
+            LatLng latLng = new LatLng(Double.parseDouble(mListMarcador.get(i).getAlerta().getLatitude())
+                    , Double.parseDouble(mListMarcador.get(i).getAlerta().getLongitude()));
+            if (mListMarcador.get(i).getAlerta().getEpositivo()) {
                 Log.e("CHOVE MARCADOR", "2");
                 marker = mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title("LUGAR BOM")
-                        .snippet((m.get(i).getMarcadorList().size() + 1) + "")
+                        .snippet((mListMarcador.get(i).getMarcadorList().size() + 1) + "")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
             } else {
                 Log.e("CHOVE MARCADOR", "3");
                 marker = mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title("LUGAR RUIM")
-                        .snippet(String.valueOf(m.get(i).getMarcadorList().size() + 1)));
+                        .snippet(String.valueOf(mListMarcador.get(i).getMarcadorList().size() + 1)));
             }
-            m.get(i).setMarcador(marker);
+            mListMarcador.get(i).setMarcador(marker);
             choveListener(latLng);
         }
-        controle = m.size() - 1;
+        controle = mListMarcador.size() - 1;
     }
 
     public void choveListener(LatLng latLng) {
@@ -598,7 +608,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     final SimpleDateFormat dateFormat = new SimpleDateFormat("dd HH:mm");
                     final SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                     Marcador marcador = new Marcador();
-                    marcador = marcador.procuraMarcador(m, marker);
+                    marcador = marcador.procuraMarcador(mListMarcador, marker);
                     /**
                      * Implementação dos itens do spinner baseado na lista de alerta em cada objeto marcador
                      */
@@ -608,7 +618,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         if (marcador.getMarcadorList().size() >= 1) {
                             for (int i = 0; i < marcador.getMarcadorList().size(); i++) {
-                                listaDrop.add(marcador.getMarcadorList().get(i).getTipo() + " ( Dia " + String.valueOf(dateFormat.format(marcador.getMarcadorList().get(i).getLoghora())) + ")");
+                                listaDrop.add(marcador.getMarcadorList().get(i).getTipo()
+                                        + " ( Dia " + String.valueOf(dateFormat.format(marcador.getMarcadorList().get(i).getLoghora())) + ")");
                             }
                         }
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(MapsActivity.this, android.R.layout.simple_list_item_1, listaDrop);
@@ -684,9 +695,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         listaTeste.add(new Alerta(9, getDataHoraAgora(), "-20.064212", "-44.282190", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 9 rapazes bonitos dos olhos claros", "Corrida Naruto5", false));
 
         Marcador marcador = new Marcador();
-        m = marcador.setReferencia(listaTeste);
-        for (int i = 0; i < m.size(); i++) {
-            Log.e("DEU OU NâO", m.get(i).toString());
+        mListMarcador = marcador.setReferencia(listaTeste);
+        for (int i = 0; i < mListMarcador.size(); i++) {
+            Log.e("DEU OU NâO", mListMarcador.get(i).toString());
         }
         choveMarcador();
 
