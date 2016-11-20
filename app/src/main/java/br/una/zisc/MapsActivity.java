@@ -58,6 +58,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, SearchView.OnQueryTextListener {
 
@@ -86,8 +88,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ToggleButton switchNegPos;
     private EditText editorOcorrencia;
     private Spinner spinnerTipo, spinnerAlerta;
-    private String cidade = "", estado = "", bairro = "", emailUsuario = "";
+    private String cidade = "", estado = "", bairro = "", emailUsuario = "mariaajp@gmail.com";
     private Integer controle = 0, contFalha = 0;
+    private DialogInterface.OnClickListener dialogInterface;
 
 
     /**
@@ -166,6 +169,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
             Log.e("LATITUDE E LONGITUDE", address.getLatitude() + "/" + address.getLongitude());
+
+            runOnUiThread(new Runnable() { // O dialogo tem que ser na tread da interface, por isso
+                @Override
+                public void run() {
+                    dialogo = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor", "Por favor, aguarde...");
+                }
+            });
             buscaPontos(latLng);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
         }
@@ -202,14 +212,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void longClickListener() {
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+
             @Override
             public void onMapLongClick(LatLng point) {
+
+
                 latLngMarcar = point;
                 addMarkerDialog = new AlertDialog.Builder(MapsActivity.this)
                         .setTitle("ADICIONAR ALERTA")
-                        .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("Confirmar", dialogInterface = new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(DialogInterface dialog, final int which) {
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -243,17 +256,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 alerta.getObservacao(),
                                                 alerta.getTipo(),
                                                 alerta.getEpositivo()); // acessa os metodos do retrofit <<<LEMBRAR alterar
-                                        call.enqueue(new Callback<String>() {
+
+                                        callCreateMarker(call,alerta);
+                                        /*call.enqueue(new Callback<String>() {
                                             @Override
                                             public void onResponse(Call<String> call, Response<String> response) {
                                                 if (!response.isSuccessful()) {
-                                                    dialogo.dismiss();
-                                                    alertDialog = new AlertDialog.Builder(MapsActivity.this)
-                                                            .setMessage("OPS! Algo deu errado.\n" + response.message())
-                                                            .setCancelable(true)
-                                                            .setPositiveButton("OK", null);
-                                                    alertDialog.create();
-                                                    alertDialog.show();
+                                                    contFalha++;
+                                                    if (contFalha > 3) {
+                                                        dialogo.dismiss();
+                                                        alertDialog = new AlertDialog.Builder(MapsActivity.this)
+                                                                .setMessage("OPS! Algo deu errado.\n" + response.message())
+                                                                .setCancelable(true)
+                                                                .setPositiveButton("OK", null);
+                                                        alertDialog.create();
+                                                        alertDialog.show();
+                                                    } else {
+                                                        call.enqueue();
+                                                    }
                                                 } else {
                                                     dialogo.dismiss();
                                                     Marcador marcador = new Marcador();
@@ -281,7 +301,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 alertDialog.show();
                                             }
                                         });
-
+*/
                                     }
                                 }).start();
 
@@ -333,6 +353,60 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+    }
+
+    public void callCreateMarker(Call call, final Alerta alerta) {
+        call.clone().enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful()) {
+                    contFalha++;
+                    if (contFalha > 5) {
+                        contFalha = 0;
+                        dialogo.dismiss();
+                        alertDialog = new AlertDialog.Builder(MapsActivity.this)
+                                .setMessage("OPS! Algo deu errado.\n" + response.message())
+                                .setCancelable(true)
+                                .setPositiveButton("OK", null);
+                        alertDialog.create();
+                        alertDialog.show();
+                    } else {
+                        callCreateMarker(call,alerta);
+                    }
+                } else {
+                    contFalha = 0;
+                    dialogo.dismiss();
+                    Marcador marcador = new Marcador();
+                    Marker marker = marcador.temReferencia(mListMarcador, alerta);
+                    if (marker != null) {
+                        dialogo.dismiss();
+                        Toast.makeText(MapsActivity.this, "Alerta adicionado ao marcador selecionado!", Toast.LENGTH_LONG).show();
+                        marker.showInfoWindow();
+                    } else {
+                        marcador.setAlerta(alerta);
+                        mListMarcador.add(marcador);
+                        choveMarcador();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                contFalha++;
+                if (contFalha > 3) {
+                    contFalha = 0;
+                    dialogo.dismiss();
+                    alertDialog = new AlertDialog.Builder(MapsActivity.this)
+                            .setMessage("OPS! Falha ao conectar.\n" + t.getMessage())
+                            .setCancelable(true)
+                            .setPositiveButton("OK", null);
+                    alertDialog.create();
+                    alertDialog.show();
+                }else{
+                    callCreateMarker(call,alerta);
+                }
+            }
+        });
     }
 
     @Override
@@ -423,6 +497,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e("ESTADO", " " + estado);
                 inicio = false;
 
+                runOnUiThread(new Runnable() { // O dialogo tem que ser na tread da interface, por isso
+                    @Override
+                    public void run() {
+                        dialogo = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor", "Por favor, aguarde...");
+                    }
+                });
+
                 buscaPontos(new LatLng(inicialLocation.getLatitude(), inicialLocation.getLongitude()));
 
                 teste();
@@ -434,12 +515,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         new Thread(new Runnable() { //por causa do Call, precisa pra rodar ele
             @Override
             public void run() { // vai rodar aqui qndo der o Start la em baixo
-                runOnUiThread(new Runnable() { // O dialogo tem que ser na tread da interface, por isso
-                    @Override
-                    public void run() {
-                        dialogo = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor ... ", "Favor Aguardar!");
-                    }
-                });
 
                 String latitudeEnviar = "" + ponto.latitude;
                 String longitudeEnviar = "" + ponto.longitude;
@@ -451,15 +526,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onResponse(Call<List<Alerta>> call, Response<List<Alerta>> response) { // resposta do server
                         if (!response.isSuccessful()) {
-                            contFalha = 0;
-                            dialogo.dismiss();
-                            alertDialog = new AlertDialog.Builder(MapsActivity.this)
-                                    .setMessage("Impossível conectar ao servidor!\n" + response.message())
-                                    .setCancelable(true)
-                                    .setPositiveButton("OK", null);
-                            alertDialog.create();
-                            alertDialog.show();
-                            Log.e(TAG, response.message() + " " + response.code() + " " + response.errorBody());
+                            if (contFalha > 3) {
+                                contFalha = 0;
+                                dialogo.dismiss();
+                                alertDialog = new AlertDialog.Builder(MapsActivity.this)
+                                        .setMessage("Impossível conectar ao servidor!\n" + response.message())
+                                        .setCancelable(true)
+                                        .setPositiveButton("OK", null);
+                                alertDialog.create();
+                                alertDialog.show();
+
+                                Log.e(TAG, response.message() + " " + response.code() + " " + response.errorBody());
+                            } else {
+                                buscaPontos(ponto);
+                            }
                         } else {
                             contFalha = 0;
                             dialogo.dismiss();
@@ -483,8 +563,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onFailure(Call<List<Alerta>> call, Throwable t) { // se for aqui, falhou a conexao com o server
                         contFalha++;
-                        if(contFalha > 3) {
+                        if (contFalha > 3) {
                             contFalha = 0;
+                            Log.e("onFailure", (contFalha + 1) + " tentativa.");
                             dialogo.dismiss();
 
                             alertDialog = new AlertDialog.Builder(MapsActivity.this)
@@ -494,8 +575,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             alertDialog.create();
                             alertDialog.show();
                             Log.e(TAG, "Falha: " + t.getMessage());
-                        }
-                        else {
+                        } else {
                             buscaPontos(ponto);
                         }
                     }

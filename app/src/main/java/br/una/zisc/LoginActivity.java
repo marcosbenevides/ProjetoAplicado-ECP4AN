@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -214,13 +215,18 @@ public class LoginActivity extends Activity {
                             it = new Intent(LoginActivity.this, MapsActivity.class);
                             if (it != null) {
                                 it.putExtra("EMAIL", usuario.getEmail());
-                                Log.e("PUT", usuario.getEmail());
+                                Log.e("PUT1", usuario.getEmail());
                             }
                             usuario.getEmail();
                             if (usuario.getEmail().equalsIgnoreCase(email)) {
                                 status_error.setVisibility(View.INVISIBLE);
+                                MapsActivity activity;
                                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                                 startActivity(intent);
+                                if (intent != null) {
+                                    it.putExtra("EMAIL", usuario.getEmail());
+                                    Log.e("PUT2", usuario.getEmail());
+                                }
                                 Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
                             } else {
                                 senhaEditor.setText("");
