@@ -379,6 +379,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Marcador marcador = new Marcador();
                     Marker marker = marcador.temReferencia(mListMarcador, alerta);
                     if (marker != null) {
+                        marker.setSnippet("" + (Integer.parseInt(marker.getSnippet()) + 1));
                         dialogo.dismiss();
                         Toast.makeText(MapsActivity.this, "Alerta adicionado ao marcador selecionado!", Toast.LENGTH_LONG).show();
                         marker.showInfoWindow();
@@ -525,8 +526,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 alertas.enqueue(new Callback<List<Alerta>>() { // aqui que vai no servidor, precisa ser em outra tread
                     @Override
                     public void onResponse(Call<List<Alerta>> call, Response<List<Alerta>> response) { // resposta do server
+                        Log.e("ON RESPONSE ", (contFalha + 1) + " ON RESPONSE.");
+
                         if (!response.isSuccessful()) {
+                            Log.e("SUCESSO NÃO nÃO 1 ", (contFalha + 1) + " SUCSSO.");
+                            contFalha++;
                             if (contFalha > 3) {
+                                Log.e("SUCESSO NÃO nÃO 2 ", (contFalha + 1) + " SUCSSO.");
                                 contFalha = 0;
                                 dialogo.dismiss();
                                 alertDialog = new AlertDialog.Builder(MapsActivity.this)
@@ -541,6 +547,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 buscaPontos(ponto);
                             }
                         } else {
+                            Log.e("SUCESSO ", (contFalha + 1) + " SUCSSO.");
                             contFalha = 0;
                             dialogo.dismiss();
                             Log.e(TAG2, response.body().toString()); // aqui vai receber os dados, tem que tratar ainda
@@ -554,6 +561,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 alertDialog.create();
                                 alertDialog.show();
                             } else {
+                                Log.e("SUCESSO ELSE ", (contFalha + 1) + " SUCSSO ELSE.");
                                 mListMarcador.addAll(marcador.setReferencia(lista));
                                 choveMarcador();
                             }
@@ -575,6 +583,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             alertDialog.create();
                             alertDialog.show();
                             Log.e(TAG, "Falha: " + t.getMessage());
+                        t.printStackTrace();
                         } else {
                             buscaPontos(ponto);
                         }
