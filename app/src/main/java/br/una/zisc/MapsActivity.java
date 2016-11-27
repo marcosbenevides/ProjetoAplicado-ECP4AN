@@ -132,7 +132,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         listaPositiva.add("Local bem movimentado.");
         listaPositiva.add("Local com bom policiamento.");
         listaNegativa.add("Assalto.");
-        listaNegativa.add("Trecho mau iluminado.");
+        listaNegativa.add("Trecho mal iluminado.");
         listaNegativa.add("Local deserto.");
 
         Bundle bundle = getIntent().getExtras();
