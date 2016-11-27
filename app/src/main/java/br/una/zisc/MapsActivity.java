@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import android.content.*;
 
@@ -550,6 +551,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Log.e("SUCESSO ", (contFalha + 1) + " SUCSSO.");
                             contFalha = 0;
                             dialogo.dismiss();
+                            barraProcurar.clearFocus(); // teclado não aparecer novamente qndo pesquisa
                             Log.e(TAG2, response.body().toString()); // aqui vai receber os dados, tem que tratar ainda
                             Marcador marcador = new Marcador();
                             List<Alerta> lista = response.body();
@@ -616,7 +618,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mListMarcador.get(i).setMarcador(marker);
             choveListener(latLng);
         }
-        controle = mListMarcador.size() - 1;
+        controle = mListMarcador.size();
     }
 
     public void choveListener(LatLng latLng) {
