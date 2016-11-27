@@ -128,6 +128,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         formato = new DecimalFormat("00");
 
+        listaPositiva.add("Trecho bem iluminado.");
+        listaPositiva.add("Local bem movimentado.");
+        listaPositiva.add("Local com bom policiamento.");
+        listaNegativa.add("Assalto.");
+        listaNegativa.add("Trecho mau iluminado.");
+        listaNegativa.add("Local deserto.");
+
         Bundle bundle = getIntent().getExtras();
         Log.e("BUNDLE: ", emailUsuario);
         if (bundle != null) {
@@ -320,13 +327,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 switchNegPos = (ToggleButton) dialogView.findViewById(R.id.buttonNegPos);
                 editorOcorrencia = (EditText) dialogView.findViewById(R.id.editOcorrencia);
                 spinnerTipo = (Spinner) dialogView.findViewById(R.id.spinnerTipo);
-
-                listaPositiva.add("Trecho bem iluminado.");
-                listaPositiva.add("Local bem movimentado.");
-                listaPositiva.add("Local com bom policiamento.");
-                listaNegativa.add("Assalto.");
-                listaNegativa.add("Trecho mau iluminado.");
-                listaNegativa.add("Local deserto.");
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(MapsActivity.this, android.R.layout.simple_list_item_1, listaNegativa);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
