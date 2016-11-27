@@ -16,10 +16,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceGenerator {
     //URL de acesso a API
-    public static String remoto = "ec2-54-187-15-178.us-west-2.compute.amazonaws.com";
-    public static String local = "192.168.1.110";
-    public static String API_URL_REMOTO = "http://" + remoto + "/ZISC/res/";
-    public static String API_URL_LOCAL = "http://" + local + ":8080/ZISC/res/";
+    public static String API_URL_REMOTO = "http://ec2-54-187-15-178.us-west-2.compute.amazonaws.com/ZISC/res/";
+    public static String API_URL_LOCAL = "http://192.168.1.110:8080/ZISC/res/";
     public static String API_URL = API_URL_LOCAL;
     public static Boolean eLocal = true;
 
@@ -37,7 +35,7 @@ public class ServiceGenerator {
 
         Gson gson = new GsonBuilder()
                 .setLenient()
-                .setDateFormat("yyyy-MM-dd HH:mm:ss")
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                 .create();
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder()

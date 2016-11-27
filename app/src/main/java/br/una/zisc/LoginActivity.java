@@ -43,14 +43,12 @@ import retrofit2.Response;
 public class LoginActivity extends Activity {
 
     private static final int MY_PERMISSION_LOCATION = 0;
-    private String senha, email
-            , ativaGPS = "GPS desativado, deseja ativa-lo?"
-            , ativaInternet = "Não existe nenhum tipo de conexão, deseja ativar o WIFI?";
+    private String senha, email, ativaGPS = "GPS desativado, deseja ativa-lo?", ativaInternet = "Não existe nenhum tipo de conexão, deseja ativar o WIFI?";
     private Button cadastrar, confirmar;
-    private EditText emailEditor, senhaEditor,remotoEditor,localEditor;
-    private TextView status_error,easterEgg;
+    private EditText emailEditor, senhaEditor, remotoEditor, localEditor;
+    private TextView status_error, easterEgg;
     private ProgressDialog dialog;
-    private AlertDialog.Builder alertDialog,easterEggConfig;
+    private AlertDialog.Builder alertDialog, easterEggConfig;
     private AlertDialog alerta;
     public static final String TAG = "MARCOS: ";
     private Intent it;
@@ -78,14 +76,61 @@ public class LoginActivity extends Activity {
         SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
         emailEditor.setText(sharedPreferences.getString("emailUsuario", ""));
         senhaEditor.setText(sharedPreferences.getString("senhaUsuario", ""));
-        checkLogin.setChecked(sharedPreferences.getBoolean("checkLogin",checkLogin.isChecked()));
+        checkLogin.setChecked(sharedPreferences.getBoolean("checkLogin", checkLogin.isChecked()));
 
         gpsLigado();
 
         ActivityCompat.requestPermissions(this,
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                 MY_PERMISSION_LOCATION);
+        easterEgg.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
 
+                easterEggConfig = new AlertDialog.Builder(LoginActivity.this)
+                        .setTitle("EDITAR PREFERÊNCIAS")
+                        .setPositiveButton("SALVAR", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ServiceGenerator.API_URL_REMOTO = remotoEditor.getText().toString();
+                                ServiceGenerator.API_URL_LOCAL = localEditor.getText().toString();
+                            }
+                        });
+
+                LayoutInflater layoutInflater = LoginActivity.this.getLayoutInflater();
+                View dialogView = layoutInflater.inflate(R.layout.easter_egg_config, null);
+                easterEggConfig.setView(dialogView);
+
+                toggleButton = (ToggleButton) dialogView.findViewById(R.id.toggleButton);
+                remotoEditor = (EditText) dialogView.findViewById(R.id.editorRemoto);
+                localEditor = (EditText) dialogView.findViewById(R.id.editorLocal);
+
+                toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked) {
+                            remotoEditor.setEnabled(false);
+                            localEditor.setEnabled(true);
+                            ServiceGenerator.eLocal = true;
+                        } else {
+                            remotoEditor.setEnabled(true);
+                            localEditor.setEnabled(false);
+                            ServiceGenerator.eLocal = false;
+                        }
+                    }
+                });
+
+                remotoEditor.setEnabled(false);
+                localEditor.setEnabled(false);
+                remotoEditor.setText(ServiceGenerator.API_URL_REMOTO);
+                localEditor.setText(ServiceGenerator.API_URL_LOCAL);
+
+                alerta = easterEggConfig.create();
+                alerta.show();
+
+                return true;
+            }
+        });
         confirmar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,55 +147,6 @@ public class LoginActivity extends Activity {
             }
         });
 
-        easterEgg.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                final ServiceGenerator sg = new ServiceGenerator();
-
-                easterEggConfig = new AlertDialog.Builder(LoginActivity.this)
-                        .setTitle("EDITAR PREFERÊNCIAS")
-                        .setPositiveButton("SALVAR", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                sg.remoto = remotoEditor.getText().toString();
-                                sg.local = localEditor.getText().toString();
-                            }
-                        });
-
-                LayoutInflater layoutInflater = LoginActivity.this.getLayoutInflater();
-                View dialogView = layoutInflater.inflate(R.layout.easter_egg_config, null);
-                easterEggConfig.setView(dialogView);
-
-                toggleButton = (ToggleButton)dialogView.findViewById(R.id.toggleButton);
-                remotoEditor = (EditText) dialogView.findViewById(R.id.editorRemoto);
-                localEditor = (EditText) dialogView.findViewById(R.id.editorLocal);
-
-                toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(isChecked){
-                            remotoEditor.setEnabled(false);
-                            localEditor.setEnabled(true);
-                            sg.eLocal = true;
-                        }else{
-                            remotoEditor.setEnabled(true);
-                            localEditor.setEnabled(false);
-                            sg.eLocal = false;
-                        }
-                    }
-                });
-
-                remotoEditor.setEnabled(false);
-                localEditor.setEnabled(false);
-                remotoEditor.setText(sg.remoto);
-                localEditor.setText(sg.local);
-
-                alerta = easterEggConfig.create();
-                alerta.show();
-
-                return true;
-            }
-        });
 
         //Marcador m = new Marcador();
         //m.distancia2Pontos("-20.064247", "-44.282156", "-20.066588", "-44.281439");
@@ -195,8 +191,8 @@ public class LoginActivity extends Activity {
                                     alertDialog.show();
                                     Log.e(TAG, " " + response.message());
                                     /**
-                                    *Retirar as duas proximas linhas qndo tudo der certo
-                                    */
+                                     *Retirar as duas proximas linhas qndo tudo der certo
+                                     */
                                     //Intent it = new Intent(LoginActivity.this, MapsActivity.class); // retirar qndo tudo der certo
                                     //startActivity(it);
                                 }
@@ -282,7 +278,7 @@ public class LoginActivity extends Activity {
      */
     public void gpsLigado() {
         locationManager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             alertAtiva(ativaGPS);
             return;
         }
@@ -295,7 +291,7 @@ public class LoginActivity extends Activity {
     public void temConexao() {
         connectivityManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
         NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
-        for(NetworkInfo n: networkInfo) {
+        for (NetworkInfo n : networkInfo) {
             if (n.getTypeName().equalsIgnoreCase("WIFI"))
                 if (n.isConnected())
                     return;
@@ -317,7 +313,7 @@ public class LoginActivity extends Activity {
                 .setCancelable(false)
                 .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        if(nome.equals(ativaGPS))
+                        if (nome.equals(ativaGPS))
                             startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
                         else
                             startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), 0);
