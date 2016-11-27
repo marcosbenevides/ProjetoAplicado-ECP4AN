@@ -1,17 +1,18 @@
 package br.una.zisc.classes;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 public class Alerta implements java.io.Serializable {
 
     private int idalerta;
     private Usuario usuario;
-    private Date loghora;
+    private Timestamp loghora;
     private String longitude;
     private String latitude;
-    private String bairro;
-    private String cidade;
-    private String estado;
+    private String bairro = "Sem bairro";
+    private String cidade = "Sem cidade";
+    private String estado = "Sem estado";
     private String observacao;
     private String tipo;
     private Boolean epositivo;
@@ -20,7 +21,7 @@ public class Alerta implements java.io.Serializable {
     public Alerta() {
     }
 
-    public Alerta(int idalerta, Date data,String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, Boolean epositivo) {
+    public Alerta(int idalerta, Timestamp data,String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, Boolean epositivo) {
         this.idalerta = idalerta;
         this.loghora = data;
         this.longitude = longitude;
@@ -34,7 +35,7 @@ public class Alerta implements java.io.Serializable {
         this.epositivo = epositivo;
     }
 
-    public Alerta(int idalerta, Usuario usuario, Date loghora, String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, boolean statusAtivo) {
+    public Alerta(int idalerta, Usuario usuario, Timestamp loghora, String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, boolean statusAtivo) {
         this.idalerta = idalerta;
         this.usuario = usuario;
         this.loghora = loghora;
@@ -70,11 +71,11 @@ public class Alerta implements java.io.Serializable {
         this.usuario = usuario;
     }
 
-    public Date getLoghora() {
+    public Timestamp getLoghora() {
         return this.loghora;
     }
 
-    public void setLoghora(Date loghora) {
+    public void setLoghora(Timestamp loghora) {
         this.loghora = loghora;
     }
 

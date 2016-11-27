@@ -41,6 +41,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import android.location.Address;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -793,9 +794,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public java.sql.Date getDataHoraAgora() {
+    public java.sql.Timestamp getDataHoraAgora() {
         Date data = new Date();
-        java.sql.Date dataSql = new java.sql.Date(data.getTime());
+        return new Timestamp(data.getTime());
+        //java.sql.Date dataSql = new java.sql.Date(data.getTime());
+        //Log.e("DATA E HORA:", String.valueOf(dataSql));
 /*        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         hora = Calendar.getInstance();
         String horario = "" + hora.get(Calendar.YEAR) + "-" + formato.format((hora.get(Calendar.MONTH) + 1))
@@ -816,7 +819,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }*/
 
 
-        return dataSql;
+        //return dataSql;
     }
 
 }
