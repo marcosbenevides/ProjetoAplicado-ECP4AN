@@ -26,9 +26,15 @@ public class Alerta implements java.io.Serializable {
         this.loghora = data;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.bairro = bairro;
-        this.cidade = cidade;
-        this.estado = estado;
+        if(bairro != null) {
+            this.bairro = bairro;
+        }
+        if(cidade != null){
+            this.cidade = cidade;
+        }
+        if(estado != null) {
+            this.estado = estado;
+        }
         this.observacao = observacao;
         this.tipo = tipo;
         this.statusAtivo = true;

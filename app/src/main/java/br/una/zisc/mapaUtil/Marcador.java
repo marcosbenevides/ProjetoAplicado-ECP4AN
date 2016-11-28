@@ -32,7 +32,13 @@ public class Marcador {
             for(int j = 0; j < listaM.size(); j++) {
                 Alerta m = listaM.get(j).getAlerta();
                 if(distancia2Pontos(a.getLatitude(), a.getLongitude(), m.getLatitude(), m.getLongitude())) {
-                    listaM.get(j).setMarcadorList(a);
+                    if(listaM.get(j).alerta.getEpositivo() && !a.getEpositivo()) {
+                        Alerta aux = listaM.get(j).alerta;
+                        listaM.get(j).alerta = a;
+                        listaM.get(j).marcadorList.add(aux);
+                    } else {
+                        listaM.get(j).marcadorList.add(a);
+                    }
                     controle = false;
                     break;
                 }
@@ -43,14 +49,21 @@ public class Marcador {
         return listaM;
     }
 
-    public Marker temReferencia(List<Marcador> marcador, Alerta alerta){
+    public Marcador temReferencia(List<Marcador> marcador, Alerta alerta){
         for(int i = 0;i<marcador.size();i++){
             if(distancia2Pontos(marcador.get(i).getAlerta().getLatitude(),
                     marcador.get(i).getAlerta().getLongitude()
                     ,alerta.getLatitude(),
                     alerta.getLongitude())){
-                marcador.get(i).marcadorList.add(alerta);
-                return marcador.get(i).getMarcador();
+                if(marcador.get(i).alerta.getEpositivo() && !alerta.getEpositivo()) {
+                    Alerta aux = marcador.get(i).alerta;
+                    marcador.get(i).alerta = alerta;
+                    marcador.get(i).marcadorList.add(aux);
+                    return marcador.get(i);
+                } else {
+                    marcador.get(i).marcadorList.add(alerta);
+                    return marcador.get(i);
+                }
             }
         }
         return null;

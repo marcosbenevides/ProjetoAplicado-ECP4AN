@@ -378,12 +378,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     contFalha = 0;
                     dialogo.dismiss();
                     Marcador marcador = new Marcador();
-                    Marker marker = marcador.temReferencia(mListMarcador, alerta);
-                    if (marker != null) {
-                        marker.setSnippet("" + (Integer.parseInt(marker.getSnippet()) + 1));
+                    Marcador aux = marcador.temReferencia(mListMarcador, alerta);
+                    if (aux != null) {
+                        if(!aux.getAlerta().getEpositivo()) {
+                            aux.getMarcador().setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        }
+                        aux.getMarcador().setSnippet("" + (Integer.parseInt(aux.getMarcador().getSnippet()) + 1));
                         dialogo.dismiss();
                         Toast.makeText(MapsActivity.this, "Alerta adicionado ao marcador selecionado!", Toast.LENGTH_LONG).show();
-                        marker.showInfoWindow();
+                        aux.getMarcador().showInfoWindow();
                     } else {
                         marcador.setAlerta(alerta);
                         mListMarcador.add(marcador);
@@ -775,15 +778,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void teste() {
 
-        listaTeste.add(new Alerta(1, getDataHoraAgora(), "-20.065993", "-44.281507", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 1 rapazes bonitos dos olhos claros", "Assalto", true));
-        listaTeste.add(new Alerta(2, getDataHoraAgora(), "-20.065900", "-44.281555", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 2 rapazes bonitos dos olhos claros", "Tiroteio", true));
+        listaTeste.add(new Alerta(1, getDataHoraAgora(), "-20.065993", "-44.281507", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 1 rapazes bonitos dos olhos claros", "Assalto", false));
+        listaTeste.add(new Alerta(2, getDataHoraAgora(), "-20.065900", "-44.281555", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 2 rapazes bonitos dos olhos claros", "Tiroteio", false));
         listaTeste.add(new Alerta(3, getDataHoraAgora(), "-20.065965", "-44.281522", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 3 rapazes bonitos dos olhos claros", "Festa", true));
         listaTeste.add(new Alerta(4, getDataHoraAgora(), "-20.065912", "-44.281566", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 4 rapazes bonitos dos olhos claros", "Policiamento", true));
         listaTeste.add(new Alerta(5, getDataHoraAgora(), "-20.065933", "-44.281512", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 5 rapazes bonitos dos olhos claros", "Corrida Naruto1", true));
-        listaTeste.add(new Alerta(6, getDataHoraAgora(), "-20.064242", "-44.282150", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 6 rapazes bonitos dos olhos claros", "Corrida Naruto2", false));
-        listaTeste.add(new Alerta(7, getDataHoraAgora(), "-21.064292", "-49.282120", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 7 rapazes bonitos dos olhos claros", "Corrida Naruto3", false));
-        listaTeste.add(new Alerta(8, getDataHoraAgora(), "-20.064232", "-44.282110", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 8 rapazes bonitos dos olhos claros", "Corrida Naruto4", false));
-        listaTeste.add(new Alerta(9, getDataHoraAgora(), "-20.064212", "-44.282190", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 9 rapazes bonitos dos olhos claros", "Corrida Naruto5", false));
+        listaTeste.add(new Alerta(6, getDataHoraAgora(), "-20.064242", "-44.282150", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 6 rapazes bonitos dos olhos claros", "Corrida Naruto2", true));
+        listaTeste.add(new Alerta(7, getDataHoraAgora(), "-21.064292", "-49.282120", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 7 rapazes bonitos dos olhos claros", "Corrida Naruto3", true));
+        listaTeste.add(new Alerta(8, getDataHoraAgora(), "-20.064232", "-44.282110", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 8 rapazes bonitos dos olhos claros", "Corrida Naruto4", true));
+        listaTeste.add(new Alerta(9, getDataHoraAgora(), "-20.064212", "-44.282190", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 9 rapazes bonitos dos olhos claros", "Corrida Naruto5", true));
 
         Marcador marcador = new Marcador();
         mListMarcador = marcador.setReferencia(listaTeste);
