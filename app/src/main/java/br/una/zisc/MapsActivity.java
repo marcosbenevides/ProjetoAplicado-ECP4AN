@@ -382,6 +382,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (aux != null) {
                         if(!aux.getAlerta().getEpositivo()) {
                             aux.getMarcador().setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                            aux.getMarcador().setTitle("LUGAR RUIM");
                         }
                         aux.getMarcador().setSnippet("" + (Integer.parseInt(aux.getMarcador().getSnippet()) + 1));
                         dialogo.dismiss();
