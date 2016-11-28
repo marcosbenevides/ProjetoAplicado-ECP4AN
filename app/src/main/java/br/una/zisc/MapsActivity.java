@@ -129,11 +129,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         formato = new DecimalFormat("00");
 
-        listaPositiva.add("Trecho bem iluminado.");
-        listaPositiva.add("Local bem movimentado.");
-        listaPositiva.add("Local com bom policiamento.");
+        listaPositiva.add("Bem iluminado.");
+        listaPositiva.add("Bem movimentado.");
+        listaPositiva.add("Bom policiamento.");
         listaNegativa.add("Assalto.");
-        listaNegativa.add("Trecho mal iluminado.");
+        listaNegativa.add("Mal iluminado.");
         listaNegativa.add("Local deserto.");
 
         Bundle bundle = getIntent().getExtras();
