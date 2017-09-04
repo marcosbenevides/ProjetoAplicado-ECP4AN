@@ -25,6 +25,11 @@ public interface RetrofitService {
     @GET("login/{email}/{senha}")
     Call<Usuario> login(@Path("email") String email, @Path("senha") String senha);
 
+    @FormUrlEncoded
+    @POST("login")
+    Call<String> loginCrip(@Field("email") String email,
+                           @Field("password") String senha);
+
     /*@GET("consultaalerta/{bairro}/{cidade}/{estado}")
     Call<List<Alerta>> consultaAlerta(@Path("bairro") String bairro,
                                       @Path("cidade") String cidade,
