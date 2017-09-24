@@ -14,6 +14,7 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +59,7 @@ public class LoginActivity extends Activity {
     private LocationManager locationManager;
     private ConnectivityManager connectivityManager;
     private ToggleButton toggleButton;
+    private Base64 base64;
 
 
     @Override
@@ -134,9 +136,8 @@ public class LoginActivity extends Activity {
         confirmar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                email = emailEditor.getText().toString();
-                //senha = md5(String.valueOf(senhaEditor.getText()));
-                senha = String.valueOf(senhaEditor.getText());
+                email = Base64.encodeToString(emailEditor.getText().toString().getBytes(),Base64.DEFAULT);
+                senha = Base64.encodeToString(String.valueOf(senhaEditor.getText()).getBytes(), Base64.DEFAULT);
                 try {
                     consultaWS();
                 } catch (UnsupportedEncodingException e) {
@@ -174,7 +175,7 @@ public class LoginActivity extends Activity {
                 RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
                 Call<Usuario> call = null;
                 Log.e(TAG, email + " = " + senha);
-                call = service.login(email, senha);
+                call = service.loginCrip(email, senha);
                 call.enqueue(new Callback<Usuario>() {
                     @Override
                     public void onResponse(final Call<Usuario> call, final Response<Usuario> response) {
@@ -216,7 +217,6 @@ public class LoginActivity extends Activity {
                             usuario.getEmail();
                             if (usuario.getEmail().equalsIgnoreCase(email)) {
                                 status_error.setVisibility(View.INVISIBLE);
-                                MapsActivity activity;
                                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                                 startActivity(intent);
                                 if (intent != null) {
