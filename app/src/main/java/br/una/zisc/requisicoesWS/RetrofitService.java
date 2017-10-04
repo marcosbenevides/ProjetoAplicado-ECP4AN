@@ -25,6 +25,9 @@ public interface RetrofitService {
     @GET("login/{email}/{senha}")
     Call<Usuario> login(@Path("email") String email, @Path("senha") String senha);
 
+    @GET("login/teste/id={enconded}")
+    Call<Usuario> login(@Path("enconded") String enconded);
+
     /*@GET("consultaalerta/{bairro}/{cidade}/{estado}")
     Call<List<Alerta>> consultaAlerta(@Path("bairro") String bairro,
                                       @Path("cidade") String cidade,
@@ -46,4 +49,5 @@ public interface RetrofitService {
                                  @Field("obs") String obs,
                                  @Field("tipo") String tipo,
                                  @Field("ePositivo") Boolean ePositivo);
+
 }

@@ -10,7 +10,26 @@ public class Usuario {
     private Integer idUsuario;
     private String nome;
     private String email;
+    private String cpf;
+    private String celular;
+    private String senha;
 
+    public Usuario(Integer idUsuario, String nome, String email, String cpf, String celular, String senha) {
+        this.idUsuario = idUsuario;
+        this.nome = nome;
+        this.email = email;
+        this.cpf = cpf;
+        this.celular = celular;
+        this.senha = senha;
+    }
+
+    public Usuario(Integer idUsuario, String nome, String email, String cpf, String celular) {
+        this.idUsuario = idUsuario;
+        this.nome = nome;
+        this.email = email;
+        this.cpf = cpf;
+        this.celular = celular;
+    }
 
     public Usuario() {
     }
@@ -46,5 +65,29 @@ public class Usuario {
 
     public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getCelular() {
+        return celular;
+    }
+
+    public void setCelular(String celular) {
+        this.celular = celular;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 }

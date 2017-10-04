@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -92,7 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String cidade = "", estado = "", bairro = "", emailUsuario = "mariaajp@gmail.com";
     private Integer controle = 0, contFalha = 0;
     private DialogInterface.OnClickListener dialogInterface;
-
+    private Base64 base64;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -126,7 +127,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
         formato = new DecimalFormat("00");
 
         listaPositiva.add("Bem iluminado.");
@@ -266,50 +266,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 alerta.getEpositivo()); // acessa os metodos do retrofit <<<LEMBRAR alterar
 
                                         callCreateMarker(call,alerta);
-                                        /*call.enqueue(new Callback<String>() {
-                                            @Override
-                                            public void onResponse(Call<String> call, Response<String> response) {
-                                                if (!response.isSuccessful()) {
-                                                    contFalha++;
-                                                    if (contFalha > 3) {
-                                                        dialogo.dismiss();
-                                                        alertDialog = new AlertDialog.Builder(MapsActivity.this)
-                                                                .setMessage("OPS! Algo deu errado.\n" + response.message())
-                                                                .setCancelable(true)
-                                                                .setPositiveButton("OK", null);
-                                                        alertDialog.create();
-                                                        alertDialog.show();
-                                                    } else {
-                                                        call.enqueue();
-                                                    }
-                                                } else {
-                                                    dialogo.dismiss();
-                                                    Marcador marcador = new Marcador();
-                                                    Marker marker = marcador.temReferencia(mListMarcador, alerta);
-                                                    if (marker != null) {
-                                                        dialogo.dismiss();
-                                                        Toast.makeText(MapsActivity.this, "Alerta adicionado ao marcador selecionado!", Toast.LENGTH_LONG).show();
-                                                        marker.showInfoWindow();
-                                                    } else {
-                                                        marcador.setAlerta(alerta);
-                                                        mListMarcador.add(marcador);
-                                                        choveMarcador();
-                                                    }
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onFailure(Call<String> call, Throwable t) {
-                                                dialogo.dismiss();
-                                                alertDialog = new AlertDialog.Builder(MapsActivity.this)
-                                                        .setMessage("OPS! Falha ao conectar.\n" + t.getMessage())
-                                                        .setCancelable(true)
-                                                        .setPositiveButton("OK", null);
-                                                alertDialog.create();
-                                                alertDialog.show();
-                                            }
-                                        });
-*/
                                     }
                                 }).start();
 
