@@ -25,8 +25,10 @@ public interface RetrofitService {
     @GET("login/{email}/{senha}")
     Call<Usuario> login(@Path("email") String email, @Path("senha") String senha);
 
-    @GET("login/teste/id={enconded}")
-    Call<Usuario> login(@Path("enconded") String enconded);
+    @FormUrlEncoded
+    @POST("login/")
+    Call<Usuario> loginCrip(@Field("email") String email,
+                           @Field("password") String password);
 
     /*@GET("consultaalerta/{bairro}/{cidade}/{estado}")
     Call<List<Alerta>> consultaAlerta(@Path("bairro") String bairro,
@@ -49,5 +51,4 @@ public interface RetrofitService {
                                  @Field("obs") String obs,
                                  @Field("tipo") String tipo,
                                  @Field("ePositivo") Boolean ePositivo);
-
 }
