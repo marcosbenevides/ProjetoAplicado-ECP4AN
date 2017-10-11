@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,6 +15,7 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,12 +29,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.gson.Gson;
+
 import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import br.una.projetoaplicado.marcosbenevides.zisc.Manifest;
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
 import br.una.zisc.classes.Usuario;
 import br.una.zisc.requisicoesWS.RetrofitService;
@@ -80,11 +85,20 @@ public class LoginActivity extends Activity {
         senhaEditor.setText(sharedPreferences.getString("senhaUsuario", ""));
         checkLogin.setChecked(sharedPreferences.getBoolean("checkLogin", checkLogin.isChecked()));
 
+
+        int internetPermission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.INTERNET);
+        int locationPermission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+        if (internetPermission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.INTERNET}, internetPermission);
+        }
+        if (locationPermission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, locationPermission);
+        }
+
         gpsLigado();
 
-        ActivityCompat.requestPermissions(this,
-                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                MY_PERMISSION_LOCATION);
         easterEgg.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -136,8 +150,8 @@ public class LoginActivity extends Activity {
         confirmar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                email = Base64.encodeToString(emailEditor.getText().toString().getBytes(),Base64.DEFAULT);
-                senha = Base64.encodeToString(String.valueOf(senhaEditor.getText()).getBytes(), Base64.DEFAULT);
+                email = Base64.encodeToString(emailEditor.getText().toString().getBytes(), Base64.NO_WRAP);
+                senha = Base64.encodeToString(String.valueOf(senhaEditor.getText()).getBytes(), Base64.NO_WRAP);
                 try {
                     consultaWS();
                 } catch (UnsupportedEncodingException e) {
@@ -148,6 +162,16 @@ public class LoginActivity extends Activity {
             }
         });
 
+        preferences = getSharedPreferences("LOGIN", MODE_PRIVATE);
+        String emailPrefs = preferences.getString("email", null);
+        String senhaPrefs = preferences.getString("senha", null);
+        Boolean lembrarPrefs = preferences.getBoolean("checkLogin", true);
+
+        if (emailPrefs != null) {
+            emailEditor.setText(emailPrefs);
+            senhaEditor.setText(senhaPrefs);
+            checkLogin.setChecked(lembrarPrefs);
+        }
 
         //Marcador m = new Marcador();
         //m.distancia2Pontos("-20.064247", "-44.282156", "-20.066588", "-44.281439");
@@ -201,21 +225,21 @@ public class LoginActivity extends Activity {
                         } else {
                             dialog.dismiss();
                             if (checkLogin.isChecked()) {
-                                preferences = getPreferences(Context.MODE_PRIVATE);
+                                preferences = getSharedPreferences("LOGIN", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = preferences.edit();
-                                editor.putString("emailUsuario", emailEditor.getText().toString());
-                                editor.putString("senhaUsuario", senhaEditor.getText().toString());
+                                editor.putString("email", emailEditor.getText().toString());
+                                editor.putString("senha", senhaEditor.getText().toString());
                                 editor.putBoolean("checkLogin", checkLogin.isChecked());
                                 editor.commit();
                             }
-                            usuario = response.body();
-                            it = new Intent(LoginActivity.this, MapsActivity.class);
-                            if (it != null) {
-                                it.putExtra("EMAIL", usuario.getEmail());
-                                Log.e("PUT1", usuario.getEmail());
-                            }
-                            usuario.getEmail();
-                            if (usuario.getEmail().equalsIgnoreCase(email)) {
+
+                            if (response.body() != null) {
+                                usuario = response.body();
+                                it = new Intent(LoginActivity.this, MapsActivity.class);
+                                if (it != null) {
+                                    it.putExtra("EMAIL", usuario.getEmail());
+                                    Log.e("PUT1", usuario.getEmail());
+                                }
                                 status_error.setVisibility(View.INVISIBLE);
                                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                                 startActivity(intent);

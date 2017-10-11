@@ -7,9 +7,11 @@ package br.una.zisc.classes;
 
 public class Usuario {
 
-    private Integer idUsuario;
+    private Integer id;
     private String nome;
     private String email;
+    private String cpf;
+    private String celular;
 
 
     public Usuario() {
@@ -18,7 +20,7 @@ public class Usuario {
     @Override
     public String toString() {
         return "Usuario{" +
-                "idUsuario=" + idUsuario +
+                "id=" + id +
                 ", nome='" + nome + '\'' +
                 ", email='" + email + '\'' +
                 '}';
@@ -40,11 +42,27 @@ public class Usuario {
         this.email = email;
     }
 
-    public Integer getIdUsuario() {
-        return idUsuario;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getCelular() {
+        return celular;
+    }
+
+    public void setCelular(String celular) {
+        this.celular = celular;
     }
 }
