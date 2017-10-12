@@ -36,10 +36,12 @@ import org.w3c.dom.Text;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import br.una.projetoaplicado.marcosbenevides.zisc.Manifest;
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
 import br.una.zisc.classes.Usuario;
+import br.una.zisc.requisicoesWS.RetrofitCall;
 import br.una.zisc.requisicoesWS.RetrofitService;
 import br.una.zisc.requisicoesWS.ServiceGenerator;
 import retrofit2.Call;
@@ -65,6 +67,7 @@ public class LoginActivity extends Activity {
     private ConnectivityManager connectivityManager;
     private ToggleButton toggleButton;
     private Base64 base64;
+    private RetrofitCall call = new RetrofitCall();
 
 
     @Override
@@ -136,7 +139,7 @@ public class LoginActivity extends Activity {
                     }
                 });
 
-                remotoEditor.setEnabled(false);
+                remotoEditor.setEnabled(true);
                 localEditor.setEnabled(false);
                 remotoEditor.setText(ServiceGenerator.API_URL_REMOTO);
                 localEditor.setText(ServiceGenerator.API_URL_LOCAL);
@@ -147,18 +150,89 @@ public class LoginActivity extends Activity {
                 return true;
             }
         });
+
+        //Ação para autenticar usuário.
         confirmar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
+                * converte email e senha para base64
+                * */
                 email = Base64.encodeToString(emailEditor.getText().toString().getBytes(), Base64.NO_WRAP);
                 senha = Base64.encodeToString(String.valueOf(senhaEditor.getText()).getBytes(), Base64.NO_WRAP);
-                try {
-                    consultaWS();
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                }
+
+                /*
+                * Abre um dialogo de carregamento na tela.
+                * */
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog = ProgressDialog.show(LoginActivity.this,
+                                        "Por favor, aguarde!", "Carregando dados do servidor...");
+                            }
+                        });
+                        //Autentica no webservice
+                        final List<Object> listaAutentica = call.autenticar(email, senha);
+
+                        /*
+                        * Testa o retorno da função autentica com 3 condicoes de acordo com o retorno da funcao.
+                        * retorno AUT_SUCESSO, deve fazer login do usuario, criar a sessão, e chamar o activity do mapa
+                        * retorno ERRO_AUTENTICACAO, remover o dialogo, e informar ao usuario que a senha está errada.
+                        * qualquer outro retorno, mostra a mensagem em um dialogo.
+                        * */
+                        if (listaAutentica.get(1).toString().contains(call.AUT_SUCESSO)) {
+
+                            if (checkLogin.isChecked()) {
+                                preferences = getSharedPreferences("LOGIN", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putString("email", emailEditor.getText().toString());
+                                editor.putString("senha", senhaEditor.getText().toString());
+                                editor.putBoolean("checkLogin", checkLogin.isChecked());
+                                editor.apply();
+                            }
+
+                            usuario = (Usuario) listaAutentica.get(0);
+
+                            it = new Intent(LoginActivity.this, MapsActivity.class);
+                            it.putExtra("EMAIL", usuario.getEmail());
+
+                            status_error.setVisibility(View.INVISIBLE);
+
+                            Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                            startActivity(intent);
+                            it.putExtra("ID", usuario.getId());
+
+                            Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
+
+                        } else if (listaAutentica.get(1).toString().contains(call.ERRO_AUTENTICACAO)) {
+
+                            if(dialog!=null){
+                                dialog.dismiss();
+                            }
+                            status_error.setVisibility(View.VISIBLE);
+
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(dialog!=null){
+                                        dialog.dismiss();
+                                    }
+                                    alertDialog = new AlertDialog.Builder(LoginActivity.this)
+                                            .setMessage(listaAutentica.get(1).toString())
+                                            .setCancelable(true)
+                                            .setPositiveButton("OK", null);
+                                    alertDialog.create();
+                                    alertDialog.show();
+                                }
+                            });
+                        }
+                    }
+                }).start();
             }
         });
 
@@ -185,6 +259,7 @@ public class LoginActivity extends Activity {
         //finish();
     }
 
+/*
     public void consultaWS() throws UnsupportedEncodingException, NoSuchAlgorithmException {
         new Thread(new Runnable() {
 
@@ -215,11 +290,7 @@ public class LoginActivity extends Activity {
                                     alertDialog.create();
                                     alertDialog.show();
                                     Log.e(TAG, " " + response.message());
-                                    /**
-                                     *Retirar as duas proximas linhas qndo tudo der certo
-                                     */
-                                    //Intent it = new Intent(LoginActivity.this, MapsActivity.class); // retirar qndo tudo der certo
-                                    //startActivity(it);
+
                                 }
                             });
                         } else {
@@ -268,9 +339,12 @@ public class LoginActivity extends Activity {
                         alertDialog.create();
                         alertDialog.show();
                         Log.e(TAG, "Falha: " + t.getMessage());
-                        /**
-                         *Retirar até startActivity(it); qndo tudo der certo
-                         */
+                        */
+
+    /**
+     * Retirar até startActivity(it); qndo tudo der certo
+     *//*
+
 //                        Intent it = new Intent(LoginActivity.this, MapsActivity.class);
 //                        if (it != null) {
 //                            it.putExtra("EMAIL", "errrrrrrrrrrrrrrrrou");
@@ -284,7 +358,7 @@ public class LoginActivity extends Activity {
 
 
     }
-
+*/
     private String md5(String senha) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");
         byte b[] = messageDigest.digest(senha.getBytes("UTF-8"));

@@ -16,15 +16,21 @@ import retrofit2.Response;
 
 public class RetrofitCall {
 
-    private static final String ERRO_AO_CONECTAR = "Erro ao conectar ao servidor. -> ";
-    private static final String AUT_SUCESSO = "Usuário autenticado com sucesso! -> ";
-    private static final String ERRO_AUTENTICACAO = "Login ou senha inválidas. -> ";
+    public static final String ERRO_AO_CONECTAR = "Erro ao conectar ao servidor. -> ";
+    public static final String AUT_SUCESSO = "Usuário autenticado com sucesso! -> ";
+    public static final String ERRO_AUTENTICACAO = "Login ou senha inválidas. -> ";
 
     Usuario usuario = new Usuario();
     List<Object> list;
     String resposta;
 
 
+    /**
+     * Autentica no servidor e monta o array de resposta
+     * @param email
+     * @param senha
+     * @return [0] usuario, [1] resposta, podendo ser ERRO_AO_CONECTAR, AUT_SUCESSO ou ERRO_AUTENTICACAO
+     */
     public List<Object> autenticar(String email, String senha) {
 
         RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
@@ -34,10 +40,11 @@ public class RetrofitCall {
             @Override
             public void onResponse(Call<Usuario> call, Response<Usuario> response) {
                 if (!response.isSuccessful()) {
-                    resposta = ERRO_AO_CONECTAR + response.message();
+                    resposta = response.message();
                 } else {
                     if (response.body() != null) {
                         usuario = response.body();
+                        list.add(0, usuario);
                         resposta = AUT_SUCESSO + usuario.getId();
                     }else{
                         resposta = ERRO_AUTENTICACAO + usuario.getId();
@@ -47,11 +54,10 @@ public class RetrofitCall {
 
             @Override
             public void onFailure(Call<Usuario> call, Throwable t) {
-
+                resposta = ERRO_AO_CONECTAR + t.getMessage();
             }
         });
 
-        list.add(0, usuario);
         list.add(1, resposta);
         return list;
     }
