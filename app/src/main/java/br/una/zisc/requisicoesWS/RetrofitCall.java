@@ -16,22 +16,21 @@ import retrofit2.Response;
 
 public class RetrofitCall {
 
-    public static final String ERRO_AO_CONECTAR = "Erro ao conectar ao servidor. -> ";
-    public static final String AUT_SUCESSO = "Usuário autenticado com sucesso! -> ";
-    public static final String ERRO_AUTENTICACAO = "Login ou senha inválidas. -> ";
-
-    Usuario usuario = new Usuario();
-    List<Object> list;
-    String resposta;
-
+    private final String ERRO_AO_CONECTAR = "Erro ao conectar ao servidor. -> ";
+    private final String AUT_SUCESSO = "Usuário autenticado com sucesso! -> ";
+    private final String ERRO_AUTENTICACAO = "Login ou senha inválidas. -> ";
+    private Usuario usuario = new Usuario();
+    private String resposta = new String();
+    private Object list[] = new Object[2];
 
     /**
      * Autentica no servidor e monta o array de resposta
+     *
      * @param email
      * @param senha
      * @return [0] usuario, [1] resposta, podendo ser ERRO_AO_CONECTAR, AUT_SUCESSO ou ERRO_AUTENTICACAO
      */
-    public List<Object> autenticar(String email, String senha) {
+    public Object[] autenticar(String email, String senha) {
 
         RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
         Call<Usuario> call = service.loginCrip(email, senha);
@@ -40,14 +39,18 @@ public class RetrofitCall {
             @Override
             public void onResponse(Call<Usuario> call, Response<Usuario> response) {
                 if (!response.isSuccessful()) {
-                    resposta = response.message();
+                    resposta = response.code() + " - " + response.message();
+                    list[1] = resposta;
                 } else {
                     if (response.body() != null) {
                         usuario = response.body();
-                        list.add(0, usuario);
                         resposta = AUT_SUCESSO + usuario.getId();
-                    }else{
+                        list[0] = usuario;
+                        list[1] = resposta;
+
+                    } else {
                         resposta = ERRO_AUTENTICACAO + usuario.getId();
+                        list[1] = resposta;
                     }
                 }
             }
@@ -55,11 +58,23 @@ public class RetrofitCall {
             @Override
             public void onFailure(Call<Usuario> call, Throwable t) {
                 resposta = ERRO_AO_CONECTAR + t.getMessage();
+                list[1] = resposta;
             }
         });
 
-        list.add(1, resposta);
         return list;
     }
 
+
+    public String getErroAoConectar() {
+        return ERRO_AO_CONECTAR;
+    }
+
+    public String getAutSucesso() {
+        return AUT_SUCESSO;
+    }
+
+    public String getErroAutenticacao() {
+        return ERRO_AUTENTICACAO;
+    }
 }

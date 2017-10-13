@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -68,6 +69,8 @@ public class LoginActivity extends Activity {
     private ToggleButton toggleButton;
     private Base64 base64;
     private RetrofitCall call = new RetrofitCall();
+    private Object listaAutentica[];
+    private Network network;
 
 
     @Override
@@ -164,27 +167,26 @@ public class LoginActivity extends Activity {
                 /*
                 * Abre um dialogo de carregamento na tela.
                 * */
-                new Thread(new Runnable() {
-
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialog = ProgressDialog.show(LoginActivity.this,
-                                        "Por favor, aguarde!", "Carregando dados do servidor...");
-                            }
-                        });
-                        //Autentica no webservice
-                        final List<Object> listaAutentica = call.autenticar(email, senha);
+                        dialog = ProgressDialog.show(LoginActivity.this,
+                                "Por favor, aguarde!", "Carregando dados do servidor...");
+                    }
+                });
 
-                        /*
-                        * Testa o retorno da função autentica com 3 condicoes de acordo com o retorno da funcao.
-                        * retorno AUT_SUCESSO, deve fazer login do usuario, criar a sessão, e chamar o activity do mapa
-                        * retorno ERRO_AUTENTICACAO, remover o dialogo, e informar ao usuario que a senha está errada.
-                        * qualquer outro retorno, mostra a mensagem em um dialogo.
-                        * */
-                        if (listaAutentica.get(1).toString().contains(call.AUT_SUCESSO)) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Autentica no webservice
+                        listaAutentica = call.autenticar(email, senha);
+                            /*
+                             * Testa o retorno da função autentica com 3 condicoes de acordo com o retorno da funcao.
+                             * retorno AUT_SUCESSO, deve fazer login do usuario, criar a sessão, e chamar o activity do mapa
+                             * retorno ERRO_AUTENTICACAO, remover o dialogo, e informar ao usuario que a senha está errada.
+                             * qualquer outro retorno, mostra a mensagem em um dialogo.
+                           **/
+                        if (listaAutentica[1].toString().contains(call.getAutSucesso())) {
 
                             if (checkLogin.isChecked()) {
                                 preferences = getSharedPreferences("LOGIN", Context.MODE_PRIVATE);
@@ -195,7 +197,7 @@ public class LoginActivity extends Activity {
                                 editor.apply();
                             }
 
-                            usuario = (Usuario) listaAutentica.get(0);
+                            usuario = (Usuario) listaAutentica[0];
 
                             it = new Intent(LoginActivity.this, MapsActivity.class);
                             it.putExtra("EMAIL", usuario.getEmail());
@@ -206,11 +208,16 @@ public class LoginActivity extends Activity {
                             startActivity(intent);
                             it.putExtra("ID", usuario.getId());
 
-                            Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
+                                }
+                            });
 
-                        } else if (listaAutentica.get(1).toString().contains(call.ERRO_AUTENTICACAO)) {
+                        } else if (listaAutentica[1].toString().contains(call.getErroAutenticacao())) {
 
-                            if(dialog!=null){
+                            if (dialog != null) {
                                 dialog.dismiss();
                             }
                             status_error.setVisibility(View.VISIBLE);
@@ -219,11 +226,11 @@ public class LoginActivity extends Activity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if(dialog!=null){
+                                    if (dialog != null) {
                                         dialog.dismiss();
                                     }
                                     alertDialog = new AlertDialog.Builder(LoginActivity.this)
-                                            .setMessage(listaAutentica.get(1).toString())
+                                            .setMessage(listaAutentica[1].toString())
                                             .setCancelable(true)
                                             .setPositiveButton("OK", null);
                                     alertDialog.create();
@@ -246,10 +253,6 @@ public class LoginActivity extends Activity {
             senhaEditor.setText(senhaPrefs);
             checkLogin.setChecked(lembrarPrefs);
         }
-
-        //Marcador m = new Marcador();
-        //m.distancia2Pontos("-20.064247", "-44.282156", "-20.066588", "-44.281439");
-
     }
 
     public void cadastrar(View arg0) {
@@ -257,118 +260,6 @@ public class LoginActivity extends Activity {
         startActivity(intent);
 
         //finish();
-    }
-
-/*
-    public void consultaWS() throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog = ProgressDialog.show(LoginActivity.this, "Por favor, aguarde...", "Carregando dados do servidor...");
-                    }
-                });
-                RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
-                Call<Usuario> call = null;
-                Log.e(TAG, email + " = " + senha);
-                call = service.loginCrip(email, senha);
-                call.enqueue(new Callback<Usuario>() {
-                    @Override
-                    public void onResponse(final Call<Usuario> call, final Response<Usuario> response) {
-                        if (!response.isSuccessful()) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dialog.dismiss();
-                                    alertDialog = new AlertDialog.Builder(LoginActivity.this)
-                                            .setMessage("Impossível conectar ao servidor!\n" + response.message())
-                                            .setCancelable(true)
-                                            .setPositiveButton("OK", null);
-                                    alertDialog.create();
-                                    alertDialog.show();
-                                    Log.e(TAG, " " + response.message());
-
-                                }
-                            });
-                        } else {
-                            dialog.dismiss();
-                            if (checkLogin.isChecked()) {
-                                preferences = getSharedPreferences("LOGIN", Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = preferences.edit();
-                                editor.putString("email", emailEditor.getText().toString());
-                                editor.putString("senha", senhaEditor.getText().toString());
-                                editor.putBoolean("checkLogin", checkLogin.isChecked());
-                                editor.commit();
-                            }
-
-                            if (response.body() != null) {
-                                usuario = response.body();
-                                it = new Intent(LoginActivity.this, MapsActivity.class);
-                                if (it != null) {
-                                    it.putExtra("EMAIL", usuario.getEmail());
-                                    Log.e("PUT1", usuario.getEmail());
-                                }
-                                status_error.setVisibility(View.INVISIBLE);
-                                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-                                startActivity(intent);
-                                if (intent != null) {
-                                    it.putExtra("EMAIL", usuario.getEmail());
-                                    Log.e("PUT2", usuario.getEmail());
-                                }
-                                Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
-                            } else {
-                                senhaEditor.setText("");
-                                status_error.setVisibility(View.VISIBLE);
-                                Toast.makeText(LoginActivity.this, "Algo está errado!", Toast.LENGTH_LONG).show();
-                            }
-                            Log.e(TAG, usuario.toString());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Usuario> call, Throwable t) {
-                        dialog.dismiss();
-
-                        alertDialog = new AlertDialog.Builder(LoginActivity.this)
-                                .setMessage("Impossível conectar ao servidor!\n" + t.getMessage())
-                                .setCancelable(true)
-                                .setPositiveButton("OK", null);
-                        alertDialog.create();
-                        alertDialog.show();
-                        Log.e(TAG, "Falha: " + t.getMessage());
-                        */
-
-    /**
-     * Retirar até startActivity(it); qndo tudo der certo
-     *//*
-
-//                        Intent it = new Intent(LoginActivity.this, MapsActivity.class);
-//                        if (it != null) {
-//                            it.putExtra("EMAIL", "errrrrrrrrrrrrrrrrou");
-//                        }
-//                        startActivity(it);
-                    }
-                });
-            }
-        }
-        ).start();
-
-
-    }
-*/
-    private String md5(String senha) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-        byte b[] = messageDigest.digest(senha.getBytes("UTF-8"));
-        StringBuilder stringBuilder = new StringBuilder();
-        for (byte b1 : b) {
-            stringBuilder.append(String.format("%02X", 0xFF & b1));
-        }
-        final String MD5_CRYPT = stringBuilder.toString();
-
-        return MD5_CRYPT;
     }
 
     /**

@@ -19,7 +19,7 @@ public class ServiceGenerator {
     public static String API_URL_REMOTO = "http://zisc-env.j8phxubfpq.us-east-2.elasticbeanstalk.com/res/";
     public static String API_URL_LOCAL = "http://192.168.33.143:8080/ZiscWS/res/";
     public static String API_URL = API_URL_LOCAL;
-    public static Boolean eLocal = true;
+    public static Boolean eLocal = false;
 
     public static <S> S createService(Class<S> serviceClass) {
 
