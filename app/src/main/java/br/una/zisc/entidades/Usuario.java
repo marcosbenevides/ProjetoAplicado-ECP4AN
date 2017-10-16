@@ -1,4 +1,4 @@
-package br.una.zisc.classes;
+package br.una.zisc.entidades;
 
 
 /**

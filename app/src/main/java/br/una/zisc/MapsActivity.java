@@ -52,15 +52,14 @@ import java.util.Date;
 import java.util.List;
 
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
-import br.una.zisc.classes.Alerta;
+import br.una.zisc.entidades.Alerta;
 import br.una.zisc.mapaUtil.Marcador;
+import br.una.zisc.requisicoesWS.RetrofitCall;
 import br.una.zisc.requisicoesWS.RetrofitService;
 import br.una.zisc.requisicoesWS.ServiceGenerator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, SearchView.OnQueryTextListener {
@@ -79,7 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Circle circulo;
     private Calendar hora;
     private NumberFormat formato;
-    private ProgressDialog dialogo;
+    private ProgressDialog dialog;
     private AlertDialog.Builder alertDialog, infoDialog, addMarkerDialog;
     private AlertDialog informacao, cadastro;
     private TextView textTipoAlertaCont, textDataHoraCont, textOcorrenciaCont;
@@ -90,10 +89,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ToggleButton switchNegPos;
     private EditText editorOcorrencia;
     private Spinner spinnerTipo, spinnerAlerta;
-    private String cidade = "", estado = "", bairro = "", emailUsuario = "mariaajp@gmail.com";
+    private String cidade = "", estado = "", bairro = "", emailUsuario = "";
     private Integer controle = 0, contFalha = 0;
     private DialogInterface.OnClickListener dialogInterface;
     private Base64 base64;
+    private RetrofitCall call = new RetrofitCall();
+    private Object[] alertas = new Object[2];
+    private Marcador marcador = new Marcador();
+    private Thread thread1, thread2;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -178,10 +181,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
             Log.e("LATITUDE E LONGITUDE", address.getLatitude() + "/" + address.getLongitude());
 
-            runOnUiThread(new Runnable() { // O dialogo tem que ser na tread da interface, por isso
+            runOnUiThread(new Runnable() { // O dialog tem que ser na tread da interface, por isso
                 @Override
                 public void run() {
-                    dialogo = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor", "Por favor, aguarde...");
+                    dialog = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor", "Por favor, aguarde...");
                 }
             });
             buscaPontos(latLng);
@@ -237,7 +240,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                dialogo = ProgressDialog.show(MapsActivity.this, "Aguarde..", "Enviando ao servidor...");
+                                                MapsActivity.this.dialog = ProgressDialog.show(MapsActivity.this, "Aguarde..", "Enviando ao servidor...");
                                             }
                                         });
                                         dados(latLngMarcar);
@@ -255,7 +258,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         RetrofitService service = ServiceGenerator.createService(RetrofitService.class); // inicia o gerador de servico/cria conexao com o server
                                         Call<String> call = service.cadastraralerta(
                                                 emailUsuario,
-                                                alerta.getLoghora(),
+                                                alerta.getLogHora(),
                                                 alerta.getLatitude(),
                                                 alerta.getLongitude(),
                                                 alerta.getBairro(),
@@ -263,9 +266,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 alerta.getEstado(),
                                                 alerta.getObservacao(),
                                                 alerta.getTipo(),
-                                                alerta.getEpositivo()); // acessa os metodos do retrofit <<<LEMBRAR alterar
+                                                alerta.getePositivo()); // acessa os metodos do retrofit <<<LEMBRAR alterar
 
-                                        callCreateMarker(call,alerta);
+                                        callCreateMarker(call, alerta);
                                     }
                                 }).start();
 
@@ -320,7 +323,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     contFalha++;
                     if (contFalha > 5) {
                         contFalha = 0;
-                        dialogo.dismiss();
+                        dialog.dismiss();
                         alertDialog = new AlertDialog.Builder(MapsActivity.this)
                                 .setMessage("OPS! Algo deu errado.\n" + response.message())
                                 .setCancelable(true)
@@ -328,20 +331,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         alertDialog.create();
                         alertDialog.show();
                     } else {
-                        callCreateMarker(call,alerta);
+                        callCreateMarker(call, alerta);
                     }
                 } else {
                     contFalha = 0;
-                    dialogo.dismiss();
+                    dialog.dismiss();
                     Marcador marcador = new Marcador();
                     Marcador aux = marcador.temReferencia(mListMarcador, alerta);
                     if (aux != null) {
-                        if(!aux.getAlerta().getEpositivo()) {
+                        if (!aux.getAlerta().getePositivo()) {
                             aux.getMarcador().setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                             aux.getMarcador().setTitle("LUGAR RUIM");
                         }
                         aux.getMarcador().setSnippet("" + (Integer.parseInt(aux.getMarcador().getSnippet()) + 1));
-                        dialogo.dismiss();
+                        dialog.dismiss();
                         Toast.makeText(MapsActivity.this, "Alerta adicionado ao marcador selecionado!", Toast.LENGTH_LONG).show();
                         aux.getMarcador().showInfoWindow();
                     } else {
@@ -357,15 +360,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 contFalha++;
                 if (contFalha > 3) {
                     contFalha = 0;
-                    dialogo.dismiss();
+                    dialog.dismiss();
                     alertDialog = new AlertDialog.Builder(MapsActivity.this)
                             .setMessage("OPS! Falha ao conectar.\n" + t.getMessage())
                             .setCancelable(true)
                             .setPositiveButton("OK", null);
                     alertDialog.create();
                     alertDialog.show();
-                }else{
-                    callCreateMarker(call,alerta);
+                } else {
+                    callCreateMarker(call, alerta);
                 }
             }
         });
@@ -459,10 +462,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e("ESTADO", " " + estado);
                 inicio = false;
 
-                runOnUiThread(new Runnable() { // O dialogo tem que ser na tread da interface, por isso
+                runOnUiThread(new Runnable() { // O dialog tem que ser na tread da interface, por isso
                     @Override
                     public void run() {
-                        dialogo = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor", "Por favor, aguarde...");
+                        dialog = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor", "Por favor, aguarde...");
                     }
                 });
 
@@ -474,81 +477,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void buscaPontos(final LatLng ponto) {
+
         new Thread(new Runnable() { //por causa do Call, precisa pra rodar ele
             @Override
             public void run() { // vai rodar aqui qndo der o Start la em baixo
+                String latitude = "" + ponto.latitude;
+                String longitude = "" + ponto.longitude;
 
-                String latitudeEnviar = "" + ponto.latitude;
-                String longitudeEnviar = "" + ponto.longitude;
+                RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
+                Call<List<Alerta>> alertas = service.consultaAlerta(latitude, longitude);
 
-                RetrofitService service = ServiceGenerator.createService(RetrofitService.class); // inicia o gerador de servico/cria conexao com o server
-                Call<List<Alerta>> alertas = service.consultaAlerta(latitudeEnviar, longitudeEnviar); // acessa os metodos do retrofit <<<LEMBRAR alterar
-
-                alertas.enqueue(new Callback<List<Alerta>>() { // aqui que vai no servidor, precisa ser em outra tread
+                alertas.enqueue(new Callback<List<Alerta>>() {
                     @Override
-                    public void onResponse(Call<List<Alerta>> call, Response<List<Alerta>> response) { // resposta do server
-                        Log.e("ON RESPONSE ", (contFalha + 1) + " ON RESPONSE.");
-
+                    public void onResponse(Call<List<Alerta>> call, Response<List<Alerta>> response) {
                         if (!response.isSuccessful()) {
-                            Log.e("SUCESSO NÃO nÃO 1 ", (contFalha + 1) + " SUCSSO.");
                             contFalha++;
-                            if (contFalha > 3) {
-                                Log.e("SUCESSO NÃO nÃO 2 ", (contFalha + 1) + " SUCSSO.");
-                                contFalha = 0;
-                                dialogo.dismiss();
-                                alertDialog = new AlertDialog.Builder(MapsActivity.this)
-                                        .setMessage("Impossível conectar ao servidor!\n" + response.message())
-                                        .setCancelable(true)
-                                        .setPositiveButton("OK", null);
-                                alertDialog.create();
-                                alertDialog.show();
-
-                                Log.e(TAG, response.message() + " " + response.code() + " " + response.errorBody());
-                            } else {
-                                buscaPontos(ponto);
-                            }
-                        } else {
-                            Log.e("SUCESSO ", (contFalha + 1) + " SUCSSO.");
+                        } else if (response.body() != null) {
                             contFalha = 0;
-                            dialogo.dismiss();
+                            dialog.dismiss();
                             barraProcurar.clearFocus(); // teclado não aparecer novamente qndo pesquisa
-                            Log.e(TAG2, response.body().toString()); // aqui vai receber os dados, tem que tratar ainda
-                            Marcador marcador = new Marcador();
-                            List<Alerta> lista = response.body();
-                            if (lista.size() == 0) {
-                                alertDialog = new AlertDialog.Builder(MapsActivity.this)
-                                        .setMessage("Não existe Alertas nesta \nproximidade!")
-                                        .setCancelable(true)
-                                        .setPositiveButton("OK", null);
-                                alertDialog.create();
-                                alertDialog.show();
-                            } else {
-                                Log.e("SUCESSO ELSE ", (contFalha + 1) + " SUCSSO ELSE.");
-                                mListMarcador.addAll(marcador.setReferencia(lista));
-                                choveMarcador();
-                            }
+
+                            List<Alerta> listAlertas = response.body();
+                            mListMarcador.addAll(marcador.setReferencia(listAlertas));
+                            choveMarcador();
+                        } else {
+                            callDialog(2, "");
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<List<Alerta>> call, Throwable t) { // se for aqui, falhou a conexao com o server
-                        contFalha++;
-                        if (contFalha > 3) {
-                            contFalha = 0;
-                            Log.e("onFailure", (contFalha + 1) + " tentativa.");
-                            dialogo.dismiss();
-
-                            alertDialog = new AlertDialog.Builder(MapsActivity.this)
-                                    .setMessage("Impossível conectar ao servidor! Fui lá três vezes já!!")
-                                    .setCancelable(true)
-                                    .setPositiveButton("OK", null);
-                            alertDialog.create();
-                            alertDialog.show();
-                            Log.e(TAG, "Falha: " + t.getMessage());
-                        t.printStackTrace();
-                        } else {
-                            buscaPontos(ponto);
-                        }
+                    public void onFailure(Call<List<Alerta>> call, Throwable t) {
+                        callDialog(1, t.getMessage() + " - " + t.getCause());
                     }
                 });
             }
@@ -561,7 +520,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (int i = controle; i < mListMarcador.size(); i++) {
             LatLng latLng = new LatLng(Double.parseDouble(mListMarcador.get(i).getAlerta().getLatitude())
                     , Double.parseDouble(mListMarcador.get(i).getAlerta().getLongitude()));
-            if (mListMarcador.get(i).getAlerta().getEpositivo()) {
+            if (mListMarcador.get(i).getAlerta().getePositivo()) {
                 Log.e("CHOVE MARCADOR", "2");
                 marker = mMap.addMarker(new MarkerOptions()
                         .position(latLng)
@@ -637,9 +596,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onInfoWindowClick(Marker marker) {
                 System.out.println("0...");
-/**
- * Chamando o InfoDialog com as informações do alerta
- */
+                /**
+                 * Chamando o InfoDialog com as informações do alerta
+                 */
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     System.out.println("1...");
                     infoDialog = new AlertDialog.Builder(MapsActivity.this)
@@ -665,12 +624,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                      */
                     if (marcador != null) {
                         List<String> listaDrop = new ArrayList<String>();
-                        listaDrop.add(marcador.getAlerta().getTipo() + " ( Dia " + String.valueOf(dateFormat.format(marcador.getAlerta().getLoghora())) + ")");
+                        listaDrop.add(marcador.getAlerta().getTipo() + " ( Dia " + String.valueOf(dateFormat.format(marcador.getAlerta().getLogHora())) + ")");
 
                         if (marcador.getMarcadorList().size() >= 1) {
                             for (int i = 0; i < marcador.getMarcadorList().size(); i++) {
                                 listaDrop.add(marcador.getMarcadorList().get(i).getTipo()
-                                        + " ( Dia " + String.valueOf(dateFormat.format(marcador.getMarcadorList().get(i).getLoghora())) + ")");
+                                        + " ( Dia " + String.valueOf(dateFormat.format(marcador.getMarcadorList().get(i).getLogHora())) + ")");
                             }
                         }
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(MapsActivity.this, android.R.layout.simple_list_item_1, listaDrop);
@@ -678,7 +637,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         spinnerAlerta.setAdapter(adapter);
 
                         /**
-                         * Função para alterar os itens dentro do dialogo de informações de cada marcador.
+                         * Função para alterar os itens dentro do dialog de informações de cada marcador.
                          * Os valores irão alterar para cada tipo de alerta selecionado na lista de dropdown
                          */
                         final Marcador finalMarcador = marcador;
@@ -688,12 +647,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 if (position == 0) {
                                     textOcorrenciaCont.setText(finalMarcador.getAlerta().getObservacao());
                                     textTipoAlertaCont.setText(finalMarcador.getAlerta().getTipo());
-                                    textDataHoraCont.setText(String.valueOf(dateFormat2.format(finalMarcador.getAlerta().getLoghora())));
+                                    textDataHoraCont.setText(String.valueOf(dateFormat2.format(finalMarcador.getAlerta().getLogHora())));
 
                                 } else {
                                     textOcorrenciaCont.setText(finalMarcador.getMarcadorList().get(position - 1).getObservacao());
                                     textTipoAlertaCont.setText(finalMarcador.getMarcadorList().get(position - 1).getTipo());
-                                    textDataHoraCont.setText(String.valueOf(dateFormat2.format(finalMarcador.getMarcadorList().get(position - 1).getLoghora())));
+                                    textDataHoraCont.setText(String.valueOf(dateFormat2.format(finalMarcador.getMarcadorList().get(position - 1).getLogHora())));
                                 }
                             }
 
@@ -702,7 +661,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 textOcorrenciaCont.setText(finalMarcador.getAlerta().getObservacao());
 
                                 textTipoAlertaCont.setText(finalMarcador.getAlerta().getTipo());
-                                textDataHoraCont.setText(String.valueOf(dateFormat2.format(finalMarcador.getAlerta().getLoghora())));
+                                textDataHoraCont.setText(String.valueOf(dateFormat2.format(finalMarcador.getAlerta().getLogHora())));
                                 System.out.println("3...");
                             }
                         });
@@ -754,9 +713,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public java.sql.Timestamp getDataHoraAgora() {
+    /**
+     * Chama o dialogMessage com o tipo especificado nos parametros
+     *
+     * @param tipoErro -> 1 = Erro ao conectar, 2 = Sem Alertas
+     * @param response
+     */
+    public void callDialog(final Integer tipoErro, final String response) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String title;
+                String msg;
+                if (tipoErro == 1) {
+                    title = getResources().getString(R.string.ERRO_AO_CONECTAR);
+                    msg = response;
+                } else if (tipoErro == 2) {
+                    title = "OPS!";
+                    msg = getResources().getString(R.string.SEM_ALERTAS);
+                } else {
+                    title = getResources().getString(R.string.ERRO_AO_CONECTAR);
+                    msg = response;
+                }
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+                alertDialog = new AlertDialog.Builder(MapsActivity.this)
+                        .setTitle(title)
+                        .setMessage(msg)
+                        .setCancelable(true)
+                        .setPositiveButton("OK", null);
+                alertDialog.create();
+                alertDialog.show();
+            }
+        });
+    }
+
+    public java.sql.Date getDataHoraAgora() {
         Date data = new Date();
-        return new Timestamp(data.getTime());
+        java.sql.Date dataSql = new java.sql.Date(data.getTime());
+        return dataSql;
         //java.sql.Date dataSql = new java.sql.Date(data.getTime());
         //Log.e("DATA E HORA:", String.valueOf(dataSql));
 /*        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

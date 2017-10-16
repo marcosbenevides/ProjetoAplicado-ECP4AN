@@ -1,13 +1,13 @@
-package br.una.zisc.classes;
+package br.una.zisc.entidades;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 
 public class Alerta implements java.io.Serializable {
 
-    private int idalerta;
+    private int id;
     private Usuario usuario;
-    private Timestamp loghora;
+    private Date logHora;
     private String longitude;
     private String latitude;
     private String bairro = "Sem bairro";
@@ -15,15 +15,15 @@ public class Alerta implements java.io.Serializable {
     private String estado = "Sem estado";
     private String observacao;
     private String tipo;
-    private Boolean epositivo;
-    private boolean statusAtivo;
+    private Boolean ePositivo;
+    private boolean ativo;
 
     public Alerta() {
     }
 
-    public Alerta(int idalerta, Timestamp data,String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, Boolean epositivo) {
-        this.idalerta = idalerta;
-        this.loghora = data;
+    public Alerta(int id, Date data, String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, Boolean ePositivo) {
+        this.id = id;
+        this.logHora = data;
         this.longitude = longitude;
         this.latitude = latitude;
         if(bairro != null) {
@@ -37,14 +37,14 @@ public class Alerta implements java.io.Serializable {
         }
         this.observacao = observacao;
         this.tipo = tipo;
-        this.statusAtivo = true;
-        this.epositivo = epositivo;
+        this.ativo = true;
+        this.ePositivo = ePositivo;
     }
 
-    public Alerta(int idalerta, Usuario usuario, Timestamp loghora, String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, boolean statusAtivo) {
-        this.idalerta = idalerta;
+    public Alerta(int id, Usuario usuario, Date logHora, String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, boolean ativo) {
+        this.id = id;
         this.usuario = usuario;
-        this.loghora = loghora;
+        this.logHora = logHora;
         this.longitude = longitude;
         this.latitude = latitude;
         this.bairro = bairro;
@@ -52,21 +52,21 @@ public class Alerta implements java.io.Serializable {
         this.estado = estado;
         this.observacao = observacao;
         this.tipo = tipo;
-        this.statusAtivo = statusAtivo;
+        this.ativo = ativo;
     }
 
     @Override
     public String toString() {
-        return "Alerta{" + "idalerta=" + idalerta +"}";// + ", loghora=" + loghora + ", longitude=" + longitude + ", latitude=" + latitude + ", bairro=" + bairro + ", cidade=" + cidade + ", estado=" + estado + ", observacao=" + observacao + ", tipo=" + tipo + ", statusAtivo=" + statusAtivo + '}';
+        return "Alerta{" + "id=" + id + ", logHora=" + logHora + ", longitude=" + longitude + ", latitude=" + latitude + ", bairro=" + bairro + ", cidade=" + cidade + ", estado=" + estado + ", observacao=" + observacao + ", tipo=" + tipo + ", ativo=" + ativo + '}';
     }
 
 
-    public int getIdalerta() {
-        return this.idalerta;
+    public int getId() {
+        return this.id;
     }
 
-    public void setIdalerta(int idalerta) {
-        this.idalerta = idalerta;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Usuario getUsuario() {
@@ -77,12 +77,12 @@ public class Alerta implements java.io.Serializable {
         this.usuario = usuario;
     }
 
-    public Timestamp getLoghora() {
-        return this.loghora;
+    public Date getLogHora() {
+        return this.logHora;
     }
 
-    public void setLoghora(Timestamp loghora) {
-        this.loghora = loghora;
+    public void setLogHora(Date logHora) {
+        this.logHora = logHora;
     }
 
     public String getLongitude() {
@@ -141,19 +141,19 @@ public class Alerta implements java.io.Serializable {
         this.tipo = tipo;
     }
 
-    public boolean isStatusAtivo() {
-        return this.statusAtivo;
+    public boolean isAtivo() {
+        return this.ativo;
     }
 
-    public void setStatusAtivo(boolean statusAtivo) {
-        this.statusAtivo = statusAtivo;
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 
-    public Boolean getEpositivo() {
-        return epositivo;
+    public Boolean getePositivo() {
+        return ePositivo;
     }
 
-    public void setEpositivo(Boolean epositivo) {
-        this.epositivo = epositivo;
+    public void setePositivo(Boolean ePositivo) {
+        this.ePositivo = ePositivo;
     }
 }

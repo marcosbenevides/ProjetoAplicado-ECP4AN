@@ -7,7 +7,7 @@ import com.google.android.gms.maps.model.Marker;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.una.zisc.classes.Alerta;
+import br.una.zisc.entidades.Alerta;
 
 /**
  * Created by Marcos Benevides on 05/11/2016.
@@ -32,7 +32,7 @@ public class Marcador {
             for(int j = 0; j < listaM.size(); j++) {
                 Alerta m = listaM.get(j).getAlerta();
                 if(distancia2Pontos(a.getLatitude(), a.getLongitude(), m.getLatitude(), m.getLongitude())) {
-                    if(listaM.get(j).alerta.getEpositivo() && !a.getEpositivo()) {
+                    if(listaM.get(j).alerta.getePositivo() && !a.getePositivo()) {
                         Alerta aux = listaM.get(j).alerta;
                         listaM.get(j).alerta = a;
                         listaM.get(j).marcadorList.add(aux);
@@ -55,7 +55,7 @@ public class Marcador {
                     marcador.get(i).getAlerta().getLongitude()
                     ,alerta.getLatitude(),
                     alerta.getLongitude())){
-                if(marcador.get(i).alerta.getEpositivo() && !alerta.getEpositivo()) {
+                if(marcador.get(i).alerta.getePositivo() && !alerta.getePositivo()) {
                     Alerta aux = marcador.get(i).alerta;
                     marcador.get(i).alerta = alerta;
                     marcador.get(i).marcadorList.add(aux);

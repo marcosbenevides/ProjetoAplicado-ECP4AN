@@ -2,7 +2,7 @@
     <string name="app_name">ZISC</string>
     <string name="proj_name">Projeto Aplicado</string>
     <string name="login_Screen">Login Screen</string>
-    <string name="Carregando">Buscando dados no servidor...</string>
+    <string name="Carregando">Buscando dados no servidor</string>
     <string name="Favor_Aguardar">Favor aguardar...</string>
     <string name="title_activity_maps">Mapa</string>
     <string name="digiteLocal">Digite um local</string>
@@ -15,4 +15,9 @@
     <string name="email">email</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="ERRO_AO_CONECTAR">Erro ao conectar ao servidor.</string>
+    <string name="AUT_SUCESSO">Usuário autenticado com sucesso!</string>
+    <string name="ERRO_AUTENTICACAO">Login ou senha inválidas.</string>
+    <string name="SEM_ALERTAS">Não foi encontrado alertas \npara esta região!</string>
+
 </resources>

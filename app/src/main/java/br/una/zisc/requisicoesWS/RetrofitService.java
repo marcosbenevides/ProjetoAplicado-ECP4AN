@@ -1,11 +1,11 @@
 package br.una.zisc.requisicoesWS;
 
+import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
-import br.una.zisc.classes.Alerta;
-import br.una.zisc.classes.Usuario;
+import br.una.zisc.entidades.Alerta;
+import br.una.zisc.entidades.Usuario;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -35,14 +35,19 @@ public interface RetrofitService {
                                       @Path("cidade") String cidade,
                                       @Path("estado") String estado);*/
 
-    @GET("ConsultaAlerta/{latitude}/{longitude}")
+    @FormUrlEncoded
+    @POST("consultaalerta/")
+    Call<List<Alerta>> consultaAlerta(@Field("latitude") String latitude,
+                                      @Field("longitude") String longitude);
+
+   /* @GET("ConsultaAlerta/{latitude}/{longitude}")
     Call<List<Alerta>> consultaAlerta(@Path("latitude") String longitude,
-                                      @Path("longitude") String latitude);
+                                      @Path("longitude") String latitude);*/
 
     @FormUrlEncoded
     @POST("CadastrarAlerta")
     Call<String> cadastraralerta(@Field("email") String email,
-                                 @Field("logHora") Timestamp data,
+                                 @Field("logHora") Date data,
                                  @Field("latitude") String latitude,
                                  @Field("longitude") String longitude,
                                  @Field("bairro") String bairro,

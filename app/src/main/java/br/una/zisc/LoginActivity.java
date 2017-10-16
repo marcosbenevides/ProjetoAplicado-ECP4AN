@@ -12,36 +12,23 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
-
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
-
-import br.una.projetoaplicado.marcosbenevides.zisc.Manifest;
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
-import br.una.zisc.classes.Usuario;
+import br.una.zisc.entidades.Usuario;
 import br.una.zisc.requisicoesWS.RetrofitCall;
 import br.una.zisc.requisicoesWS.RetrofitService;
 import br.una.zisc.requisicoesWS.ServiceGenerator;
@@ -71,6 +58,7 @@ public class LoginActivity extends Activity {
     private RetrofitCall call = new RetrofitCall();
     private Object listaAutentica[];
     private Network network;
+    private Thread threadOne, threadTwo;
 
 
     @Override
@@ -178,66 +166,74 @@ public class LoginActivity extends Activity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        //Autentica no webservice
-                        listaAutentica = call.autenticar(email, senha);
+                        /*
+                        * Criação do servico de conexão com o webservice
+                        **/
+                        RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
+                        /*
+                        * chamada de método de autenticação no server.
+                        * */
+                        Call<Usuario> call = service.loginCrip(email, senha);
+
+                        /*
+                        * Método assincrono, augarda resposta do server.
+                        * */
+                        call.enqueue(new Callback<Usuario>() {
+
                             /*
-                             * Testa o retorno da função autentica com 3 condicoes de acordo com o retorno da funcao.
-                             * retorno AUT_SUCESSO, deve fazer login do usuario, criar a sessão, e chamar o activity do mapa
-                             * retorno ERRO_AUTENTICACAO, remover o dialogo, e informar ao usuario que a senha está errada.
-                             * qualquer outro retorno, mostra a mensagem em um dialogo.
-                           **/
-                        if (listaAutentica[1].toString().contains(call.getAutSucesso())) {
+                            * A obter uma resposta do servidor esse método irá tratar as proximas ações
+                            * dependendo da resposta. Podendo ser elas:
+                            * -> 200 e corpo da resposta não nulo = usuario autenticado com sucesso!
+                            * -> 200 e corpo da resposta nulo = senha ou login de usuario errado!
+                            * -> 500, 404 ou outra resposta = erro de conexão.
+                            * */
+                            @Override
+                            public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                                if (response.isSuccessful()) {
+                                    if (response.body() != null) {
+                                        //Salva as preferências do usuário
+                                        if (checkLogin.isChecked()) {
+                                            preferences = getSharedPreferences("LOGIN", Context.MODE_PRIVATE);
+                                            SharedPreferences.Editor editor = preferences.edit();
+                                            editor.putString("email", emailEditor.getText().toString());
+                                            editor.putString("senha", senhaEditor.getText().toString());
+                                            editor.putBoolean("checkLogin", checkLogin.isChecked());
+                                            editor.apply();
+                                        }
 
-                            if (checkLogin.isChecked()) {
-                                preferences = getSharedPreferences("LOGIN", Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = preferences.edit();
-                                editor.putString("email", emailEditor.getText().toString());
-                                editor.putString("senha", senhaEditor.getText().toString());
-                                editor.putBoolean("checkLogin", checkLogin.isChecked());
-                                editor.apply();
-                            }
+                                        usuario = response.body();
+                                        it = new Intent(LoginActivity.this, MapsActivity.class);
+                                        it.putExtra("EMAIL", usuario.getEmail());
+                                        it.putExtra("ID", usuario.getId());
 
-                            usuario = (Usuario) listaAutentica[0];
+                                        status_error.setVisibility(View.INVISIBLE);
 
-                            it = new Intent(LoginActivity.this, MapsActivity.class);
-                            it.putExtra("EMAIL", usuario.getEmail());
+                                        Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                                        startActivity(intent);
 
-                            status_error.setVisibility(View.INVISIBLE);
-
-                            Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-                            startActivity(intent);
-                            it.putExtra("ID", usuario.getId());
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
-                                }
-                            });
-
-                        } else if (listaAutentica[1].toString().contains(call.getErroAutenticacao())) {
-
-                            if (dialog != null) {
-                                dialog.dismiss();
-                            }
-                            status_error.setVisibility(View.VISIBLE);
-
-                        } else {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (dialog != null) {
-                                        dialog.dismiss();
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    } else {
+                                        if (dialog != null) {
+                                            dialog.dismiss();
+                                        }
+                                        status_error.setVisibility(View.VISIBLE);
                                     }
-                                    alertDialog = new AlertDialog.Builder(LoginActivity.this)
-                                            .setMessage(listaAutentica[1].toString())
-                                            .setCancelable(true)
-                                            .setPositiveButton("OK", null);
-                                    alertDialog.create();
-                                    alertDialog.show();
+                                } else {
+                                    callDialog(1, response.message() + " - " + response.code());
                                 }
-                            });
-                        }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Usuario> call, Throwable t) {
+                                callDialog(1, t.getMessage() + " - " + t.getCause());
+                            }
+                        });
+
                     }
                 }).start();
             }
@@ -326,6 +322,43 @@ public class LoginActivity extends Activity {
     protected void onActivityResult(int requestCode,
                                     int resultCode, Intent data) {
         gpsLigado();
+    }
+
+    /**
+     * Chama o dialogMessage com o tipo especificado nos parametros
+     *
+     * @param tipoErro
+     * @param response
+     */
+    public void callDialog(final Integer tipoErro, final String response) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String title;
+                String msg;
+                if (tipoErro == 1) {
+                    title = getResources().getString(R.string.ERRO_AO_CONECTAR);
+                    msg = response;
+                } else if (tipoErro == 2) {
+                    title = "OPS!";
+                    msg = getResources().getString(R.string.SEM_ALERTAS);
+                } else {
+                    title = getResources().getString(R.string.ERRO_AO_CONECTAR);
+                    msg = response;
+                }
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+                alertDialog = new AlertDialog.Builder(LoginActivity.this)
+                        .setTitle(title)
+                        .setMessage(msg)
+                        .setCancelable(true)
+                        .setPositiveButton("OK", null);
+                alertDialog.create();
+                alertDialog.show();
+            }
+        });
     }
 
 }
