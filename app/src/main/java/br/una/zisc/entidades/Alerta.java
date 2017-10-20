@@ -1,7 +1,7 @@
 package br.una.zisc.entidades;
 
-import java.sql.Date;
-import java.sql.Timestamp;
+
+import java.util.Date;
 
 public class Alerta implements java.io.Serializable {
 
@@ -79,6 +79,10 @@ public class Alerta implements java.io.Serializable {
 
     public Date getLogHora() {
         return this.logHora;
+    }
+
+    public void setLogHora(){
+        this.logHora = new Date(System.currentTimeMillis());
     }
 
     public void setLogHora(Date logHora) {

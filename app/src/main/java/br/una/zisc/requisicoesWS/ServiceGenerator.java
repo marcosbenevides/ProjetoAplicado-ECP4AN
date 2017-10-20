@@ -3,6 +3,7 @@ package br.una.zisc.requisicoesWS;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.text.DateFormat;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -35,7 +36,7 @@ public class ServiceGenerator {
 
         Gson gson = new GsonBuilder()
                 .setLenient()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                .setDateFormat(DateFormat.LONG)
                 .create();
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder()

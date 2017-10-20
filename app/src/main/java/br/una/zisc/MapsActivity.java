@@ -750,33 +750,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    public java.sql.Date getDataHoraAgora() {
-        Date data = new Date();
-        java.sql.Date dataSql = new java.sql.Date(data.getTime());
-        return dataSql;
-        //java.sql.Date dataSql = new java.sql.Date(data.getTime());
-        //Log.e("DATA E HORA:", String.valueOf(dataSql));
-/*        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        hora = Calendar.getInstance();
-        String horario = "" + hora.get(Calendar.YEAR) + "-" + formato.format((hora.get(Calendar.MONTH) + 1))
-                + "-" + formato.format(hora.get(Calendar.DAY_OF_MONTH)) + " "
-                + formato.format(hora.get(Calendar.HOUR_OF_DAY)) + ":" + formato.format(hora.get(Calendar.MINUTE)) +
-                ":" + formato.format(hora.get(Calendar.SECOND));
-        Log.e("HORA: ", horario);
+    public Date getDataHoraAgora() {
 
+        return new Date(System.currentTimeMillis());
 
-        try {
-            data = dateFormat.parse(horario);
-            dataSql = new java.sql.Date(data.getTime());
-
-            Log.e("HORA DATE", data.toString());
-            Log.e("HORA DATE SQL", dataSql.toString());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }*/
-
-
-        //return dataSql;
     }
 
 }

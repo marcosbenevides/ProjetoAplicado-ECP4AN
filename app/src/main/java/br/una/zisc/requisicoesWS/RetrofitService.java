@@ -1,7 +1,5 @@
 package br.una.zisc.requisicoesWS;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.List;
 
 import br.una.zisc.entidades.Alerta;
@@ -47,7 +45,7 @@ public interface RetrofitService {
     @FormUrlEncoded
     @POST("CadastrarAlerta")
     Call<String> cadastraralerta(@Field("email") String email,
-                                 @Field("logHora") Date data,
+                                 @Field("logHora") java.util.Date data,
                                  @Field("latitude") String latitude,
                                  @Field("longitude") String longitude,
                                  @Field("bairro") String bairro,
