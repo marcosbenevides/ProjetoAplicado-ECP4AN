@@ -18,7 +18,43 @@ public class Alerta implements java.io.Serializable {
     private Boolean ePositivo;
     private boolean ativo;
 
-    public Alerta() {
+    public Alerta(Alerta alerta) {
+        try {
+            alerta.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Creates and returns a copy of this {@code Object}. The default
+     * implementation returns a so-called "shallow" copy: It creates a new
+     * instance of the same class and then copies the field values (including
+     * object references) from this instance to the new instance. A "deep" copy,
+     * in contrast, would also recursively clone nested objects. A subclass that
+     * needs to implement this kind of cloning should call {@code super.clone()}
+     * to create the new instance and then create deep copies of the nested,
+     * mutable objects.
+     *
+     * @return a copy of this object.
+     * @throws CloneNotSupportedException if this object's class does not implement the {@code
+     *                                    Cloneable} interface.
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public Alerta(Date logHora, String longitude, String latitude, String bairro, String cidade, String estado, String observacao, String tipo, Boolean ePositivo) {
+        this.logHora = logHora;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.estado = estado;
+        this.observacao = observacao;
+        this.tipo = tipo;
+        this.ePositivo = ePositivo;
     }
 
     public Alerta(int id, Date data, String latitude, String longitude, String bairro, String cidade, String estado, String observacao, String tipo, Boolean ePositivo) {

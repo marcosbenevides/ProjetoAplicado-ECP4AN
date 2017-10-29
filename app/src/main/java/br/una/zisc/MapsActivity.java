@@ -38,18 +38,22 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 
 import android.location.Address;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
 import br.una.zisc.entidades.Alerta;
@@ -97,6 +101,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Object[] alertas = new Object[2];
     private Marcador marcador = new Marcador();
     private Thread thread1, thread2;
+    private Gson gson = new Gson();
+    private int idUsuario;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -140,9 +146,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         listaNegativa.add("Local deserto.");
 
         Bundle bundle = getIntent().getExtras();
-        Log.e("BUNDLE: ", emailUsuario);
         if (bundle != null) {
             emailUsuario = bundle.getString("EMAIL");
+            idUsuario = bundle.getInt("ID");
+
             Log.e("BUNDLE: ", emailUsuario);
         }
     }
@@ -199,26 +206,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         List<Address> address = null;
         try {
             address = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
             cidade = address.get(0).getLocality();
             bairro = address.get(0).getSubLocality();
             estado = address.get(0).getAdminArea();
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        }catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
-
-
-        Log.e("ESTADO", " " + estado);
-        Log.e("CIDADE", " " + cidade);
-        Log.e("BAIRRO", " " + bairro);
-        String lat = "" + latLng.latitude;
-        Log.e("LATITUDE", lat);
-        String slong = "" + latLng.longitude;
-        Log.e("LONGITUDE", slong);
-
     }
 
     public void longClickListener() {
@@ -244,10 +239,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             }
                                         });
                                         dados(latLngMarcar);
-                                        final Alerta alerta = new Alerta(55,
-                                                getDataHoraAgora(),
-                                                String.valueOf(latLngMarcar.latitude),
+                                        final Alerta alerta_temporario = new Alerta(getDataHoraAgora(),
                                                 String.valueOf(latLngMarcar.longitude),
+                                                String.valueOf(latLngMarcar.latitude),
                                                 bairro,
                                                 cidade,
                                                 estado,
@@ -257,18 +251,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                         RetrofitService service = ServiceGenerator.createService(RetrofitService.class); // inicia o gerador de servico/cria conexao com o server
                                         Call<String> call = service.cadastraralerta(
-                                                emailUsuario,
-                                                alerta.getLogHora(),
-                                                alerta.getLatitude(),
-                                                alerta.getLongitude(),
-                                                alerta.getBairro(),
-                                                alerta.getCidade(),
-                                                alerta.getEstado(),
-                                                alerta.getObservacao(),
-                                                alerta.getTipo(),
-                                                alerta.getePositivo()); // acessa os metodos do retrofit <<<LEMBRAR alterar
+                                                idUsuario,
+                                                alerta_temporario.getLongitude(),
+                                                alerta_temporario.getLatitude(),
+                                                alerta_temporario.getBairro(),
+                                                alerta_temporario.getCidade(),
+                                                alerta_temporario.getEstado(),
+                                                alerta_temporario.getObservacao(),
+                                                alerta_temporario.getTipo(),
+                                                alerta_temporario.getePositivo()); // acessa os metodos do retrofit <<<LEMBRAR alterar
 
-                                        callCreateMarker(call, alerta);
+                                        callCreateMarker(call, alerta_temporario);
                                     }
                                 }).start();
 
@@ -315,7 +308,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void callCreateMarker(Call call, final Alerta alerta) {
+    public void callCreateMarker(Call call, final Alerta alerta_temporario) {
         call.clone().enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
@@ -323,20 +316,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     contFalha++;
                     if (contFalha > 5) {
                         contFalha = 0;
-                        dialog.dismiss();
-                        alertDialog = new AlertDialog.Builder(MapsActivity.this)
-                                .setMessage("OPS! Algo deu errado.\n" + response.message())
-                                .setCancelable(true)
-                                .setPositiveButton("OK", null);
-                        alertDialog.create();
-                        alertDialog.show();
+                        if(dialog != null) {
+                            dialog.dismiss();
+                        }
+                        callDialog(1,response.code() + " - " + response.message());
                     } else {
-                        callCreateMarker(call, alerta);
+                        callCreateMarker(call, alerta_temporario);
                     }
                 } else {
                     contFalha = 0;
-                    dialog.dismiss();
+                    if(dialog != null) {
+                        dialog.dismiss();
+                    }
                     Marcador marcador = new Marcador();
+                    Alerta alerta = new Alerta(gson.fromJson(response.body(), Alerta.class));
                     Marcador aux = marcador.temReferencia(mListMarcador, alerta);
                     if (aux != null) {
                         if (!aux.getAlerta().getePositivo()) {
@@ -368,7 +361,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     alertDialog.create();
                     alertDialog.show();
                 } else {
-                    callCreateMarker(call, alerta);
+                    callCreateMarker(call, alerta_temporario);
                 }
             }
         });
@@ -468,9 +461,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         dialog = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor", "Por favor, aguarde...");
                     }
                 });
-
                 buscaPontos(new LatLng(inicialLocation.getLatitude(), inicialLocation.getLongitude()));
-
                 teste();
             }
         }
@@ -492,6 +483,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onResponse(Call<List<Alerta>> call, Response<List<Alerta>> response) {
                         if (!response.isSuccessful()) {
                             contFalha++;
+                            if(contFalha >=3){
+                                callDialog(1,response.code() + " - " + response.message());
+                            }else{
+                                buscaPontos(ponto);
+                            }
                         } else if (response.body() != null) {
                             contFalha = 0;
                             dialog.dismiss();
@@ -750,7 +746,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    public Date getDataHoraAgora() {
+    public Date getDataHoraAgora(){
 
         return new Date(System.currentTimeMillis());
 

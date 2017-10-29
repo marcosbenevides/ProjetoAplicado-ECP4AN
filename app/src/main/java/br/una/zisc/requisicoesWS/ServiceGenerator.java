@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ServiceGenerator {
     //URL de acesso a API
     public static String API_URL_REMOTO = "http://zisc-env.j8phxubfpq.us-east-2.elasticbeanstalk.com/res/";
-    public static String API_URL_LOCAL = "http://192.168.33.143:8080/ZiscWS/res/";
+    public static String API_URL_LOCAL = "http://192.168.1.110:8080/ZiscWS/res/";
     public static String API_URL = API_URL_LOCAL;
     public static Boolean eLocal = false;
 

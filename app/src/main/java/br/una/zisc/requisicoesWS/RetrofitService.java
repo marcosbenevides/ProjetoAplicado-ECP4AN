@@ -1,5 +1,6 @@
 package br.una.zisc.requisicoesWS;
 
+import java.util.Date;
 import java.util.List;
 
 import br.una.zisc.entidades.Alerta;
@@ -43,15 +44,14 @@ public interface RetrofitService {
                                       @Path("longitude") String latitude);*/
 
     @FormUrlEncoded
-    @POST("CadastrarAlerta")
-    Call<String> cadastraralerta(@Field("email") String email,
-                                 @Field("logHora") java.util.Date data,
-                                 @Field("latitude") String latitude,
+    @POST("cadastroalerta/")
+    Call<String> cadastraralerta(@Field("id") int idUsuario,
                                  @Field("longitude") String longitude,
+                                 @Field("latitude") String latitude,
                                  @Field("bairro") String bairro,
                                  @Field("cidade") String cidade,
                                  @Field("estado") String estado,
-                                 @Field("obs") String obs,
+                                 @Field("observacao") String obs,
                                  @Field("tipo") String tipo,
                                  @Field("ePositivo") Boolean ePositivo);
 }

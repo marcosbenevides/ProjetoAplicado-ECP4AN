@@ -202,13 +202,19 @@ public class LoginActivity extends Activity {
                                         }
 
                                         usuario = response.body();
-                                        it = new Intent(LoginActivity.this, MapsActivity.class);
-                                        it.putExtra("EMAIL", usuario.getEmail());
-                                        it.putExtra("ID", usuario.getId());
+//                                        it = new Intent(LoginActivity.this, MapsActivity.class);
+//                                        it.putExtra("EMAIL", usuario.getEmail());
+//                                        it.putExtra("ID", usuario.getId());
 
                                         status_error.setVisibility(View.INVISIBLE);
 
+                                        if (dialog != null) {
+                                            dialog.dismiss();
+                                        }
                                         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                                        intent.putExtra("EMAIL",usuario.getEmail());
+                                        intent.putExtra("ID",usuario.getId());
+
                                         startActivity(intent);
 
                                         runOnUiThread(new Runnable() {
