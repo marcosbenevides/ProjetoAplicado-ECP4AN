@@ -211,7 +211,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             estado = address.get(0).getAdminArea();
         } catch (IOException e) {
             e.printStackTrace();
-        }catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
     }
@@ -250,7 +250,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 switchNegPos.isChecked());
 
                                         RetrofitService service = ServiceGenerator.createService(RetrofitService.class); // inicia o gerador de servico/cria conexao com o server
-                                        Call<String> call = service.cadastraralerta(
+                                        Call<Alerta> call = service.cadastraralerta(
                                                 idUsuario,
                                                 alerta_temporario.getLongitude(),
                                                 alerta_temporario.getLatitude(),
@@ -309,27 +309,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void callCreateMarker(Call call, final Alerta alerta_temporario) {
-        call.clone().enqueue(new Callback<String>() {
+        call.clone().enqueue(new Callback<Alerta>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onResponse(Call<Alerta> call, Response<Alerta> response) {
                 if (!response.isSuccessful()) {
                     contFalha++;
                     if (contFalha > 5) {
                         contFalha = 0;
-                        if(dialog != null) {
+                        if (dialog != null) {
                             dialog.dismiss();
                         }
-                        callDialog(1,response.code() + " - " + response.message());
+                        callDialog(1, response.code() + " - " + response.message());
                     } else {
                         callCreateMarker(call, alerta_temporario);
                     }
                 } else {
                     contFalha = 0;
-                    if(dialog != null) {
+                    if (dialog != null) {
                         dialog.dismiss();
                     }
                     Marcador marcador = new Marcador();
-                    Alerta alerta = new Alerta(gson.fromJson(response.body(), Alerta.class));
+                    Alerta alerta = response.body();
                     Marcador aux = marcador.temReferencia(mListMarcador, alerta);
                     if (aux != null) {
                         if (!aux.getAlerta().getePositivo()) {
@@ -349,7 +349,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(Call<Alerta> call, Throwable t) {
                 contFalha++;
                 if (contFalha > 3) {
                     contFalha = 0;
@@ -483,16 +483,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onResponse(Call<List<Alerta>> call, Response<List<Alerta>> response) {
                         if (!response.isSuccessful()) {
                             contFalha++;
-                            if(contFalha >=3){
-                                callDialog(1,response.code() + " - " + response.message());
-                            }else{
+                            if (contFalha >= 3) {
+
+                                callDialog(1, response.code() + " - " + response.message());
+                            } else {
                                 buscaPontos(ponto);
                             }
                         } else if (response.body() != null) {
                             contFalha = 0;
-                            dialog.dismiss();
                             barraProcurar.clearFocus(); // teclado não aparecer novamente qndo pesquisa
-
+                            if (dialog != null) {
+                                dialog.dismiss();
+                            }
                             List<Alerta> listAlertas = response.body();
                             mListMarcador.addAll(marcador.setReferencia(listAlertas));
                             choveMarcador();
@@ -746,7 +748,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    public Date getDataHoraAgora(){
+    public Date getDataHoraAgora() {
 
         return new Date(System.currentTimeMillis());
 

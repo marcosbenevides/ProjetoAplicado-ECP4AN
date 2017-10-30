@@ -45,7 +45,7 @@ public interface RetrofitService {
 
     @FormUrlEncoded
     @POST("cadastroalerta/")
-    Call<String> cadastraralerta(@Field("id") int idUsuario,
+    Call<Alerta> cadastraralerta(@Field("id") int idUsuario,
                                  @Field("longitude") String longitude,
                                  @Field("latitude") String latitude,
                                  @Field("bairro") String bairro,
