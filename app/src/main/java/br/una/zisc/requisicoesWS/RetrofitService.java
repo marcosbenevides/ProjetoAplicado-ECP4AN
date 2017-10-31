@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import br.una.zisc.entidades.Alerta;
+import br.una.zisc.entidades.CallHandler;
 import br.una.zisc.entidades.Usuario;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -54,4 +55,12 @@ public interface RetrofitService {
                                  @Field("observacao") String obs,
                                  @Field("tipo") String tipo,
                                  @Field("ePositivo") Boolean ePositivo);
+    @FormUrlEncoded
+    @POST("callHandler/")
+    Call<CallHandler> setCallHandler(@Field("id_usuario") int id_usuario,
+                                     @Field("latitude") String latitude,
+                                     @Field("longitude") String longitude,
+                                     @Field("cidade") String cidade,
+                                     @Field("bairro") String bairro,
+                                     @Field("estado") String estado);
 }

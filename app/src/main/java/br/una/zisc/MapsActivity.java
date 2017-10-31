@@ -43,20 +43,17 @@ import com.google.gson.Gson;
 import android.location.Address;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
 import br.una.zisc.entidades.Alerta;
+import br.una.zisc.entidades.CallHandler;
 import br.una.zisc.mapaUtil.Marcador;
 import br.una.zisc.requisicoesWS.RetrofitCall;
 import br.una.zisc.requisicoesWS.RetrofitService;
@@ -194,7 +191,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     dialog = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor", "Por favor, aguarde...");
                 }
             });
-            buscaPontos(latLng);
+            buscaAlertas(latLng);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
         }
 
@@ -409,6 +406,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         client.disconnect();
     }
 
+    /**
+     * Dispatch onResume() to fragments.  Note that for better inter-operation
+     * with older versions of the platform, at the point of this call the
+     * fragments attached to the activity are <em>not</em> resumed.  This means
+     * that in some cases the previous state may still be saved, not allowing
+     * fragment transactions that modify the state.  To correctly interact
+     * with fragments in their proper state, you should instead override
+     * {@link #onResumeFragments()}.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
     @Override
     public void onConnectionSuspended(int cause) {
         // We are not connected anymore!
@@ -461,13 +473,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         dialog = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor", "Por favor, aguarde...");
                     }
                 });
-                buscaPontos(new LatLng(inicialLocation.getLatitude(), inicialLocation.getLongitude()));
+                buscaAlertas(new LatLng(inicialLocation.getLatitude(), inicialLocation.getLongitude()));
                 teste();
             }
         }
     }
 
-    public void buscaPontos(final LatLng ponto) {
+    public void setCallHandler(Integer tipo, final CallHandler callHandler){
+        if(tipo == 1){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
+                    Call<CallHandler> callHandlerCall = service.setCallHandler(idUsuario,
+                            callHandler.getLatitude(),
+                            callHandler.getLongitude(),
+                            callHandler.getCidade(),
+                            callHandler.getBairro(),
+                            callHandler.getEstado());
+                }
+            }).start();
+        }else{
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            }).start();
+        }
+
+    }
+    public void buscaAlertas(final LatLng ponto) {
 
         new Thread(new Runnable() { //por causa do Call, precisa pra rodar ele
             @Override
@@ -487,7 +523,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 callDialog(1, response.code() + " - " + response.message());
                             } else {
-                                buscaPontos(ponto);
+                                buscaAlertas(ponto);
                             }
                         } else if (response.body() != null) {
                             contFalha = 0;
