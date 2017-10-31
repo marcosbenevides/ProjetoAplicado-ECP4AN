@@ -2,6 +2,7 @@ package br.una.zisc;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -80,7 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Calendar hora;
     private NumberFormat formato;
     private ProgressDialog dialog;
-    private AlertDialog.Builder alertDialog, infoDialog, addMarkerDialog;
+    private AlertDialog.Builder alertDialog, infoDialog, addMarkerDialog, confirmaDialog;
     private AlertDialog informacao, cadastro;
     private TextView textTipoAlertaCont, textDataHoraCont, textOcorrenciaCont;
     private List<Alerta> listaTeste = new ArrayList<>();
@@ -479,8 +480,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void setCallHandler(Integer tipo, final CallHandler callHandler){
-        if(tipo == 1){
+    public void setCallHandler(Integer tipo, final CallHandler callHandler) {
+
+        if (tipo == 1) {
+
+            confirmaDialog = new AlertDialog.Builder(MapsActivity.this)
+                    .setTitle("Ligação Direta?")
+                    .setMessage("Deseja abrir o Dial-up para fazer uma chamada na polícia?")
+                    .setPositiveButton("SIM", new DialogInterface.OnClickListener() {
+                        /**
+                         * This method will be invoked when a button in the dialog is clicked.
+                         *
+                         * @param dialog The dialog that received the click.
+                         * @param which  The button that was clicked (e.g.
+                         *               {@link DialogInterface#BUTTON1}) or the position
+                         */
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent dialup = new Intent(Intent.ACTION_DIAL);
+                            dialup.setData(Uri.parse("tel:" + 190));
+                            startActivity(dialup);
+                        }
+                    });
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -491,9 +513,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             callHandler.getCidade(),
                             callHandler.getBairro(),
                             callHandler.getEstado());
+                    callHandlerCall.enqueue(new Callback<CallHandler>() {
+                        /**
+                         * Invoked for a received HTTP response.
+                         * <p>
+                         * Note: An HTTP response may still indicate an application-level failure such as a 404 or 500.
+                         * Call {@link Response#isSuccessful()} to determine if the response indicates success.
+                         *
+                         * @param call
+                         * @param response
+                         */
+                        @Override
+                        public void onResponse(Call<CallHandler> call, Response<CallHandler> response) {
+                            if (!response.isSuccessful()) {
+
+                            }
+                        }
+
+                        /**
+                         * Invoked when a network exception occurred talking to the server or when an unexpected
+                         * exception occurred creating the request or processing the response.
+                         *
+                         * @param call
+                         * @param t
+                         */
+                        @Override
+                        public void onFailure(Call<CallHandler> call, Throwable t) {
+
+                        }
+                    });
                 }
             }).start();
-        }else{
+        } else {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -503,6 +554,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+
     public void buscaAlertas(final LatLng ponto) {
 
         new Thread(new Runnable() { //por causa do Call, precisa pra rodar ele
