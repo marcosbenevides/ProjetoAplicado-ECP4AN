@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background"
+    android:background="#00BCD4"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -16,108 +16,108 @@
         android:id="@+id/estilo_login"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:src="@drawable/logo_marker" />
 
         <EditText
             android:id="@+id/emailEditor"
             style="@style/Widget.AppCompat.EditText"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginRight="0dp"
-            android:hint="E-mail"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:paddingEnd="5dp"
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp"
+            android:background="@drawable/round_corners"
             android:cursorVisible="true"
-            android:singleLine="true"
-            android:selectAllOnFocus="true"
+            android:hint="@string/e_mail"
             android:inputType="textEmailAddress"
-            android:textColor="?android:attr/textColorHint" />
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="15sp" />
 
         <EditText
             android:id="@+id/senhaEditor"
             style="@style/Widget.AppCompat.EditText"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginRight="0dp"
-            android:hint="Senha"
-            android:password="true"
-            android:textColor="#ffffff"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:paddingEnd="5dp"
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp"
+            android:background="@drawable/round_corners"
             android:cursorVisible="true"
+            android:inputType="textPassword"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:inputType="textPassword" />
+            android:hint="@string/senha"
+            android:textSize="15sp"
+            android:textColor="#ffffff"
+            android:textColorHint="#ffffff" />
 
         <TextView
             android:id="@+id/status_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
             android:layout_marginBottom="20dp"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
-            android:text="Login ou senha inválidos!"
+            android:text="@string/invalidos"
             android:textColor="@color/colorAccent"
             android:visibility="invisible" />
 
 
         <CheckBox
-            android:text="Lembrar dados"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/checkLogin"
             style="@style/Widget.AppCompat.CompoundButton.CheckBox"
-            android:textColor="@color/cast_expanded_controller_text_color"
-            android:buttonTint="@color/cast_expanded_controller_text_color" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/white"
+            android:text="@string/lembrar_dados"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/buttonLogin"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/buttonCreateLogin"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:text="Login" />
+            android:layout_marginBottom="10dp"
+            android:text="@string/login"
+            android:background="@drawable/btn_round"/>
 
         <Button
             android:id="@+id/buttonCreateLogin"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/buttonVisitor"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
+            android:layout_marginBottom="40dp"
             android:onClick="cadastrar"
-            android:text="Criar Conta"
-            android:textColor="@color/colorWhite"/>
-
-        <Button
-            android:id="@+id/buttonVisitor"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/textView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
-            android:text="Entrar como visitante"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginBottom="19dp" />
+            android:text="@string/crie_seu_cadastro"
+            android:textColor="@color/colorWhite"
+            android:background="@drawable/btn_round"/>
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:text="Projeto Aplicado - UNA.BR"
+            android:text="@string/una"
             android:textAlignment="center"
             android:textColor="#b0b0b1" />
 

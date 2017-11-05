@@ -3,7 +3,7 @@
     <string name="proj_name">Projeto Aplicado</string>
     <string name="login_Screen">Login Screen</string>
     <string name="Carregando">Buscando dados no servidor</string>
-    <string name="Favor_Aguardar">Favor aguardar...</string>
+    <string name="Favor_Aguardar">Favor aguardar…</string>
     <string name="title_activity_maps">Mapa</string>
     <string name="digiteLocal">Digite um local</string>
     <string name="tipo_marcacao">Tipo de local</string>
@@ -12,12 +12,28 @@
     <string name="ok">OK</string>
     <string name="cancelar">Cancelar</string>
     <string name="password">senha</string>
-    <string name="email">email</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="ERRO_AO_CONECTAR">Erro ao conectar ao servidor.</string>
     <string name="AUT_SUCESSO">Usuário autenticado com sucesso!</string>
     <string name="ERRO_AUTENTICACAO">Login ou senha inválidas.</string>
     <string name="SEM_ALERTAS">Não foi encontrado alertas \npara esta região!</string>
+    <string name="nome_completo">Nome Completo</string>
+    <string name="logotipo">logotipo</string>
+    <string name="crie_seu_cadastro">Crie seu Cadastro</string>
+    <string name="e_mail">Digite seu email</string>
+    <string name="digite_uma_senha">Digite uma senha</string>
+    <string name="redigite_a_senha">Redigite a senha</string>
+    <string name="cadastrar">Cadastrar</string>
+    <string name="senha">Digite sua senha</string>
+    <string name="login_ou_senha_inv_lidos">Login ou senha inválidos!</string>
+    <string name="lembrar_dados">Lembrar dados</string>
+    <string name="login">Login</string>
+    <string name="criar_conta">Criar Conta</string>
+    <string name="una">Projeto Aplicado - UNA.BR</string>
+    <string name="invalidos">Login ou senha inválidos!</string>
+    <string name="match_password">as senhas não conferem</string>
+    <string name="digite_celular">Digite seu celular com DDD</string>
+    <string name="digite_cpf">Digite seu CPF</string>
 
 </resources>

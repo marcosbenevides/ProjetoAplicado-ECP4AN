@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Geocoder;
@@ -55,6 +56,7 @@ import java.util.List;
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
 import br.una.zisc.entidades.Alerta;
 import br.una.zisc.entidades.CallHandler;
+import br.una.zisc.entidades.DptoPolicia;
 import br.una.zisc.mapaUtil.Marcador;
 import br.una.zisc.requisicoesWS.RetrofitCall;
 import br.una.zisc.requisicoesWS.RetrofitService;
@@ -74,7 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleApiClient mGoogleApiClient = null;
     private Location inicialLocation = null;
     private Intent it;
-    private Boolean marcar = false;
+    private Boolean marcar = false, callHanderFailure = false;
     private LatLng latLngMarcar;
     private SearchView barraProcurar;
     private Circle circulo;
@@ -95,12 +97,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Integer controle = 0, contFalha = 0;
     private DialogInterface.OnClickListener dialogInterface;
     private Base64 base64;
-    private RetrofitCall call = new RetrofitCall();
     private Object[] alertas = new Object[2];
     private Marcador marcador = new Marcador();
     private Thread thread1, thread2;
     private Gson gson = new Gson();
     private int idUsuario;
+    private CallHandler callHandlerAtivo;
+    private List<DptoPolicia> listaDpto;
+    private Marker dpto;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -419,7 +423,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     @Override
@@ -468,21 +471,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e("ESTADO", " " + estado);
                 inicio = false;
 
-                runOnUiThread(new Runnable() { // O dialog tem que ser na tread da interface, por isso
-                    @Override
-                    public void run() {
-                        dialog = ProgressDialog.show(MapsActivity.this, "Buscando dados no servidor", "Por favor, aguarde...");
-                    }
-                });
+                callProgressDialog("Buscando dados no servidor","Por favor, aguarde!");
                 buscaAlertas(new LatLng(inicialLocation.getLatitude(), inicialLocation.getLongitude()));
-                teste();
+                buscaDpto();
             }
         }
     }
 
-    public void setCallHandler(Integer tipo, final CallHandler callHandler) {
+    public void setCallHandler(Integer tipo, CallHandler callHandler) {
+
+        RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
 
         if (tipo == 1) {
+
+            final Call<CallHandler> callHandlerCall = service.setCallHandler(idUsuario,
+                    callHandler.getLatitude(),
+                    callHandler.getLongitude(),
+                    callHandler.getCidade(),
+                    callHandler.getBairro(),
+                    callHandler.getEstado());
 
             confirmaDialog = new AlertDialog.Builder(MapsActivity.this)
                     .setTitle("Ligação Direta?")
@@ -496,63 +503,95 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                          *               {@link DialogInterface#BUTTON1}) or the position
                          */
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent dialup = new Intent(Intent.ACTION_DIAL);
-                            dialup.setData(Uri.parse("tel:" + 190));
-                            startActivity(dialup);
+                        public void onClick(final DialogInterface dialog, int which) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    callHandlerCall.enqueue(new Callback<CallHandler>() {
+                                        /**
+                                         * Invoked for a received HTTP response.
+                                         * <p>
+                                         * Note: An HTTP response may still indicate an application-level failure such as a 404 or 500.
+                                         * Call {@link Response#isSuccessful()} to determine if the response indicates success.
+                                         *
+                                         * @param call
+                                         * @param response
+                                         */
+                                        @Override
+                                        public void onResponse(Call<CallHandler> call, Response<CallHandler> response) {
+                                            if (!response.isSuccessful()) {
+                                                callHanderFailure = true;
+                                            } else {
+                                                callHanderFailure = false;
+                                                callHandlerAtivo = response.body();
+                                            }
+
+                                            if (dialog != null) {
+                                                dialog.dismiss();
+                                            }
+                                            Intent dialup = new Intent(Intent.ACTION_DIAL);
+                                            dialup.setData(Uri.parse("tel:" + 190));
+                                            startActivity(dialup);
+                                        }
+
+                                        /**
+                                         * Invoked when a network exception occurred talking to the server or when an unexpected
+                                         * exception occurred creating the request or processing the response.
+                                         *
+                                         * @param call
+                                         * @param t
+                                         */
+                                        @Override
+                                        public void onFailure(Call<CallHandler> call, Throwable t) {
+                                            if (dialog != null) {
+                                                dialog.dismiss();
+                                            }
+                                            Intent dialup = new Intent(Intent.ACTION_DIAL);
+                                            dialup.setData(Uri.parse("tel:" + 190));
+                                            startActivity(dialup);
+                                        }
+                                    });
+                                }
+                            }).start();
+
                         }
-                    });
+                    })
+                    .setNegativeButton("Cancelar", null);
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
-                    Call<CallHandler> callHandlerCall = service.setCallHandler(idUsuario,
-                            callHandler.getLatitude(),
-                            callHandler.getLongitude(),
-                            callHandler.getCidade(),
-                            callHandler.getBairro(),
-                            callHandler.getEstado());
-                    callHandlerCall.enqueue(new Callback<CallHandler>() {
-                        /**
-                         * Invoked for a received HTTP response.
-                         * <p>
-                         * Note: An HTTP response may still indicate an application-level failure such as a 404 or 500.
-                         * Call {@link Response#isSuccessful()} to determine if the response indicates success.
-                         *
-                         * @param call
-                         * @param response
-                         */
-                        @Override
-                        public void onResponse(Call<CallHandler> call, Response<CallHandler> response) {
-                            if (!response.isSuccessful()) {
 
-                            }
-                        }
-
-                        /**
-                         * Invoked when a network exception occurred talking to the server or when an unexpected
-                         * exception occurred creating the request or processing the response.
-                         *
-                         * @param call
-                         * @param t
-                         */
-                        @Override
-                        public void onFailure(Call<CallHandler> call, Throwable t) {
-
-                        }
-                    });
-                }
-            }).start();
         } else {
-            new Thread(new Runnable() {
+            runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
+                    MapsActivity.this.dialog = ProgressDialog.show(MapsActivity.this, "Aguarde..", "Enviando ao servidor...");
                 }
-            }).start();
-        }
+            });
 
+            if (callHanderFailure == false) {
+                final Call<CallHandler> callHandlerCall = service.cancelCallHandler(callHandlerAtivo.getId());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        callHandlerCall.enqueue(new Callback<CallHandler>() {
+                            @Override
+                            public void onResponse(Call<CallHandler> call, Response<CallHandler> response) {
+                                if (!response.isSuccessful()) {
+                                    callDialog(1, response.code() + " - " + response.message());
+                                } else {
+                                    callHandlerAtivo = response.body();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<CallHandler> call, Throwable t) {
+                                callDialog(1, t.getCause() + " - " + t.getMessage());
+                            }
+                        });
+                    }
+                }).start();
+            }
+        }
     }
 
     public void buscaAlertas(final LatLng ponto) {
@@ -777,7 +816,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build();
     }
 
-
     public void teste() {
 
         listaTeste.add(new Alerta(1, getDataHoraAgora(), "-20.065993", "-44.281507", "Marques Canadá", "São Joaquim de Bicas", "Minas Gerais", "Fui abordado por 1 rapazes bonitos dos olhos claros", "Assalto", false));
@@ -842,4 +880,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    public void buscaDpto() {
+        RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
+        Call<List<DptoPolicia>> call = service.buscaDpto();
+        callProgressDialog("Por favor, aguarde!", "Estamos carregando os pontos policiais!");
+        call.enqueue(new Callback<List<DptoPolicia>>() {
+            @Override
+            public void onResponse(Call<List<DptoPolicia>> call, Response<List<DptoPolicia>> response) {
+                if (!response.isSuccessful()) {
+                    callDialog(1, response.code() + " - " + response.message());
+                } else {
+                    listaDpto = response.body();
+                    for (DptoPolicia policia : listaDpto) {
+                        dpto = mMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(Double.parseDouble(policia.getLatitude()), Double.parseDouble(policia.getLongitude())))
+                                .title(policia.getId() + " - " + policia.getNome())
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.police_marker))
+                                .snippet("(" + policia.getDdd() + ") " + policia.getTelefone()));
+                    }
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<DptoPolicia>> call, Throwable t) {
+                callDialog(1, t.getCause() + " - " + t.getMessage());
+            }
+        });
+
+
+    }
+
+    public void callProgressDialog(final String title, final String message) {
+        if(dialog!=null){
+            dialog.dismiss();
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MapsActivity.this.dialog = ProgressDialog.show(MapsActivity.this, title, message);
+            }
+        });
+    }
 }

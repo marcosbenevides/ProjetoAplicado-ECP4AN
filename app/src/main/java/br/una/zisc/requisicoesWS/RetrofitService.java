@@ -5,12 +5,14 @@ import java.util.List;
 
 import br.una.zisc.entidades.Alerta;
 import br.una.zisc.entidades.CallHandler;
+import br.una.zisc.entidades.DptoPolicia;
 import br.una.zisc.entidades.Usuario;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -19,30 +21,25 @@ import retrofit2.http.Path;
 
 public interface RetrofitService {
 
-    @GET("evalido")
-    Call<Object> buscaUsuario();
-
-    @GET("login/{email}/{senha}")
-    Call<Usuario> login(@Path("email") String email, @Path("senha") String senha);
-
+    /* Usuario */
     @FormUrlEncoded
     @POST("login/")
     Call<Usuario> loginCrip(@Field("email") String email,
-                           @Field("password") String password);
+                            @Field("password") String password);
 
-    /*@GET("consultaalerta/{bairro}/{cidade}/{estado}")
-    Call<List<Alerta>> consultaAlerta(@Path("bairro") String bairro,
-                                      @Path("cidade") String cidade,
-                                      @Path("estado") String estado);*/
+    @FormUrlEncoded
+    @POST("cadastrousuario/")
+    Call<Usuario> cadastraUsuario(@Field("nome") String nome,
+                                  @Field("email") String email,
+                                  @Field("cpf") String cpf,
+                                  @Field("celular") String celular,
+                                  @Field("senha") String senha);
 
+    /* Alertas */
     @FormUrlEncoded
     @POST("consultaalerta/")
     Call<List<Alerta>> consultaAlerta(@Field("latitude") String latitude,
                                       @Field("longitude") String longitude);
-
-   /* @GET("ConsultaAlerta/{latitude}/{longitude}")
-    Call<List<Alerta>> consultaAlerta(@Path("latitude") String longitude,
-                                      @Path("longitude") String latitude);*/
 
     @FormUrlEncoded
     @POST("cadastroalerta/")
@@ -55,6 +52,8 @@ public interface RetrofitService {
                                  @Field("observacao") String obs,
                                  @Field("tipo") String tipo,
                                  @Field("ePositivo") Boolean ePositivo);
+
+    /* CallHandler */
     @FormUrlEncoded
     @POST("callHandler/")
     Call<CallHandler> setCallHandler(@Field("id_usuario") int id_usuario,
@@ -63,4 +62,12 @@ public interface RetrofitService {
                                      @Field("cidade") String cidade,
                                      @Field("bairro") String bairro,
                                      @Field("estado") String estado);
+
+    @FormUrlEncoded
+    @PUT("callHandler/")
+    Call<CallHandler> cancelCallHandler(@Field("id") int id_call);
+
+    /* Departamento de Policia */
+    @GET("consultadpto/")
+    Call<List<DptoPolicia>> buscaDpto();
 }
