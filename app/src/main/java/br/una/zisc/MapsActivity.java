@@ -10,15 +10,20 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.*;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.*;
 import android.content.*;
 
@@ -41,6 +46,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
 import android.location.Address;
+import android.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -62,7 +69,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback,
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, SearchView.OnQueryTextListener {
 
     private static final String TAG = "ERRO: ";
@@ -132,6 +139,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .build();
         }
         actionBar = (Toolbar) findViewById(R.id.actionbar);
+        setSupportActionBar(actionBar);
         menu = (Button) findViewById(R.id.menuActionBar);
         emergencia = (Button) findViewById(R.id.btnEmergencia);
         barraProcurar = (SearchView) findViewById(R.id.barraProcurar);
@@ -163,6 +171,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    /**
+     * Set a {@link Toolbar Toolbar} to act as the
+     * {@link ActionBar} for this Activity window.
+     * <p>
+     * <p>When set to a non-null value the {@link #getActionBar()} method will return
+     * an {@link ActionBar} object that can be used to control the given
+     * toolbar as if it were a traditional window decor action bar. The toolbar's menu will be
+     * populated with the Activity's options menu and the navigation button will be wired through
+     * the standard {@link android.R.id#home home} menu select action.</p>
+     * <p>
+     * <p>In order to use a Toolbar within the Activity's window content the application
+     * must not request the window feature
+     * {@link Window#FEATURE_ACTION_BAR FEATURE_SUPPORT_ACTION_BAR}.</p>
+     *
+     * @param toolbar Toolbar to set as the Activity's action bar, or {@code null} to clear it
+     */
+    @Override
+    public void setSupportActionBar(@Nullable android.support.v7.widget.Toolbar toolbar) {
+        super.setSupportActionBar(toolbar);
+    }
 
     @Override
     public boolean onQueryTextChange(String newText) {
