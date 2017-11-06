@@ -55,7 +55,7 @@ public interface RetrofitService {
 
     /* CallHandler */
     @FormUrlEncoded
-    @POST("callHandler/")
+    @POST("callhandler/")
     Call<CallHandler> setCallHandler(@Field("id_usuario") int id_usuario,
                                      @Field("latitude") String latitude,
                                      @Field("longitude") String longitude,
@@ -64,7 +64,7 @@ public interface RetrofitService {
                                      @Field("estado") String estado);
 
     @FormUrlEncoded
-    @PUT("callHandler/")
+    @PUT("callhandler/")
     Call<CallHandler> cancelCallHandler(@Field("id") int id_call);
 
     /* Departamento de Policia */

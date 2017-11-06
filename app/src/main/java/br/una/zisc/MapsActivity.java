@@ -2,10 +2,8 @@ package br.una.zisc;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Geocoder;
@@ -58,7 +56,6 @@ import br.una.zisc.entidades.Alerta;
 import br.una.zisc.entidades.CallHandler;
 import br.una.zisc.entidades.DptoPolicia;
 import br.una.zisc.mapaUtil.Marcador;
-import br.una.zisc.requisicoesWS.RetrofitCall;
 import br.una.zisc.requisicoesWS.RetrofitService;
 import br.una.zisc.requisicoesWS.ServiceGenerator;
 import retrofit2.Call;
@@ -105,6 +102,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CallHandler callHandlerAtivo;
     private List<DptoPolicia> listaDpto;
     private Marker dpto;
+    private RadioButton negativo, positivo;
+    private Button emergencia, menu;
+    private Toolbar actionBar;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -124,7 +124,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 MY_PERMISSION_LOCATION);*/
 
-
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
@@ -132,7 +131,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
-
+        actionBar = (Toolbar) findViewById(R.id.actionbar);
+        menu = (Button) findViewById(R.id.menuActionBar);
+        emergencia = (Button) findViewById(R.id.btnEmergencia);
         barraProcurar = (SearchView) findViewById(R.id.barraProcurar);
         barraProcurar.setOnQueryTextListener(this);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -151,10 +152,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (bundle != null) {
             emailUsuario = bundle.getString("EMAIL");
             idUsuario = bundle.getInt("ID");
-
-            Log.e("BUNDLE: ", emailUsuario);
         }
+
+        emergencia.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG2, "BOTAO EMERGÊNCIA");
+                setCallHandler(1, getCallHandler());
+            }
+        });
     }
+
 
     @Override
     public boolean onQueryTextChange(String newText) {
@@ -201,6 +209,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         return false;
+    }
+
+    public CallHandler getCallHandler() {
+        String cidade = "", bairro = "", estado = "";
+        LatLng latlng = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
+        Log.e(TAG2, latlng.toString());
+        Geocoder geocoder = new Geocoder(this);
+        List<Address> address = null;
+        try {
+            address = geocoder.getFromLocation(latlng.latitude, latlng.longitude, 1);
+            cidade = address.get(0).getLocality();
+            bairro = address.get(0).getSubLocality();
+            estado = address.get(0).getAdminArea();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+        return new CallHandler(String.valueOf(latlng.latitude), String.valueOf(latlng.longitude), cidade, estado, bairro, true, new Date());
     }
 
     public void dados(LatLng latLng) {
@@ -423,6 +450,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
+        // setCallHandler(2,null);
     }
 
     @Override
@@ -471,7 +499,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e("ESTADO", " " + estado);
                 inicio = false;
 
-                callProgressDialog("Buscando dados no servidor","Por favor, aguarde!");
+                callProgressDialog("Buscando dados no servidor", "Por favor, aguarde!");
                 buscaAlertas(new LatLng(inicialLocation.getLatitude(), inicialLocation.getLongitude()));
                 buscaDpto();
             }
@@ -483,14 +511,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
 
         if (tipo == 1) {
-
+            Log.e(TAG2, callHandler.toString());
             final Call<CallHandler> callHandlerCall = service.setCallHandler(idUsuario,
                     callHandler.getLatitude(),
                     callHandler.getLongitude(),
                     callHandler.getCidade(),
                     callHandler.getBairro(),
                     callHandler.getEstado());
-
             confirmaDialog = new AlertDialog.Builder(MapsActivity.this)
                     .setTitle("Ligação Direta?")
                     .setMessage("Deseja abrir o Dial-up para fazer uma chamada na polícia?")
@@ -558,7 +585,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     })
                     .setNegativeButton("Cancelar", null);
-
+            confirmaDialog.create();
+            confirmaDialog.show();
 
         } else {
             runOnUiThread(new Runnable() {
@@ -914,7 +942,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void callProgressDialog(final String title, final String message) {
-        if(dialog!=null){
+        if (dialog != null) {
             dialog.dismiss();
         }
         runOnUiThread(new Runnable() {

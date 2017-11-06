@@ -5,7 +5,7 @@
     <string name="Carregando">Buscando dados no servidor</string>
     <string name="Favor_Aguardar">Favor aguardar…</string>
     <string name="title_activity_maps">Mapa</string>
-    <string name="digiteLocal">Digite um local</string>
+    <string name="digiteLocal">Pesquise</string>
     <string name="tipo_marcacao">Tipo de local</string>
     <string name="bom">Bom</string>
     <string name="ruim">Ruim</string>
@@ -35,5 +35,7 @@
     <string name="match_password">as senhas não conferem</string>
     <string name="digite_celular">Digite seu celular com DDD</string>
     <string name="digite_cpf">Digite seu CPF</string>
+    <string name="adicionar_alerta">Adicionar Alerta</string>
+    <string name="zisc">ZISC</string>
 
 </resources>

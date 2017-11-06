@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/home"
+        android:title="Home"
+        android:titleCondensed="Home" />
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/ic_face_black_24dp"
+        android:title="Meu Perfil"
+        android:titleCondensed="Perfil" />
+    <item
+        android:id="@+id/my_alerts"
+        android:icon="@drawable/ic_place_black_24dp"
+        android:title="Meus Alertas"
+        android:titleCondensed="Alertas" />
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/ic_exit_to_app_black_24dp"
+        android:title="Sair"
+        android:titleCondensed="Sair" />
+
+</menu>
