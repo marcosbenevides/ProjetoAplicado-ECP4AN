@@ -5,10 +5,10 @@
     android:layout_height="match_parent"
     tools:context="br.una.zisc.MapsActivity">
 
-    <Toolbar
+    <android.support.v7.widget.Toolbar
         android:id="@+id/actionbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:elevation="4dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -23,7 +23,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:padding="5dp">
 
                 <TextView
                     android:id="@+id/ziscTitle"
@@ -36,8 +37,8 @@
 
                 <Button
                     android:id="@+id/menuActionBar"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:background="@drawable/ic_menu_white_24dp" />
             </RelativeLayout>
 
@@ -48,24 +49,23 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="5dp"
-                android:background="@android:color/white"
+                android:background="@drawable/search_box"
                 android:queryHint="@string/digiteLocal"
                 android:textColor="@android:color/black"
                 android:voiceIcon="@drawable/ic_settings_voice_black_24dp" />
         </LinearLayout>
 
-    </Toolbar>
+    </android.support.v7.widget.Toolbar>
 
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/actionbar"
         tools:layout="@layout/layout_map" />
-
 
     <Button
         android:id="@+id/btnEmergencia"
@@ -73,6 +73,7 @@
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/emergencia_128_round" />
 
 
