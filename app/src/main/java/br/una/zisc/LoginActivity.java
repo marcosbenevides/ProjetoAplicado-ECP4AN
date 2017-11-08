@@ -211,7 +211,7 @@ public class LoginActivity extends Activity {
                                         if (dialog != null) {
                                             dialog.dismiss();
                                         }
-                                        Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                                        Intent intent = new Intent(LoginActivity.this, MenuLateral.class);
                                         intent.putExtra("EMAIL",usuario.getEmail());
                                         intent.putExtra("ID",usuario.getId());
 
