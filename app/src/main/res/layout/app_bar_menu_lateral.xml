@@ -8,24 +8,42 @@
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppBarOverlay">
+        android:layout_height="wrap_content">
+        <!--android:theme="@style/AppBarOverlay">-->
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/toolbarStyle"
+            android:layout_height="90dp"
             android:background="#00BCD4"
             app:popupTheme="@style/PopupOverlay">
 
-            <SearchView
-                android:id="@+id/barraProcurar"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginBottom="5dp"
-                android:background="@drawable/search_box"
-                android:queryHint="@string/digiteLocal"
-                android:textColor="@android:color/black" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/ziscTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/zisc"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <SearchView
+                    android:id="@+id/barraProcurar"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/search_box"
+                    android:gravity="center_horizontal"
+                    android:queryHint="@string/digiteLocal" />
+            </LinearLayout>
+
+
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

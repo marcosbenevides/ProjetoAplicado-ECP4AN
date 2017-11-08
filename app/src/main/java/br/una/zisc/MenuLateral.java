@@ -65,6 +65,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -106,7 +108,7 @@ public class MenuLateral extends AppCompatActivity
     private ProgressDialog dialog;
     private AlertDialog.Builder alertDialog, infoDialog, addMarkerDialog, confirmaDialog;
     private AlertDialog informacao, cadastro;
-    private TextView textTipoAlertaCont, textDataHoraCont, textOcorrenciaCont;
+    private TextView textTipoAlertaCont, textDataHoraCont, textOcorrenciaCont, nomeUserMenu, emailUserMenu;
     private List<Alerta> listaTeste = new ArrayList<>();
     private final List<String> listaPositiva = new ArrayList<String>();
     private final List<String> listaNegativa = new ArrayList<String>();
@@ -114,7 +116,7 @@ public class MenuLateral extends AppCompatActivity
     private ToggleButton switchNegPos;
     private EditText editorOcorrencia;
     private Spinner spinnerTipo, spinnerAlerta;
-    private String cidade = "", estado = "", bairro = "", emailUsuario = "";
+    private String cidade = "", estado = "", bairro = "", emailUsuario = "", nomeUsuario = "";
     private Integer controle = 0, contFalha = 0;
     private DialogInterface.OnClickListener dialogInterface;
     private Base64 base64;
@@ -152,6 +154,7 @@ public class MenuLateral extends AppCompatActivity
 //        actionBar = (Toolbar) findViewById(R.id.actionbar);
 //        setSupportActionBar(actionBar);
 //        menu = (Button) findViewById(R.id.menuActionBar);
+
         emergencia = (Button) findViewById(R.id.btnEmergencia);
         barraProcurar = (SearchView) findViewById(R.id.barraProcurar);
         barraProcurar.setOnQueryTextListener(this);
@@ -171,6 +174,7 @@ public class MenuLateral extends AppCompatActivity
         if (bundle != null) {
             emailUsuario = bundle.getString("EMAIL");
             idUsuario = bundle.getInt("ID");
+            nomeUsuario = bundle.getString("NOME");
         }
 
         emergencia.setOnClickListener(new View.OnClickListener() {
@@ -191,6 +195,15 @@ public class MenuLateral extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View headerview = navigationView.getHeaderView(0);
+                /* Setando no menu o nome do usuario e o email */
+        nomeUserMenu = (TextView) headerview.findViewById(R.id.nomeUserMenu);
+        emailUserMenu = (TextView) headerview.findViewById(R.id.emailUserMenu);
+        nomeUserMenu.setText(nomeUsuario);
+        emailUserMenu.setText(emailUsuario);
+
+
     }
 
     @Override
@@ -231,17 +244,13 @@ public class MenuLateral extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.home) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.profile) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.my_alerts) {
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.logout) {
 
         }
 
@@ -434,6 +443,7 @@ public class MenuLateral extends AppCompatActivity
             }
         });
     }
+
     @Override
     public boolean onQueryTextChange(String newText) {
         //está aqui porque implementou SearchView.OnQueryTextListener
@@ -480,6 +490,7 @@ public class MenuLateral extends AppCompatActivity
 
         return false;
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;

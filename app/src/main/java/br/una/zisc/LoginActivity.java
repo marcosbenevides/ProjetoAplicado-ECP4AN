@@ -214,6 +214,8 @@ public class LoginActivity extends Activity {
                                         Intent intent = new Intent(LoginActivity.this, MenuLateral.class);
                                         intent.putExtra("EMAIL",usuario.getEmail());
                                         intent.putExtra("ID",usuario.getId());
+                                        intent.putExtra("NOME",usuario.getNome());
+
 
                                         startActivity(intent);
 
