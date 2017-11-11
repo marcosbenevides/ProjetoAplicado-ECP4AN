@@ -34,6 +34,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -135,14 +136,14 @@ public class MenuLateral extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_menu_lateral);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        /*ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                MY_PERMISSION_LOCATION);*/
 
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -151,8 +152,8 @@ public class MenuLateral extends AppCompatActivity
                     .addApi(LocationServices.API)
                     .build();
         }
-//        actionBar = (Toolbar) findViewById(R.id.actionbar);
-//        setSupportActionBar(actionBar);
+        actionBar = (Toolbar) findViewById(R.id.actionbar);
+        setSupportActionBar(actionBar);
 //        menu = (Button) findViewById(R.id.menuActionBar);
 
         emergencia = (Button) findViewById(R.id.btnEmergencia);
@@ -184,6 +185,7 @@ public class MenuLateral extends AppCompatActivity
                 setCallHandler(1, getCallHandler());
             }
         });
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -219,7 +221,7 @@ public class MenuLateral extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_lateral, menu);
+        //getMenuInflater().inflate(R.menu.menu_lateral, menu);
         return true;
     }
 
