@@ -52,6 +52,8 @@ public interface RetrofitService {
                                  @Field("observacao") String obs,
                                  @Field("tipo") String tipo,
                                  @Field("ePositivo") Boolean ePositivo);
+    @GET("consultaAlertaUsuario/{id}")
+    Call<List<Alerta>> consultaAlertaUsuario(@Path("id") int idUsuario);
 
     /* CallHandler */
     @FormUrlEncoded

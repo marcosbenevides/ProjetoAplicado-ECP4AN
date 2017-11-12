@@ -252,6 +252,11 @@ public class MenuLateral extends AppCompatActivity
 
         } else if (id == R.id.my_alerts) {
 
+            Intent intent = new Intent(MenuLateral.this, CardViewActivity.class);
+            intent.putExtra("ID", idUsuario);
+
+            startActivity(intent);
+
         } else if (id == R.id.logout) {
 
         }
