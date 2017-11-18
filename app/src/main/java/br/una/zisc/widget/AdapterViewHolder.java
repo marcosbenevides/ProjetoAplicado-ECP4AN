@@ -20,7 +20,6 @@ public class AdapterViewHolder extends RecyclerView.ViewHolder {
         tipoAlerta = (TextView) itemView.findViewById(R.id.tipoAlertaCard);
         localidade = (TextView) itemView.findViewById(R.id.localidadeCard);
         logHora = (TextView) itemView.findViewById(R.id.loghoraCard);
-        observacao = (TextView) itemView.findViewById(R.id.obsAlertaCard);
-
+        observacao = (TextView) itemView.findViewById(R.id.obsCard);
     }
 }

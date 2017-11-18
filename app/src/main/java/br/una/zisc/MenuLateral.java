@@ -152,13 +152,12 @@ public class MenuLateral extends AppCompatActivity
                     .addApi(LocationServices.API)
                     .build();
         }
-        actionBar = (Toolbar) findViewById(R.id.actionbar);
+/*        actionBar = (Toolbar) findViewById(R.id.actionbar);
         setSupportActionBar(actionBar);
-//        menu = (Button) findViewById(R.id.menuActionBar);
+//        menu = (Button) findViewById(R.id.menuActionBar);*/
 
         emergencia = (Button) findViewById(R.id.btnEmergencia);
-        barraProcurar = (SearchView) findViewById(R.id.barraProcurar);
-        barraProcurar.setOnQueryTextListener(this);
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -221,7 +220,11 @@ public class MenuLateral extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.menu_lateral, menu);
+        getMenuInflater().inflate(R.menu.menu_lateral, menu);
+
+        barraProcurar = (SearchView) menu.getItem(R.id.procurar).getActionView();
+        barraProcurar.setOnQueryTextListener(this);
+
         return true;
     }
 
