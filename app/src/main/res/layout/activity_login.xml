@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#00BCD4"
@@ -12,116 +13,129 @@
     tools:context="br.una.zisc.LoginActivity">
 
 
-    <LinearLayout
-        android:id="@+id/estilo_login"
-        android:layout_width="fill_parent"
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo_marker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/emailEditor"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/round_corners"
+        android:cursorVisible="true"
+        android:hint="@string/e_mail"
+        android:inputType="textEmailAddress"
+        android:paddingEnd="5dp"
+        android:paddingLeft="5dp"
+        android:paddingStart="5dp"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/senhaEditor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+    <EditText
+        android:id="@+id/senhaEditor"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/round_corners"
+        android:cursorVisible="true"
+        android:hint="@string/senha"
+        android:inputType="textPassword"
+        android:paddingEnd="5dp"
+        android:paddingLeft="5dp"
+        android:paddingStart="5dp"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:textColor="#ffffff"
+        android:textColorHint="#ffffff"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/checkLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <CheckBox
+        android:id="@+id/checkLogin"
+        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:orientation="vertical">
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:buttonTint="@color/white"
+        android:text="@string/lembrar_dados"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:src="@drawable/logo_marker" />
+    <Button
+        android:id="@+id/buttonLogin"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/btn_round"
+        android:text="@string/login"
+        app:layout_constraintBottom_toTopOf="@+id/buttonCreateLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <EditText
-            android:id="@+id/emailEditor"
-            style="@style/Widget.AppCompat.EditText"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginEnd="0dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:paddingEnd="5dp"
-            android:paddingLeft="5dp"
-            android:paddingStart="5dp"
-            android:background="@drawable/round_corners"
-            android:cursorVisible="true"
-            android:hint="@string/e_mail"
-            android:inputType="textEmailAddress"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white"
-            android:textSize="15sp" />
+    <Button
+        android:id="@+id/buttonCreateLogin"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/btn_round"
+        android:onClick="cadastrar"
+        android:text="@string/crie_seu_cadastro"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <EditText
-            android:id="@+id/senhaEditor"
-            style="@style/Widget.AppCompat.EditText"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginEnd="0dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:paddingEnd="5dp"
-            android:paddingLeft="5dp"
-            android:paddingStart="5dp"
-            android:background="@drawable/round_corners"
-            android:cursorVisible="true"
-            android:inputType="textPassword"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:hint="@string/senha"
-            android:textSize="15sp"
-            android:textColor="#ffffff"
-            android:textColorHint="#ffffff" />
-
-        <TextView
-            android:id="@+id/status_login"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:text="@string/invalidos"
-            android:textColor="@color/colorAccent"
-            android:visibility="invisible" />
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="19dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/una"
+        android:textAlignment="center"
+        android:textColor="#b0b0b1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
-        <CheckBox
-            android:id="@+id/checkLogin"
-            style="@style/Widget.AppCompat.CompoundButton.CheckBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:buttonTint="@color/white"
-            android:text="@string/lembrar_dados"
-            android:textColor="@color/white" />
-
-        <Button
-            android:id="@+id/buttonLogin"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="@string/login"
-            android:background="@drawable/btn_round"/>
-
-        <Button
-            android:id="@+id/buttonCreateLogin"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            android:onClick="cadastrar"
-            android:text="@string/crie_seu_cadastro"
-            android:textColor="@color/colorWhite"
-            android:background="@drawable/btn_round"/>
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/una"
-            android:textAlignment="center"
-            android:textColor="#b0b0b1" />
-
-    </LinearLayout>
-
-
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

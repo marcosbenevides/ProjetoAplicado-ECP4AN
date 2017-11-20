@@ -21,6 +21,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
@@ -138,6 +139,7 @@ public class MenuLateral extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_menu_lateral);
 
@@ -152,9 +154,6 @@ public class MenuLateral extends AppCompatActivity
                     .addApi(LocationServices.API)
                     .build();
         }
-/*        actionBar = (Toolbar) findViewById(R.id.actionbar);
-        setSupportActionBar(actionBar);
-//        menu = (Button) findViewById(R.id.menuActionBar);*/
 
         emergencia = (Button) findViewById(R.id.btnEmergencia);
 
@@ -222,7 +221,7 @@ public class MenuLateral extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_lateral, menu);
 
-        barraProcurar = (SearchView) menu.getItem(R.id.procurar).getActionView();
+        barraProcurar = (SearchView) menu.findItem(R.id.procurar).getActionView();
         barraProcurar.setOnQueryTextListener(this);
 
         return true;
@@ -230,15 +229,6 @@ public class MenuLateral extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

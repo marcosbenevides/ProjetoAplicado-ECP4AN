@@ -71,7 +71,6 @@ public class LoginActivity extends Activity {
         emailEditor = (EditText) findViewById(R.id.emailEditor);
         senhaEditor = (EditText) findViewById(R.id.senhaEditor);
         easterEgg = (TextView) findViewById(R.id.textView);
-        status_error = (TextView) findViewById(R.id.status_login);
         checkLogin = (CheckBox) findViewById(R.id.checkLogin);
 
         SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
@@ -206,15 +205,14 @@ public class LoginActivity extends Activity {
 //                                        it.putExtra("EMAIL", usuario.getEmail());
 //                                        it.putExtra("ID", usuario.getId());
 
-                                        status_error.setVisibility(View.INVISIBLE);
 
                                         if (dialog != null) {
                                             dialog.dismiss();
                                         }
                                         Intent intent = new Intent(LoginActivity.this, MenuLateral.class);
-                                        intent.putExtra("EMAIL",usuario.getEmail());
-                                        intent.putExtra("ID",usuario.getId());
-                                        intent.putExtra("NOME",usuario.getNome());
+                                        intent.putExtra("EMAIL", usuario.getEmail());
+                                        intent.putExtra("ID", usuario.getId());
+                                        intent.putExtra("NOME", usuario.getNome());
 
 
                                         startActivity(intent);
@@ -229,7 +227,6 @@ public class LoginActivity extends Activity {
                                         if (dialog != null) {
                                             dialog.dismiss();
                                         }
-                                        status_error.setVisibility(View.VISIBLE);
                                     }
                                 } else {
                                     callDialog(1, response.message() + " - " + response.code());

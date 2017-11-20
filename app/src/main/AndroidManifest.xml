@@ -72,9 +72,8 @@
 
         <activity
             android:name="br.una.zisc.MenuLateral"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:label=""/>
-        <activity android:name="br.una.zisc.CardViewActivity"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name="br.una.zisc.CardViewActivity" />
     </application>
 
 </manifest>
