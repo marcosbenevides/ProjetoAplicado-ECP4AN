@@ -3,20 +3,21 @@ package br.una.zisc;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
-import java.nio.file.Files;
+import com.google.gson.Gson;
+
 import java.util.List;
 
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
 import br.una.zisc.entidades.Alerta;
+import br.una.zisc.entidades.Usuario;
 import br.una.zisc.requisicoesWS.RetrofitService;
 import br.una.zisc.requisicoesWS.ServiceGenerator;
 import retrofit2.Call;
@@ -32,6 +33,7 @@ public class CardViewActivity extends AppCompatActivity {
     private ProgressDialog dialog;
     private AlertDialog.Builder alertDialog;
     private Toolbar actionBar;
+    private Usuario usuario;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -39,13 +41,13 @@ public class CardViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_view);
 
-        recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        recyclerView = findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
 
-        actionBar = (Toolbar) findViewById(R.id.actionBar);
+        actionBar = findViewById(R.id.actionBar);
         setSupportActionBar(actionBar);
 
         try {
@@ -58,7 +60,7 @@ public class CardViewActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            idUsuario = bundle.getInt("ID");
+            usuario = new Gson().fromJson(bundle.getString("USUARIO"), Usuario.class);
         }
 
         buscaAlertas();
@@ -102,7 +104,7 @@ public class CardViewActivity extends AppCompatActivity {
             public void run() {
 
                 RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
-                Call<List<Alerta>> alertas = service.consultaAlertaUsuario(idUsuario);
+                Call<List<Alerta>> alertas = service.consultaAlertaUsuario(usuario.getId());
 
                 alertas.enqueue(new Callback<List<Alerta>>() {
                     @Override

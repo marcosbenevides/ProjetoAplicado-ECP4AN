@@ -5,17 +5,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
 import br.una.zisc.entidades.Alerta;
 import br.una.zisc.widget.AdapterViewHolder;
-import retrofit2.Callback;
 
 /**
  * Created by marcos.benevides on 10/11/2017.

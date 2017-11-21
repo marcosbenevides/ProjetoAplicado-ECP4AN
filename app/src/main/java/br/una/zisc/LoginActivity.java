@@ -27,6 +27,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.gson.Gson;
+
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
 import br.una.zisc.entidades.Usuario;
 import br.una.zisc.requisicoesWS.RetrofitCall;
@@ -66,12 +68,12 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        confirmar = (Button) findViewById(R.id.buttonLogin);
-        cadastrar = (Button) findViewById(R.id.buttonCreateLogin);
-        emailEditor = (EditText) findViewById(R.id.emailEditor);
-        senhaEditor = (EditText) findViewById(R.id.senhaEditor);
-        easterEgg = (TextView) findViewById(R.id.textView);
-        checkLogin = (CheckBox) findViewById(R.id.checkLogin);
+        confirmar = findViewById(R.id.buttonLogin);
+        cadastrar = findViewById(R.id.buttonCreateLogin);
+        emailEditor = findViewById(R.id.emailEditor);
+        senhaEditor = findViewById(R.id.senhaEditor);
+        easterEgg = findViewById(R.id.textView);
+        checkLogin = findViewById(R.id.checkLogin);
 
         SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
         emailEditor.setText(sharedPreferences.getString("emailUsuario", ""));
@@ -110,9 +112,9 @@ public class LoginActivity extends Activity {
                 View dialogView = layoutInflater.inflate(R.layout.easter_egg_config, null);
                 easterEggConfig.setView(dialogView);
 
-                toggleButton = (ToggleButton) dialogView.findViewById(R.id.toggleButton);
-                remotoEditor = (EditText) dialogView.findViewById(R.id.editorRemoto);
-                localEditor = (EditText) dialogView.findViewById(R.id.editorLocal);
+                toggleButton = dialogView.findViewById(R.id.toggleButton);
+                remotoEditor = dialogView.findViewById(R.id.editorRemoto);
+                localEditor = dialogView.findViewById(R.id.editorLocal);
 
                 toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
@@ -209,11 +211,9 @@ public class LoginActivity extends Activity {
                                         if (dialog != null) {
                                             dialog.dismiss();
                                         }
+                                        Gson gson = new Gson();
                                         Intent intent = new Intent(LoginActivity.this, MenuLateral.class);
-                                        intent.putExtra("EMAIL", usuario.getEmail());
-                                        intent.putExtra("ID", usuario.getId());
-                                        intent.putExtra("NOME", usuario.getNome());
-
+                                        intent.putExtra("USUARIO",gson.toJson(usuario));
 
                                         startActivity(intent);
 
@@ -267,7 +267,7 @@ public class LoginActivity extends Activity {
      * Verifica se o GPS está ligado, se não chama um dialogo perguntando se quer ligar
      */
     public void gpsLigado() {
-        locationManager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             alertAtiva(ativaGPS);
             return;
@@ -279,7 +279,7 @@ public class LoginActivity extends Activity {
      * Verifica se tem internet, se não chama um dialogo perguntando se quer conectar no WIFI
      */
     public void temConexao() {
-        connectivityManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
         for (NetworkInfo n : networkInfo) {
             if (n.getTypeName().equalsIgnoreCase("WIFI"))

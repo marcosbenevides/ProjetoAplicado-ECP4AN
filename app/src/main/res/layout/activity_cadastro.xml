@@ -33,14 +33,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:text="@string/crie_seu_cadastro"
         android:textAlignment="center"
         android:textColor="#f4f6f7"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/textNomeUser"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginLeft="8dp" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/textNomeUser"
@@ -122,7 +122,7 @@
         android:paddingLeft="5dp"
         android:paddingStart="5dp"
         android:textColor="#f4f6f7"
-        android:textColorHint="#f4f6f7"
+        android:textColorHint="@color/white"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/textRePasswd" />
 
@@ -140,7 +140,7 @@
         android:paddingLeft="5dp"
         android:paddingStart="5dp"
         android:textColor="#f4f6f7"
-        android:textColorHint="#f4f6f7"
+        android:textColorHint="@color/white"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/buttonRegister" />
 

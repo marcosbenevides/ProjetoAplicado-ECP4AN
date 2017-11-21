@@ -15,26 +15,21 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.util.Base64;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -67,8 +62,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -82,6 +75,7 @@ import br.una.projetoaplicado.marcosbenevides.zisc.R;
 import br.una.zisc.entidades.Alerta;
 import br.una.zisc.entidades.CallHandler;
 import br.una.zisc.entidades.DptoPolicia;
+import br.una.zisc.entidades.Usuario;
 import br.una.zisc.mapaUtil.Marcador;
 import br.una.zisc.requisicoesWS.RetrofitService;
 import br.una.zisc.requisicoesWS.ServiceGenerator;
@@ -112,21 +106,19 @@ public class MenuLateral extends AppCompatActivity
     private AlertDialog informacao, cadastro;
     private TextView textTipoAlertaCont, textDataHoraCont, textOcorrenciaCont, nomeUserMenu, emailUserMenu;
     private List<Alerta> listaTeste = new ArrayList<>();
-    private final List<String> listaPositiva = new ArrayList<String>();
-    private final List<String> listaNegativa = new ArrayList<String>();
+    private final List<String> listaPositiva = new ArrayList<>();
+    private final List<String> listaNegativa = new ArrayList<>();
     private List<Marcador> mListMarcador = new ArrayList<>(); // lista que armazena todos os objetos do tipo Marcador
     private ToggleButton switchNegPos;
     private EditText editorOcorrencia;
     private Spinner spinnerTipo, spinnerAlerta;
-    private String cidade = "", estado = "", bairro = "", emailUsuario = "", nomeUsuario = "";
+    private String cidade = "", estado = "", bairro = "";
     private Integer controle = 0, contFalha = 0;
     private DialogInterface.OnClickListener dialogInterface;
     private Base64 base64;
     private Object[] alertas = new Object[2];
     private Marcador marcador = new Marcador();
     private Thread thread1, thread2;
-    private Gson gson = new Gson();
-    private int idUsuario;
     private CallHandler callHandlerAtivo;
     private List<DptoPolicia> listaDpto;
     private Marker dpto;
@@ -134,6 +126,7 @@ public class MenuLateral extends AppCompatActivity
     private Button emergencia, menu;
     private Toolbar actionBar;
     private GoogleApiClient client;
+    private Usuario usuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +148,7 @@ public class MenuLateral extends AppCompatActivity
                     .build();
         }
 
-        emergencia = (Button) findViewById(R.id.btnEmergencia);
+        emergencia = findViewById(R.id.btnEmergencia);
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -171,9 +164,7 @@ public class MenuLateral extends AppCompatActivity
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            emailUsuario = bundle.getString("EMAIL");
-            idUsuario = bundle.getInt("ID");
-            nomeUsuario = bundle.getString("NOME");
+            usuario = new Gson().fromJson(bundle.getString("USUARIO"), Usuario.class);
         }
 
         emergencia.setOnClickListener(new View.OnClickListener() {
@@ -184,31 +175,38 @@ public class MenuLateral extends AppCompatActivity
             }
         });
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        try {
+            getSupportActionBar().setTitle("Mapa de Alertas");
+        } catch (NullPointerException e) {
+            callDialog(3, e.getMessage());
+        }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerview = navigationView.getHeaderView(0);
+
+
                 /* Setando no menu o nome do usuario e o email */
-        nomeUserMenu = (TextView) headerview.findViewById(R.id.nomeUserMenu);
-        emailUserMenu = (TextView) headerview.findViewById(R.id.emailUserMenu);
-        nomeUserMenu.setText(nomeUsuario);
-        emailUserMenu.setText(emailUsuario);
+        nomeUserMenu = headerview.findViewById(R.id.nomeUserMenu);
+        emailUserMenu = headerview.findViewById(R.id.emailUserMenu);
+        nomeUserMenu.setText(usuario.getNome());
+        emailUserMenu.setText(usuario.getEmail());
 
 
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -243,10 +241,14 @@ public class MenuLateral extends AppCompatActivity
             // Handle the camera action
         } else if (id == R.id.profile) {
 
+            Intent intent = new Intent(MenuLateral.this, ProfileActivity.class);
+            intent.putExtra("USUARIO", new Gson().toJson(usuario));
+            startActivity(intent);
+
         } else if (id == R.id.my_alerts) {
 
             Intent intent = new Intent(MenuLateral.this, CardViewActivity.class);
-            intent.putExtra("ID", idUsuario);
+            intent.putExtra("USUARIO", new Gson().toJson(usuario));
 
             startActivity(intent);
 
@@ -254,7 +256,7 @@ public class MenuLateral extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -264,7 +266,7 @@ public class MenuLateral extends AppCompatActivity
         LatLng latlng = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
         Log.e(TAG2, latlng.toString());
         Geocoder geocoder = new Geocoder(this);
-        List<Address> address = null;
+        List<Address> address;
         try {
             address = geocoder.getFromLocation(latlng.latitude, latlng.longitude, 1);
             cidade = address.get(0).getLocality();
@@ -280,7 +282,7 @@ public class MenuLateral extends AppCompatActivity
 
     public void dados(LatLng latLng) {
         Geocoder geocoder = new Geocoder(this);
-        List<Address> address = null;
+        List<Address> address;
         try {
             address = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
             cidade = address.get(0).getLocality();
@@ -328,7 +330,7 @@ public class MenuLateral extends AppCompatActivity
 
                                         RetrofitService service = ServiceGenerator.createService(RetrofitService.class); // inicia o gerador de servico/cria conexao com o server
                                         Call<Alerta> call = service.cadastraralerta(
-                                                idUsuario,
+                                                usuario.getId(),
                                                 alerta_temporario.getLongitude(),
                                                 alerta_temporario.getLatitude(),
                                                 alerta_temporario.getBairro(),
@@ -354,9 +356,9 @@ public class MenuLateral extends AppCompatActivity
                 View dialogView = layoutInflater.inflate(R.layout.add_marker_view, null);
                 addMarkerDialog.setView(dialogView);
 
-                switchNegPos = (ToggleButton) dialogView.findViewById(R.id.buttonNegPos);
-                editorOcorrencia = (EditText) dialogView.findViewById(R.id.editOcorrencia);
-                spinnerTipo = (Spinner) dialogView.findViewById(R.id.spinnerTipo);
+                switchNegPos = dialogView.findViewById(R.id.buttonNegPos);
+                editorOcorrencia = dialogView.findViewById(R.id.editOcorrencia);
+                spinnerTipo = dialogView.findViewById(R.id.spinnerTipo);
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(MenuLateral.this, android.R.layout.simple_list_item_1, listaNegativa);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
@@ -607,7 +609,7 @@ public class MenuLateral extends AppCompatActivity
 
         if (tipo == 1) {
             Log.e(TAG2, callHandler.toString());
-            final Call<CallHandler> callHandlerCall = service.setCallHandler(idUsuario,
+            final Call<CallHandler> callHandlerCall = service.setCallHandler(usuario.getId(),
                     callHandler.getLatitude(),
                     callHandler.getLongitude(),
                     callHandler.getCidade(),
@@ -691,7 +693,7 @@ public class MenuLateral extends AppCompatActivity
                 }
             });
 
-            if (callHanderFailure == false) {
+            if (!callHanderFailure) {
                 final Call<CallHandler> callHandlerCall = service.cancelCallHandler(callHandlerAtivo.getId());
                 new Thread(new Runnable() {
                     @Override
@@ -844,8 +846,8 @@ public class MenuLateral extends AppCompatActivity
             @Override
             public void onInfoWindowClick(Marker marker) {
                 System.out.println("0...");
-                /**
-                 * Chamando o InfoDialog com as informações do alerta
+                /*
+                  Chamando o InfoDialog com as informações do alerta
                  */
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     System.out.println("1...");
@@ -856,13 +858,13 @@ public class MenuLateral extends AppCompatActivity
                     View dialogView = layoutInflater.inflate(R.layout.info_dialog, null);
                     infoDialog.setView(dialogView);
 
-                    /**
-                     * Elementos na tela de informações do alerta
+                    /*
+                      Elementos na tela de informações do alerta
                      */
-                    textTipoAlertaCont = (TextView) dialogView.findViewById(R.id.textTipoAlertaCont);
-                    textDataHoraCont = (TextView) dialogView.findViewById(R.id.textDataHoraCont);
-                    textOcorrenciaCont = (TextView) dialogView.findViewById(R.id.textOcorrenciaCont);
-                    spinnerAlerta = (Spinner) dialogView.findViewById(R.id.spinnerAlertas);
+                    textTipoAlertaCont = dialogView.findViewById(R.id.textTipoAlertaCont);
+                    textDataHoraCont = dialogView.findViewById(R.id.textDataHoraCont);
+                    textOcorrenciaCont = dialogView.findViewById(R.id.textOcorrenciaCont);
+                    spinnerAlerta = dialogView.findViewById(R.id.spinnerAlertas);
                     final SimpleDateFormat dateFormat = new SimpleDateFormat("dd HH:mm");
                     final SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                     Marcador marcador = new Marcador();
@@ -871,7 +873,7 @@ public class MenuLateral extends AppCompatActivity
                      * Implementação dos itens do spinner baseado na lista de alerta em cada objeto marcador
                      */
                     if (marcador != null) {
-                        List<String> listaDrop = new ArrayList<String>();
+                        List<String> listaDrop = new ArrayList<>();
                         listaDrop.add(marcador.getAlerta().getTipo() + " ( Dia " + String.valueOf(dateFormat.format(marcador.getAlerta().getLogHora())) + ")");
 
                         if (marcador.getMarcadorList().size() >= 1) {
@@ -884,9 +886,9 @@ public class MenuLateral extends AppCompatActivity
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
                         spinnerAlerta.setAdapter(adapter);
 
-                        /**
-                         * Função para alterar os itens dentro do dialog de informações de cada marcador.
-                         * Os valores irão alterar para cada tipo de alerta selecionado na lista de dropdown
+                        /*
+                          Função para alterar os itens dentro do dialog de informações de cada marcador.
+                          Os valores irão alterar para cada tipo de alerta selecionado na lista de dropdown
                          */
                         final Marcador finalMarcador = marcador;
                         spinnerAlerta.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

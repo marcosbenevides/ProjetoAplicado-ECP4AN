@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -17,5 +17,17 @@
 
     <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="EditTextZisc" parent="Widget.AppCompat.EditText">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/white</item>
+        <item name="android:background">@drawable/round_corners</item>
+        <item name="android:paddingLeft">5sp</item>
+        <item name="android:paddingStart" tools:targetApi="jelly_bean_mr1">5sp</item>
+        <item name="android:paddingRight">5sp</item>
+        <item name="android:paddingEnd" tools:targetApi="jelly_bean_mr1">5sp</item>
+        <item name="android:layout_marginBottom">8dp</item>
     </style>
 </resources>
