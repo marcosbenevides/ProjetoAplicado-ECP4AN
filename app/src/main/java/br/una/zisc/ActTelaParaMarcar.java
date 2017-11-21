@@ -32,7 +32,7 @@ public class ActTelaParaMarcar extends AppCompatActivity implements View.OnClick
     }
 
     public void onClick(View v){
-        it = new Intent(this, MapsActivity.class);
+        it = new Intent(this, MenuLateral.class);
         switch (v.getId()){
             case R.id.btnOk:
                 if(it!=null && !classificacao.equals("vazio")) {

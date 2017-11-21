@@ -1,12 +1,18 @@
 package br.una.zisc;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
 
+import java.nio.file.Files;
 import java.util.List;
 
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
@@ -25,7 +31,9 @@ public class CardViewActivity extends AppCompatActivity {
     private Integer idUsuario, contFalha = 0;
     private ProgressDialog dialog;
     private AlertDialog.Builder alertDialog;
+    private Toolbar actionBar;
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,15 +45,55 @@ public class CardViewActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
 
+        actionBar = (Toolbar) findViewById(R.id.actionBar);
+        setSupportActionBar(actionBar);
+
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            //getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setTitle("Meus Alertas");
+        } catch (NullPointerException e) {
+            callDialog(3, e.getMessage());
+        }
+
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             idUsuario = bundle.getInt("ID");
         }
+
         buscaAlertas();
 
     }
 
-    public void buscaAlertas() {
+    /**
+     * This hook is called whenever an item in your options menu is selected.
+     * The default implementation simply returns false to have the normal
+     * processing happen (calling the item's Runnable or sending a message to
+     * its Handler as appropriate).  You can use this method for any items
+     * for which you would like to do processing without those other
+     * facilities.
+     * <p>
+     * <p>Derived classes should call through to the base class for it to
+     * perform the default menu handling.</p>
+     *
+     * @param item The menu item that was selected.
+     * @return boolean Return false to allow normal menu processing to
+     * proceed, true to consume it here.
+     * @see #onCreateOptionsMenu
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void buscaAlertas() {
 
         callProgressDialog("Por favor aguarde", "Buscando seus alertas!");
 
@@ -74,7 +122,7 @@ public class CardViewActivity extends AppCompatActivity {
                                 dialog.dismiss();
                             }
                             List<Alerta> lista = response.body();
-                            recyclerView.setAdapter(new AlertasAdapter(lista,CardViewActivity.this));
+                            recyclerView.setAdapter(new AlertasAdapter(lista, CardViewActivity.this));
 
                         } else {
                             callDialog(2, "");
@@ -137,4 +185,5 @@ public class CardViewActivity extends AppCompatActivity {
             }
         });
     }
+
 }

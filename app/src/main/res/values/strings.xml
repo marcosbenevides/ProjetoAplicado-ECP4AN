@@ -139,5 +139,6 @@
     <string name="horaedata">horaedata</string>
     <string name="imagem_ilustrativa">imagem ilustrativa</string>
     <string name="pesquisar">Pesquisar</string>
+    <string name="title_activity_profile">ProfileActivity</string>
 
 </resources>

@@ -55,9 +55,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity
-            android:name="br.una.zisc.MapsActivity"
-            android:label="@string/title_activity_maps" />
         <activity android:name="br.una.zisc.ActTelaParaMarcar" />
 
         <receiver android:name="br.una.zisc.widget.Zisc">
@@ -73,7 +70,15 @@
         <activity
             android:name="br.una.zisc.MenuLateral"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name="br.una.zisc.CardViewActivity" />
+        <activity android:name="br.una.zisc.CardViewActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="br.una.zisc.MenuLateral" />
+        </activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:label="@string/title_activity_profile"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

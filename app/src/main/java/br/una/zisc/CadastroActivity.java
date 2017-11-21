@@ -97,7 +97,7 @@ public class CadastroActivity extends Activity {
     }
 
     public void cadastroConcluido() {
-        Intent intent = new Intent(CadastroActivity.this, MapsActivity.class);
+        Intent intent = new Intent(CadastroActivity.this, MenuLateral.class);
         intent.putExtra("EMAIL", usuario.getNome());
         intent.putExtra("ID", usuario.getId());
         startActivity(intent);
