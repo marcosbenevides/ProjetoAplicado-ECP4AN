@@ -3,12 +3,14 @@ package br.una.zisc;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.gson.Gson;
@@ -52,7 +54,6 @@ public class CardViewActivity extends AppCompatActivity {
 
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            //getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setTitle("Meus Alertas");
         } catch (NullPointerException e) {
             callDialog(3, e.getMessage());
@@ -65,6 +66,11 @@ public class CardViewActivity extends AppCompatActivity {
 
         buscaAlertas();
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
     }
 
     /**
@@ -87,9 +93,11 @@ public class CardViewActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                break;
+            case android.R.id.home: {
+                onBackPressed();
+                finish();
+            }
+            break;
         }
 
         return super.onOptionsItemSelected(item);

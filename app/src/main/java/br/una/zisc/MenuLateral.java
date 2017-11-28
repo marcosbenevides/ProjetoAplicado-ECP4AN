@@ -123,10 +123,11 @@ public class MenuLateral extends AppCompatActivity
     private List<DptoPolicia> listaDpto;
     private Marker dpto;
     private RadioButton negativo, positivo;
-    private Button emergencia, menu;
+    private Button emergencia, menu, myLocation;
     private Toolbar actionBar;
     private GoogleApiClient client;
     private Usuario usuario;
+    private Boolean ativoCallHandler = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,9 +177,15 @@ public class MenuLateral extends AppCompatActivity
         });
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbarSearch = findViewById(R.id.toolbar_search);
         setSupportActionBar(toolbar);
+        //toolbar.setTitle("Mapa de Alertas");
+        //toolbar.setTitleMargin(15, 0, 15, 0);
+
+        barraProcurar = findViewById(R.id.search_view_toolbar);
+        barraProcurar.setOnQueryTextListener(this);
         try {
-            getSupportActionBar().setTitle("Mapa de Alertas");
+            getSupportActionBar().setTitle("");
         } catch (NullPointerException e) {
             callDialog(3, e.getMessage());
         }
@@ -216,19 +223,36 @@ public class MenuLateral extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+
         getMenuInflater().inflate(R.menu.menu_lateral, menu);
 
-        barraProcurar = (SearchView) menu.findItem(R.id.procurar).getActionView();
-        barraProcurar.setOnQueryTextListener(this);
-
+        myLocation = (Button) menu.findItem(R.id.localizacao).getActionView();
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        switch (item.getItemId()) {
+            case R.id.localizacao: {
+                setMyLocation();
+            }
+            break;
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setMyLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            inicialLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            if (inicialLocation != null) {
+                LatLng lugar = new LatLng(inicialLocation.getLatitude(), inicialLocation.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lugar, 14));
+            }
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -249,11 +273,12 @@ public class MenuLateral extends AppCompatActivity
 
             Intent intent = new Intent(MenuLateral.this, CardViewActivity.class);
             intent.putExtra("USUARIO", new Gson().toJson(usuario));
-
             startActivity(intent);
 
         } else if (id == R.id.logout) {
-
+            Intent intent = new Intent(MenuLateral.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -496,6 +521,7 @@ public class MenuLateral extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
         it = new Intent(this, ActTelaParaMarcar.class);
 
@@ -547,6 +573,10 @@ public class MenuLateral extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        if (ativoCallHandler) {
+            ativoCallHandler = false;
+            setCallHandler(2, callHandlerAtivo);
+        }
         // setCallHandler(2,null);
     }
 
@@ -617,7 +647,7 @@ public class MenuLateral extends AppCompatActivity
                     callHandler.getEstado());
             confirmaDialog = new AlertDialog.Builder(MenuLateral.this)
                     .setTitle("Ligação Direta?")
-                    .setMessage("Deseja abrir o Dial-up para fazer uma chamada na polícia?")
+                    .setMessage("Deseja abrir o Dial-up para fazer uma chamada de emergência?")
                     .setPositiveButton("SIM", new DialogInterface.OnClickListener() {
                         /**
                          * This method will be invoked when a button in the dialog is clicked.
@@ -646,7 +676,9 @@ public class MenuLateral extends AppCompatActivity
                                         public void onResponse(Call<CallHandler> call, Response<CallHandler> response) {
                                             if (!response.isSuccessful()) {
                                                 callHanderFailure = true;
+                                                ativoCallHandler = false;
                                             } else {
+                                                ativoCallHandler = true;
                                                 callHanderFailure = false;
                                                 callHandlerAtivo = response.body();
                                             }
@@ -704,6 +736,7 @@ public class MenuLateral extends AppCompatActivity
                                 if (!response.isSuccessful()) {
                                     callDialog(1, response.code() + " - " + response.message());
                                 } else {
+                                    dialog.dismiss();
                                     callHandlerAtivo = response.body();
                                 }
                             }

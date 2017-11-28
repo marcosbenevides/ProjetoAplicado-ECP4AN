@@ -2,9 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/procurar"
-        android:icon="@drawable/ic_search_white_36dp"
+        android:id="@+id/localizacao"
+        android:icon="@drawable/ic_location_searching_white_36dp"
         android:title="@string/pesquisar"
-        app:actionViewClass="android.widget.SearchView"
         app:showAsAction="collapseActionView|ifRoom" />
 </menu>

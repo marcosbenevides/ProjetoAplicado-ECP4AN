@@ -213,7 +213,7 @@ public class LoginActivity extends Activity {
                                         }
                                         Gson gson = new Gson();
                                         Intent intent = new Intent(LoginActivity.this, MenuLateral.class);
-                                        intent.putExtra("USUARIO",gson.toJson(usuario));
+                                        intent.putExtra("USUARIO", gson.toJson(usuario));
 
                                         startActivity(intent);
 
@@ -223,6 +223,9 @@ public class LoginActivity extends Activity {
                                                 Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_LONG).show();
                                             }
                                         });
+
+                                        finish();
+
                                     } else {
                                         if (dialog != null) {
                                             dialog.dismiss();

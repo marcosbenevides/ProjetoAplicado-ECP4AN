@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import br.una.projetoaplicado.marcosbenevides.zisc.R;
 import br.una.zisc.entidades.Usuario;
 import br.una.zisc.requisicoesWS.RetrofitService;
@@ -34,14 +36,14 @@ public class CadastroActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro);
 
-        nome_usuario = (EditText) findViewById(R.id.textNomeUser);
-        email_usuario = (EditText) findViewById(R.id.textEmailUser);
-        senha_usuario = (EditText) findViewById(R.id.textPasswd);
-        re_senha_usuario = (EditText) findViewById(R.id.textRePasswd);
-        cpf_usuario = (EditText) findViewById(R.id.textCpfUser);
-        cel_usuario = (EditText) findViewById(R.id.textCelUser);
+        nome_usuario = findViewById(R.id.textNomeUser);
+        email_usuario = findViewById(R.id.textEmailUser);
+        senha_usuario = findViewById(R.id.textPasswd);
+        re_senha_usuario = findViewById(R.id.textRePasswd);
+        cpf_usuario = findViewById(R.id.textCpfUser);
+        cel_usuario = findViewById(R.id.textCelUser);
 
-        cadastrar = (Button) findViewById(R.id.buttonRegister);
+        cadastrar = findViewById(R.id.buttonRegister);
         cadastrar.setOnClickListener(new View.OnClickListener() {
             /**
              * Called when a view has been clicked.
@@ -97,8 +99,7 @@ public class CadastroActivity extends Activity {
 
     public void cadastroConcluido() {
         Intent intent = new Intent(CadastroActivity.this, MenuLateral.class);
-        intent.putExtra("EMAIL", usuario.getNome());
-        intent.putExtra("ID", usuario.getId());
+        intent.putExtra("USUARIO", new Gson().toJson(usuario));
         startActivity(intent);
 
         finish();

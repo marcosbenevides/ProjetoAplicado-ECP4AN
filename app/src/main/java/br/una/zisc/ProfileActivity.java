@@ -1,11 +1,15 @@
 package br.una.zisc;
 
+import android.content.Intent;
+import android.graphics.MaskFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -17,7 +21,6 @@ import br.una.zisc.entidades.Usuario;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private TextInputLayout layout_nome, layout_email, layout_cpf, layout_celular;
     private EditText input_nome, input_email, input_cpf, input_celular;
     private Usuario usuario;
 
@@ -37,11 +40,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        layout_nome = findViewById(R.id.layout_nome);
-        layout_email = findViewById(R.id.layout_email);
-        layout_cpf = findViewById(R.id.layout_cpf);
-        layout_celular = findViewById(R.id.layout_celular);
-
         input_nome = findViewById(R.id.input_nome);
         input_email = findViewById(R.id.input_email);
         input_cpf = findViewById(R.id.input_cpf);
@@ -52,11 +50,11 @@ public class ProfileActivity extends AppCompatActivity {
             usuario = new Gson().fromJson(bundle.getString("USUARIO"), Usuario.class);
         }
 
-        try{
+        try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(usuario.getNome());
-        }catch(NullPointerException ex){
-            Toast.makeText(this,ex.getMessage(),Toast.LENGTH_LONG).show();
+            getSupportActionBar().setTitle("Meu Cadastro");
+        } catch (NullPointerException ex) {
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         input_nome.setText(usuario.getNome());
@@ -66,5 +64,23 @@ public class ProfileActivity extends AppCompatActivity {
 
         input_cpf.setEnabled(false);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                finish();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
